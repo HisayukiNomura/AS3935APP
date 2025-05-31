@@ -141,6 +141,7 @@ int main()
 		gpio_init(AS3935_IRQ);
 		gpio_set_dir(AS3935_IRQ, GPIO_IN);
 	}
+	
 
     {
         tft.printf("Initializing DMA ... ");
