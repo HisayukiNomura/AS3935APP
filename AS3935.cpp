@@ -1,57 +1,37 @@
-#include "AS3935.h"
 #include "lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h"
-#include "hardware/i2c.h"
+#include "AS3935.h"
 #include "hardware/gpio.h"
+#include "hardware/i2c.h"
 
 using namespace ardPort;
-
-AS3935::AS3935(Adafruit_ILI9341* a_pTft): m_pTft(a_pTft)
+using namespace ardPort::spi;
+#define AFE_GB 0x1F // ANALOG FRONT END GAIN BOOST = 12(Indoor) 0x00 to 0x1F
+#define NF_LEV 0x02 // NOIS FLOOR LEVEL 0x00 to 0x07
+#define WDTH 0x02   // WATCH DOG THRESHOLD 0x00 to 0x0F
+AS3935::AS3935(Adafruit_ILI9341* a_pTft) : m_pTft(a_pTft)
 {
-    // I2C初期化
-
-    // IRQピン初期化
-    gpio_init(m_u8IrqPin);
-    gpio_set_dir(m_u8IrqPin, GPIO_IN);
+    // 必要ならここで初期化
 }
-
-/// @brief I2Cの初期化関数
-/// @param PortNo	I2Cのポート番号（0または1）
-/// @param a_SDA	I2CのSDAピン番号（0〜29の範囲）
-/// @param a_SCL	I2CのSCLピン番号（0〜29の範囲）
-/// @return 	初期化が成功した場合はtrue、失敗した場合はfalseを返す
-bool AS3935::InitI2C(uint8_t PortNo, uint8_t a_SDA, uint8_t a_SCL, uint8_t a_IRQ)
+bool AS3935::Init(uint8_t a_u8I2CAddress, uint8_t a_u8I2cPort, uint8_t a_u8SdaPin, uint8_t a_u8SclPin, uint8_t a_u8IrqPin)
 {
-	// I2Cのポート番号を設定
-	m_u8I2cPort =  PortNo;
-	m_u8SdaPin = a_SDA;
-	m_u8SclPin = a_SCL;
-	m_u8IrqPin = a_IRQ;
-    
-	if (PortNo != 0 && PortNo != 1) {
-		return false; // 無効なポート番号
-	}
+	m_u8IrqPin = a_u8IrqPin;
 
-	// I2CのSDAとSCLピンを設定
-	if (m_u8SdaPin < 0 || m_u8SdaPin > 29 || m_u8SclPin < 0 || m_u8IrqPin > 29) {
-		return false; // 無効なピン番号
-	}
 
-	// I2Cの初期化
+	bool bRet = InitI2C(a_u8I2CAddress,a_u8I2cPort, a_u8SdaPin, a_u8SclPin);
 
-	i2c_init((PortNo == 0) ? i2c0 : i2c1, 400 * 1000); // 400KHzで初期化
-
-	gpio_set_function(m_u8SdaPin, GPIO_FUNC_I2C);
-	gpio_set_function(m_u8SclPin, GPIO_FUNC_I2C);
-	gpio_pull_up(m_u8SdaPin);
-	gpio_pull_up(m_u8SclPin);
-    // IRQピンの初期化
+	// IRQピンの初期化
 	gpio_init(m_u8IrqPin);
 	gpio_set_dir(m_u8IrqPin, GPIO_IN);
 
+	//AS3935の初期化処理
+	writeRegAndData_1(0x3C, 0x96); // Reset and set default values
+	writeRegAndData_1(0x3D, 0x96); // Reset and set default values
+	writeRegAndData_1(0x00, (AFE_GB << 1)); // SET ANALOG FRONT END GAIN BOOST
+	writeRegAndData_1(0x01, ((NF_LEV << 4) | WDTH));
+	writeRegAndData_1(0x03, 0x00); // FRQ DIV RATIO = 1/16
 
-	return true;
+	return bRet; // 初期化成功
 }
-
 void AS3935::calibrate() {
     if (m_pTft) {
         m_pTft->setCursor(0, 100);

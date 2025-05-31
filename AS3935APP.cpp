@@ -33,6 +33,8 @@ using namespace ardPort::spi;
 #define I2C_SCL 15		// I2CのSCLピン番号としてGP15
 // AS3935からのIRQ入力
 #define AS3935_IRQ 13 // AS3935のIRQピン GP13
+// AS3935のアドレス。ボードにより0か３のどちらか
+#define AS3935_ADDRESS 0
 
 /// @brief 	Wi-Fi接続関数
 /// @param ipAddr 		IPアドレスを格納する配列（4バイト）
@@ -112,7 +114,8 @@ int main()
 	// ILI9341ディスプレイのインスタンスを作成　　＜＜＜＜＜　追加　（３）
 	SPI.setTX(TFT_MOSI); // SPI0のTX(MOSI)
 	SPI.setSCK(TFT_SCK); // SPI0のSCK
-	tft.begin();         // TFTを初期化
+	tft.begin();         // TFTを初期
+
 
 	AS3935 as3935(&tft); // AS3935のインスタンスを作成
 
@@ -131,7 +134,7 @@ int main()
 	/// I2Cの初期化と、IRQ入力の設定。実際にはIRQするかは決めていない。IRQピンを使ってキャリブレーションするから。
 	{
 		tft.printf("Initializing i2C ... ");
-		bool bRet = as3935.InitI2C(I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
+		bool bRet = as3935.Init(AS3935_ADDRESS,I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
 		if (bRet) {
 			tft.printf("Success!\n");
 		} else {
