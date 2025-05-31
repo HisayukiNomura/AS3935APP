@@ -1,1 +1,16 @@
 build
+_build
+Scopy_SPISettings.ini
+*_
+.vscode
+.clang-format
+*.bak
+.gitignore
+go.bat
+*.pdf
+CMakeFiles
+dev_memo.txt
+dev_memo.txt
+*.zip
+KNJGfx9341_ARD
+outlog.txt
