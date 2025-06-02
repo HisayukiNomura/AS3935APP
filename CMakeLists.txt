@@ -52,6 +52,7 @@ pico_sdk_init()
 add_executable(AS3935APP AS3935APP.cpp
 AS3935.cpp
 I2CBase.cpp
+FreqCounter.cpp
 
 lib-9341/misc/defines.cpp
 lib-9341/Adafruit_GFX_Library/Adafruit_GFX.cpp

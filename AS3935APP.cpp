@@ -106,10 +106,10 @@ bool isEnableWifi = false;         // Wi-Fiを有効にするかどうか
 static const char* SSID = "IP50"; // Replace with your Wi-Fi SSID
 static const char* PASSWORD = "testpass";
 uint8_t ipAddress[4] = {0, 0, 0, 0}; // IPアドレスを格納する配列
-Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
 {
+	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 	stdio_init_all();
 	// ILI9341ディスプレイのインスタンスを作成　　＜＜＜＜＜　追加　（３）
 	SPI.setTX(TFT_MOSI); // SPI0のTX(MOSI)
@@ -185,8 +185,8 @@ int main()
 
 
 	{
-		tft.printf("Scalibrating AS3935");
-		as3935.calibrate(); // AS3935のキャリブレーションを実行
+		tft.printf("Calibrating AS3935\n");
+		as3935.StartCalibration(); // AS3935のキャリブレーションを実行
 		tft.printf("Done.\n");
 	}
 
