@@ -28,13 +28,13 @@ static void freqcounter_gpio_callback(uint gpio, uint32_t events) {
  * @param a_u8PinNo 周波数を測定するGPIOピン番号
  * @return 1秒間に入力されたパルス数（周波数）
  */
-uint32_t FreqCounter::start(uint8_t a_u8PinNo) {
+uint32_t FreqCounter::start(uint8_t a_u8PinNo, uint16_t a_time) {
     g_u32PulseCount = 0;
     gpio_init(a_u8PinNo);
     gpio_set_dir(a_u8PinNo, GPIO_IN);
     gpio_pull_down(a_u8PinNo);
     gpio_set_irq_enabled_with_callback(a_u8PinNo, GPIO_IRQ_EDGE_RISE, true, &freqcounter_gpio_callback);
-    sleep_ms(1000); // 1秒間カウント
-    gpio_set_irq_enabled(a_u8PinNo, GPIO_IRQ_EDGE_RISE, false);
+	sleep_ms(a_time); // 1秒間カウント
+	gpio_set_irq_enabled(a_u8PinNo, GPIO_IRQ_EDGE_RISE, false);
     return g_u32PulseCount;
 }

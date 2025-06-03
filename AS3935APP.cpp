@@ -12,9 +12,11 @@
 
 // 漢字フォント情報ファイル　　　　　　　　　＜＜＜＜＜　追加　　（４）　
 #include "Kanji/Fonts/JF-Dot-Shinonome16_16x16_ALL.inc"
+#include "pictData.h" // 画像データ
 
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
+#include "hardware/sync.h" // WFE（Wait For Event）を扱うためのライブラリ
 
 // 名前空間の使用を宣言　　　　　　　　　　　　＜＜＜＜＜　追加　（２）
 using namespace ardPort;
@@ -101,15 +103,45 @@ bool InitDMA()
 	return RetVal;
 	
 }
+bool isIRQTriggered = false; // IRQがトリガーされたかどうかのフラグ
+/// @brief IRQピンの割り込みに対するコールバック関数
+/// @param gpio 
+/// @param events 
+static void as3935IRQCallback(uint gpio, uint32_t events)
+{
+	isIRQTriggered = true; // IRQがトリガーされたことを記録
+}
+/// @brief 	タイマー割り込みのコールバック関数
+/// @param rt　	タイマーのリピート割り込み構造体 
+/// @return　割り込みを継続するかどうか 
+bool hartbeatCallback(repeating_timer_t* rt)
+{
+	return true; // 割り込みを継続
+}
 
 bool isEnableWifi = false;         // Wi-Fiを有効にするかどうか
 static const char* SSID = "IP50"; // Replace with your Wi-Fi SSID
 static const char* PASSWORD = "testpass";
 uint8_t ipAddress[4] = {0, 0, 0, 0}; // IPアドレスを格納する配列
 
+/**
+ * @brief メイン関数（エントリーポイント）
+ * @details
+ * Raspberry Pi Pico上でAS3935雷センサとILI9341 TFTディスプレイを制御するアプリケーションのメイン関数です。
+ * - TFTディスプレイ、I2C、DMA、Wi-Fiの初期化を行います。
+ * - AS3935の初期化とキャリブレーションを実行します。
+ * - Wi-Fi接続やIPアドレスの取得、ステーションモードの有効化を行います（有効時）。
+ * - メインループでは、ディスプレイに日本語メッセージと経過時間を表示し続けます。
+ * - 各種初期化やエラー時にはTFTに進捗やエラー内容を表示します。
+ *
+ *
+ * @return 終了コード（正常終了時は0、初期化失敗時は-1）
+ */
+
+Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
+
 int main()
 {
-	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 	stdio_init_all();
 	// ILI9341ディスプレイのインスタンスを作成　　＜＜＜＜＜　追加　（３）
 	SPI.setTX(TFT_MOSI); // SPI0のTX(MOSI)
@@ -183,21 +215,68 @@ int main()
 		tft.printf("Wi-Fi is disabled.\n");
 	}
 
-
+	
 	{
 		tft.printf("Calibrating AS3935\n");
-		as3935.StartCalibration(); // AS3935のキャリブレーションを実行
+		as3935.StartCalibration(100); // AS3935のキャリブレーションを実行
 		tft.printf("Done.\n");
 	}
+	delay(1000);
+	tft.fillScreen(STDCOLOR.SUPERDARK_GRAY); // 画面を暗い灰色で塗りつぶす
+	tft.setCursor(0, 2);
+	tft.fillRoundRect(0,0,240,20,4,STDCOLOR.DARK_GRAY); // 画面の上部に帯を描画
+	tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.WHITE);
+	tft.printf("Lightning Sensor\n");
+	tft.setCursor(0, 22);
+
+	// メインループ
+	gpio_set_irq_enabled_with_callback(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true, &as3935IRQCallback);
+	// タイマー割り込み設定（1000msごと）
+	repeating_timer_t timer;
+	add_repeating_timer_ms(1000, hartbeatCallback, NULL, &timer);
+
 
 	while (true) {
-		tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK); // 文字色を白に設定
-		tft.setCursor(10, 10);
-		tft.printf("こんにちは、世界！"); // 文字を表示
-		uint64_t time_us = time_us_64();  // 起動後の経過時間（ミリ秒）
-		tft.setCursor(10, 40);
-		tft.printf("経過時間: %llu ms", time_us / 1000); // 経過時間を表示
-		printf("Hello, world!\n");
-		sleep_ms(1000);
+		isIRQTriggered = false;
+		__wfe(); // 割り込みが発生するまでスリープ
+		if (isIRQTriggered) {			// IRQがトリガーされた場合
+			uint8_t u8Summary;
+			uint8_t u8Distance;
+			uint8_t u8Status;
+
+			tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
+			// ここに本当に雷かの処理を追加
+			bool bRet = as3935.validateSignal();
+			if (bRet) {				// 雷が検出された場合
+				tft.setTextColor(STDCOLOR.RED, STDCOLOR.SUPERDARK_GRAY);
+				tft.setCursor(0, 30);
+				tft.printf("雷を検出しました！\n");
+				as3935.GetLatestAlarm(0,u8Summary, u8Distance, u8Status);
+				tft.printf("距離:%3d km STAT：%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
+			} else {				// 雷が検出されなかった場合
+				tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
+				tft.setCursor(0, 30);
+				tft.printf("雷は検出されませんでした。\n");
+				as3935.GetLatestFalseAlarm(0,u8Summary, u8Distance, u8Status);
+				tft.printf("距離:%3d km STAT:%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
+			}
+			// 最新から５個のアラームをアイコンで表示する
+			tft.setCursor(0, 70);
+
+			for (int i = 0; i < 5;i++) {
+				int16_t  curY = tft.getCursorY();
+				bool bRet = as3935.GetLatestAlarm(i, u8Summary, u8Distance, u8Status);
+				if (bRet == false) {
+					break; // 取得できなかったら終了
+				}
+				tft.drawRGBBitmap((int16_t)0,curY,picThndr,15,15, STDCOLOR.BLACK);
+				tft.setCursor(24, curY);
+				tft.printf("%3d km\n", u8Distance);
+			}
+			// マークを消して、元の状態に戻す
+			tft.fillRect(0, 320 - 20, 16, 16, STDCOLOR.SUPERDARK_GRAY);
+		} else {						// それ以外の処理があればここに追加
+
+		}
 	}
 }

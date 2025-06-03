@@ -11,5 +11,5 @@
 class FreqCounter {
 public:
     // 指定ピンでカウント開始し、1秒間のパルス数（周波数）を返す
-    static uint32_t start(uint8_t a_u8PinNo);
+    static uint32_t start(uint8_t a_u8PinNo,uint16_t a_time);
 };
