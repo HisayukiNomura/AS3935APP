@@ -13,6 +13,9 @@
 // 漢字フォント情報ファイル　　　　　　　　　＜＜＜＜＜　追加　　（４）　
 #include "Kanji/Fonts/JF-Dot-Shinonome16_16x16_ALL.inc"
 #include "pictData.h" // 画像データ
+#include "FlashMem.h"
+#include "Settings.h"
+#include "InetAction.h"
 
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
@@ -30,13 +33,15 @@ using namespace ardPort::spi;
 #define TFT_CS 22   // 液晶画面の CS
 
 // I2Cのポート番号とピン番号の定義
-#define I2C_PORT 1		// I2Cのポート番号として０
-#define I2C_SDA 14		// I2CのSDAピン番号としてGP14
-#define I2C_SCL 15		// I2CのSCLピン番号としてGP15
+#define I2C_PORT 1 // I2Cのポート番号として０
+#define I2C_SDA 14 // I2CのSDAピン番号としてGP14
+#define I2C_SCL 15 // I2CのSCLピン番号としてGP15
 // AS3935からのIRQ入力
 #define AS3935_IRQ 13 // AS3935のIRQピン GP13
 // AS3935のアドレス。ボードにより0か３のどちらか
 #define AS3935_ADDRESS 0
+
+Settings settings;
 
 /// @brief 	Wi-Fi接続関数
 /// @param ipAddr 		IPアドレスを格納する配列（4バイト）
@@ -46,8 +51,8 @@ using namespace ardPort::spi;
 int ConnectToWifi(uint8_t* ipAddr, const char* ssid, const char* password)
 {
 	ipAddr[0] = ipAddr[1] = ipAddr[2] = ipAddr[3] = 0; // IPアドレスの初期化
-	int ret = cyw43_arch_wifi_connect_timeout_ms(ssid, password, CYW43_AUTH_WPA2_AES_PSK, 500000);
-    if (ret != 0) {
+	int ret = cyw43_arch_wifi_connect_timeout_ms(ssid, password, CYW43_AUTH_WPA3_WPA2_AES_PSK, 5000000);
+	if (ret != 0) {
 		return ret;
 	}
 	uint8_t* ip_addr = (uint8_t*)&(cyw43_state.netif[0].ip_addr.addr);
@@ -58,11 +63,9 @@ int ConnectToWifi(uint8_t* ipAddr, const char* ssid, const char* password)
 	return true;
 }
 
-
-
 /// @brief 	DMAの初期化関数
 /// @return 	初期化が成功した場合はtrue、失敗した場合はfalseを返す
-bool InitDMA() 
+bool InitDMA()
 {
 
 	// Get a free channel, panic() if there are none
@@ -101,28 +104,25 @@ bool InitDMA()
 	bool RetVal = (strcmp(src, dst) == 0) ? true : false;
 
 	return RetVal;
-	
 }
 bool isIRQTriggered = false; // IRQがトリガーされたかどうかのフラグ
 /// @brief IRQピンの割り込みに対するコールバック関数
-/// @param gpio 
-/// @param events 
+/// @param gpio
+/// @param events
 static void as3935IRQCallback(uint gpio, uint32_t events)
 {
 	isIRQTriggered = true; // IRQがトリガーされたことを記録
 }
 /// @brief 	タイマー割り込みのコールバック関数
-/// @param rt　	タイマーのリピート割り込み構造体 
-/// @return　割り込みを継続するかどうか 
+/// @param rt　	タイマーのリピート割り込み構造体
+/// @return　割り込みを継続するかどうか
 bool hartbeatCallback(repeating_timer_t* rt)
 {
 	return true; // 割り込みを継続
 }
 
-bool isEnableWifi = false;         // Wi-Fiを有効にするかどうか
-static const char* SSID = "IP50"; // Replace with your Wi-Fi SSID
-static const char* PASSWORD = "testpass";
-uint8_t ipAddress[4] = {0, 0, 0, 0}; // IPアドレスを格納する配列
+
+
 
 /**
  * @brief メイン関数（エントリーポイント）
@@ -138,16 +138,29 @@ uint8_t ipAddress[4] = {0, 0, 0, 0}; // IPアドレスを格納する配列
  * @return 終了コード（正常終了時は0、初期化失敗時は-1）
  */
 
-Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
-{
+ {
+	 Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
+
+	 FlashMem flash(31, 1); // フラッシュメモリのブロック0を管理するインスタンスを作成
+
+	 if (flash.read(0, (void*)(&settings), sizeof(Settings)) == false) {
+		 settings.setDefault();                                // チャンク識別子が一致しない場合はデフォルト値を設定
+		 flash.write(0, (void*)(&settings), sizeof(Settings)); // デフォルト値を書き込む
+	 } else {
+		 if (settings.isActive() == false) {
+			 settings.setDefault();                                // チャンク識別子が一致しない場合はデフォルト値を設定
+			 flash.write(0, (void*)(&settings), sizeof(Settings)); // デフォルト値を書き込む
+		 }
+	}
+	InetAction iNet(settings, &tft); // InetActionのインスタンスを作成
+
 	stdio_init_all();
 	// ILI9341ディスプレイのインスタンスを作成　　＜＜＜＜＜　追加　（３）
 	SPI.setTX(TFT_MOSI); // SPI0のTX(MOSI)
 	SPI.setSCK(TFT_SCK); // SPI0のSCK
 	tft.begin();         // TFTを初期
-
 
 	AS3935 as3935(&tft); // AS3935のインスタンスを作成
 
@@ -166,7 +179,7 @@ int main()
 	/// I2Cの初期化と、IRQ入力の設定。実際にはIRQするかは決めていない。IRQピンを使ってキャリブレーションするから。
 	{
 		tft.printf("Initializing i2C ... ");
-		bool bRet = as3935.Init(AS3935_ADDRESS,I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
+		bool bRet = as3935.Init(AS3935_ADDRESS, I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
 		if (bRet) {
 			tft.printf("Success!\n");
 		} else {
@@ -176,46 +189,38 @@ int main()
 		gpio_init(AS3935_IRQ);
 		gpio_set_dir(AS3935_IRQ, GPIO_IN);
 	}
-	
-
-    {
-        tft.printf("Initializing DMA ... ");
-        bool bRet = InitDMA(); // DMAの初期化関数を呼び出す
-        if (bRet) {
-            tft.printf("Success!\n");
-        } else {
-            tft.printf("Failed.\n");
-            return -1; // 初期化に失敗した場合は終了
-        }
-    }
-	tft.printf("Initializing Wifi ... ");
-	// Initialise the Wi-Fi chip
-	if (cyw43_arch_init()) {
-		tft.printf("cyw43_arch_init failed\n");
-		return -1;
-	} else {
-		tft.printf("Success!\n");
-	}
 
 
-	if (isEnableWifi) {
-		tft.printf("Connecting to Wi-Fi ... ");
-		int iRet = ConnectToWifi(ipAddress, SSID, PASSWORD);
-		if (iRet == 0) {
-			tft.printf("Success!\n");
-			tft.printf("IP address: %d.%d.%d.%d\n", ipAddress[0], ipAddress[1], ipAddress[2], ipAddress[3]);
-			// Enable wifi station
-			tft.printf("Enable Wifi on station mode\n");
-			cyw43_arch_enable_sta_mode();
 
-		} else {
-			tft.printf("Failed(%d).\n",iRet);
+	if (settings.isEnableWifi) {
+		
+		tft.printf("Initializing Wifi ... ");
+		// Initialise the Wi-Fi chip
+		if (iNet.init() == false) { 
+			// 初期化に失敗したら、ネットワーク無しで継続
+			settings.isEnableWifi = false; // Wi-Fiを無効にする
+		} else {	// 成功したら、接続処理を行う
+			int iRet = iNet.connect(); // Wi-Fi接続を試みる
+			if (iRet != 0) {
+				//　初期化に失敗したら、ネットワーク無しで継続
+				settings.isEnableWifi = false; // Wi-Fiを無効にする
+				tft.drawRGBBitmap(1, 240 - 16, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
+			} 
 		}
-	} else {
-		tft.printf("Wi-Fi is disabled.\n");
+		tft.drawRGBBitmap(1, 240 - 16, wifiIcon_OK, 16, 16, STDCOLOR.BLACK);
+		// ここに、SNTPに接続して現在時刻を取得する処理などを記述
+		iNet.setTime();
 	}
-
-	
+	{
+		tft.printf("Initializing DMA ... ");
+		bool bRet = InitDMA(); // DMAの初期化関数を呼び出す
+		if (bRet) {
+			tft.printf("Success!\n");
+		} else {
+			tft.printf("Failed.\n");
+			return -1; // 初期化に失敗した場合は終了
+		}
+	}
 	{
 		tft.printf("Calibrating AS3935\n");
 		as3935.StartCalibration(100); // AS3935のキャリブレーションを実行
@@ -224,10 +229,15 @@ int main()
 	delay(1000);
 	tft.fillScreen(STDCOLOR.SUPERDARK_GRAY); // 画面を暗い灰色で塗りつぶす
 	tft.setCursor(0, 2);
-	tft.fillRoundRect(0,0,240,20,4,STDCOLOR.DARK_GRAY); // 画面の上部に帯を描画
+	tft.fillRoundRect(0, 0, 240, 20, 4, STDCOLOR.DARK_GRAY); // 画面の上部に帯を描画
 	tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.WHITE);
 	tft.printf("Lightning Sensor\n");
 	tft.setCursor(0, 22);
+	if (settings.isEnableWifi) {
+		tft.drawRGBBitmap(240 - 16,2, wifiIcon_OK, 16, 16, STDCOLOR.BLACK);
+	} else {
+		tft.drawRGBBitmap(240 - 16,2, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
+	}
 
 	// メインループ
 	gpio_set_irq_enabled_with_callback(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true, &as3935IRQCallback);
@@ -235,11 +245,10 @@ int main()
 	repeating_timer_t timer;
 	add_repeating_timer_ms(1000, hartbeatCallback, NULL, &timer);
 
-
 	while (true) {
 		isIRQTriggered = false;
-		__wfe(); // 割り込みが発生するまでスリープ
-		if (isIRQTriggered) {			// IRQがトリガーされた場合
+		__wfe();              // 割り込みが発生するまでスリープ
+		if (isIRQTriggered) { // IRQがトリガーされた場合
 			uint8_t u8Summary;
 			uint8_t u8Distance;
 			uint8_t u8Status;
@@ -247,36 +256,35 @@ int main()
 			tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
 			// ここに本当に雷かの処理を追加
 			bool bRet = as3935.validateSignal();
-			if (bRet) {				// 雷が検出された場合
+			if (bRet) { // 雷が検出された場合
 				tft.setTextColor(STDCOLOR.RED, STDCOLOR.SUPERDARK_GRAY);
 				tft.setCursor(0, 30);
 				tft.printf("雷を検出しました！\n");
-				as3935.GetLatestAlarm(0,u8Summary, u8Distance, u8Status);
+				as3935.GetLatestAlarm(0, u8Summary, u8Distance, u8Status);
 				tft.printf("距離:%3d km STAT：%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
-			} else {				// 雷が検出されなかった場合
+			} else { // 雷が検出されなかった場合
 				tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
 				tft.setCursor(0, 30);
 				tft.printf("雷は検出されませんでした。\n");
-				as3935.GetLatestFalseAlarm(0,u8Summary, u8Distance, u8Status);
+				as3935.GetLatestFalseAlarm(0, u8Summary, u8Distance, u8Status);
 				tft.printf("距離:%3d km STAT:%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
 			}
 			// 最新から５個のアラームをアイコンで表示する
 			tft.setCursor(0, 70);
 
-			for (int i = 0; i < 5;i++) {
-				int16_t  curY = tft.getCursorY();
+			for (int i = 0; i < 5; i++) {
+				int16_t curY = tft.getCursorY();
 				bool bRet = as3935.GetLatestAlarm(i, u8Summary, u8Distance, u8Status);
 				if (bRet == false) {
 					break; // 取得できなかったら終了
 				}
-				tft.drawRGBBitmap((int16_t)0,curY,picThndr,15,15, STDCOLOR.BLACK);
+				tft.drawRGBBitmap((int16_t)0, curY, picThndr, 15, 15, STDCOLOR.BLACK);
 				tft.setCursor(24, curY);
 				tft.printf("%3d km\n", u8Distance);
 			}
 			// マークを消して、元の状態に戻す
 			tft.fillRect(0, 320 - 20, 16, 16, STDCOLOR.SUPERDARK_GRAY);
-		} else {						// それ以外の処理があればここに追加
-
+		} else { // それ以外の処理があればここに追加
 		}
 	}
 }

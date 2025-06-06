@@ -7,7 +7,7 @@
 // Forward declaration to avoid include errors if only pointer is used
 
 using namespace ardPort;
-    using namespace ardPort::spi;
+using namespace ardPort::spi;
 
 	
 

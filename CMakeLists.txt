@@ -54,6 +54,10 @@ AS3935.cpp
 I2CBase.cpp
 FreqCounter.cpp
 RingBuffer.cpp
+FlashMem.cpp
+inetAction.cpp
+
+sntp.c
 
 lib-9341/misc/defines.cpp
 lib-9341/Adafruit_GFX_Library/Adafruit_GFX.cpp
@@ -120,9 +124,11 @@ ${PICO_SDK_PATH}/src/rp2_common/pico_async_context/include
 ${PICO_SDK_PATH}/src/rp2_common/pico_async_context/include/pico
 ${PICO_SDK_PATH}/src/rp2_common/hardware_adc/include/
 ${PICO_SDK_PATH}/src/rp2_common/hardware_pwm/include/
+${PICO_SDK_PATH}/src/rp2_common/hardware_rtc/include/
 ${PICO_SDK_PATH}/lib/lwip/src/include
 ${PICO_SDK_PATH}/lib/lwip/src/include/iwip
 ${PICO_SDK_PATH}/lib/cyw43-driver/src/        
+
 )
 
 # Add any user requested libraries
@@ -130,8 +136,15 @@ target_link_libraries(AS3935APP
         hardware_spi
         hardware_i2c
         hardware_dma
+        hardware_flash
+        hardware_sync                
+        hardware_rtc
         pico_cyw43_arch_lwip_poll
+        #pico_lwip_sntp        
         )
+add_definitions(
+    -DLWIP_SNTP=1    
+)
 
 pico_add_extra_outputs(AS3935APP)
 
