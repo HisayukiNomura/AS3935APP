@@ -138,10 +138,10 @@ bool hartbeatCallback(repeating_timer_t* rt)
  * @return 終了コード（正常終了時は0、初期化失敗時は-1）
  */
 
+Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
  {
-	 Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 	 FlashMem flash(31, 1); // フラッシュメモリのブロック0を管理するインスタンスを作成
 

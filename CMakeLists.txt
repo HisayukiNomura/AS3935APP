@@ -57,7 +57,6 @@ RingBuffer.cpp
 FlashMem.cpp
 inetAction.cpp
 
-sntp.c
 
 lib-9341/misc/defines.cpp
 lib-9341/Adafruit_GFX_Library/Adafruit_GFX.cpp
@@ -140,11 +139,7 @@ target_link_libraries(AS3935APP
         hardware_sync                
         hardware_rtc
         pico_cyw43_arch_lwip_poll
-        #pico_lwip_sntp        
         )
-add_definitions(
-    -DLWIP_SNTP=1    
-)
 
 pico_add_extra_outputs(AS3935APP)
 

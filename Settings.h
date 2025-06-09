@@ -11,6 +11,10 @@ class __attribute__((packed)) Settings
 	char SSID[32];
 	char PASSWORD[32];
 	uint8_t ipAddr[4]; // IPアドレスを格納する配列
+	char localeStr[32]; // ロケール文字列（例: "ja_JP.UTF-8"）
+	char tzStr[16]; // タイムゾーン文字列（例: "JST-9"）
+	char end[4]; // チャンクの終端を示す文字列（例: "ENDC"）
+
 	void setDefault()
 	{
 		strncpy(chunk, "HNTE", sizeof(chunk));                         // チャンク識別子を設定
@@ -19,11 +23,15 @@ class __attribute__((packed)) Settings
 		SSID[sizeof(SSID) - 1] = '\0';                                 // ゼロ終端
 		strncpy(PASSWORD, "0422111111", sizeof(PASSWORD) - 1);           // パスワードのデフォルト値
 		PASSWORD[sizeof(PASSWORD) - 1] = '\0';                         // ゼロ終端
+		strcpy(localeStr, "ja_JP.UTF-8");       // ロケール文字列のデフォルト値
+		strcpy(tzStr, "JST-9");       // ロケール文字列のデフォルト値
+		strcpy(end, "ENDC"); // チャンクの終端を示す文字列
 		ipAddr[0] = ipAddr[1] = ipAddr[2] = ipAddr[3] = 0; // IPアドレスの初期化
 	}
 	bool isActive()
 	{
-		if (strncmp(chunk, "HNTE", 4) != 0) return false;
+		if (strncmp(chunk, "HNTE", 4) != 0) return false; // チャンク識別子が一致しない場合は無効
+		if (strncmp(end, "ENDC", 4) != 0 ) return false;
 		return true;
 	}
 
@@ -49,4 +57,12 @@ class __attribute__((packed)) Settings
         ipAddr[2] = a_u8Ip2;
         ipAddr[3] = a_u8Ip3;
     }
+	const char* getLocaleStr() const
+	{
+		return localeStr;
+	}
+	const char* getTzStr() const
+	{
+		return tzStr;
+	}
 } ;
