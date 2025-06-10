@@ -16,6 +16,7 @@
 #include "FlashMem.h"
 #include "Settings.h"
 #include "InetAction.h"
+#include "DispClock.h"
 
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
@@ -176,7 +177,7 @@ int main()
 	tft.setCursor(0, 0);
 	tft.printf("Start initializing...\n");
 
-	/// I2Cの初期化と、IRQ入力の設定。実際にはIRQするかは決めていない。IRQピンを使ってキャリブレーションするから。
+	// --- I2C初期化とAS3935のIRQピン設定 ---
 	{
 		tft.printf("Initializing i2C ... ");
 		bool bRet = as3935.Init(AS3935_ADDRESS, I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
@@ -192,25 +193,30 @@ int main()
 
 
 
+	// --- Wi-Fi初期化・接続・時刻同期 ---
 	if (settings.isEnableWifi) {
-		
 		tft.printf("Initializing Wifi ... ");
-		// Initialise the Wi-Fi chip
+		// Wi-Fiチップ初期化
 		if (iNet.init() == false) { 
-			// 初期化に失敗したら、ネットワーク無しで継続
-			settings.isEnableWifi = false; // Wi-Fiを無効にする
-		} else {	// 成功したら、接続処理を行う
-			int iRet = iNet.connect(); // Wi-Fi接続を試みる
+			// 初期化失敗時はWi-Fi無効で継続
+			settings.isEnableWifi = false;
+		} else {
+			// Wi-Fi接続処理
+			int iRet = iNet.connect();
 			if (iRet != 0) {
-				//　初期化に失敗したら、ネットワーク無しで継続
-				settings.isEnableWifi = false; // Wi-Fiを無効にする
+				settings.isEnableWifi = false;
 				tft.drawRGBBitmap(1, 240 - 16, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
 			} 
 		}
 		tft.drawRGBBitmap(1, 240 - 16, wifiIcon_OK, 16, 16, STDCOLOR.BLACK);
-		// ここに、SNTPに接続して現在時刻を取得する処理などを記述
+		// SNTPで現在時刻を取得
 		iNet.setTime();
 	}
+	// -- 時計表示部の初期化 --
+	{
+		DispClock::init(&tft);
+	}
+	// --- DMA初期化 ---
 	{
 		tft.printf("Initializing DMA ... ");
 		bool bRet = InitDMA(); // DMAの初期化関数を呼び出す
@@ -221,12 +227,16 @@ int main()
 			return -1; // 初期化に失敗した場合は終了
 		}
 	}
+
+	// --- AS3935の初期化・キャリブレーション ---
 	{
 		tft.printf("Calibrating AS3935\n");
 		as3935.StartCalibration(100); // AS3935のキャリブレーションを実行
 		tft.printf("Done.\n");
 	}
+
 	delay(1000);
+	// --- 画面初期化・タイトル表示 ---
 	tft.fillScreen(STDCOLOR.SUPERDARK_GRAY); // 画面を暗い灰色で塗りつぶす
 	tft.setCursor(0, 2);
 	tft.fillRoundRect(0, 0, 240, 20, 4, STDCOLOR.DARK_GRAY); // 画面の上部に帯を描画
@@ -239,11 +249,12 @@ int main()
 		tft.drawRGBBitmap(240 - 16,2, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
 	}
 
-	// メインループ
+	// --- 割り込み・タイマー・メインループ ---
+	// AS3935のIRQ割り込みを有効化
 	gpio_set_irq_enabled_with_callback(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true, &as3935IRQCallback);
-	// タイマー割り込み設定（1000msごと）
+	// 1秒ごとのハートビートタイマーを設定
 	repeating_timer_t timer;
-	add_repeating_timer_ms(1000, hartbeatCallback, NULL, &timer);
+	add_repeating_timer_ms(500, hartbeatCallback, NULL, &timer);
 
 	while (true) {
 		isIRQTriggered = false;
@@ -252,39 +263,52 @@ int main()
 			uint8_t u8Summary;
 			uint8_t u8Distance;
 			uint8_t u8Status;
+			time_t eventtime;
 
 			tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
-			// ここに本当に雷かの処理を追加
+			// 雷信号の検証
 			bool bRet = as3935.validateSignal();
 			if (bRet) { // 雷が検出された場合
 				tft.setTextColor(STDCOLOR.RED, STDCOLOR.SUPERDARK_GRAY);
-				tft.setCursor(0, 30);
+				tft.setCursor(0, 100);
 				tft.printf("雷を検出しました！\n");
-				as3935.GetLatestAlarm(0, u8Summary, u8Distance, u8Status);
+				as3935.GetLatestAlarm(0, u8Summary, u8Distance, u8Status,eventtime);
 				tft.printf("距離:%3d km STAT：%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
 			} else { // 雷が検出されなかった場合
 				tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
-				tft.setCursor(0, 30);
+				tft.setCursor(0, 100);
 				tft.printf("雷は検出されませんでした。\n");
-				as3935.GetLatestFalseAlarm(0, u8Summary, u8Distance, u8Status);
+				as3935.GetLatestFalseAlarm(0, u8Summary, u8Distance, u8Status,eventtime);
 				tft.printf("距離:%3d km STAT:%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
 			}
-			// 最新から５個のアラームをアイコンで表示する
-			tft.setCursor(0, 70);
+			tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
 
-			for (int i = 0; i < 5; i++) {
+			// 最新から5個のアラームをアイコンで表示
+			tft.setCursor(0, 150);
+
+			for (int i = 0; i < 10; i++) {
 				int16_t curY = tft.getCursorY();
-				bool bRet = as3935.GetLatestAlarm(i, u8Summary, u8Distance, u8Status);
+				bool bRet = as3935.GetLatestEvent(i, u8Summary, u8Distance, u8Status, eventtime);
 				if (bRet == false) {
 					break; // 取得できなかったら終了
 				}
-				tft.drawRGBBitmap((int16_t)0, curY, picThndr, 15, 15, STDCOLOR.BLACK);
-				tft.setCursor(24, curY);
-				tft.printf("%3d km\n", u8Distance);
+				struct tm* t = localtime(&eventtime);
+				int hour = t->tm_hour;
+				int min = t->tm_min;
+				if  (u8Summary == as3935.SUMM_THUNDER) {
+					tft.drawRGBBitmap((int16_t)0, curY, picThndr, 15, 15, STDCOLOR.BLACK);
+					tft.setCursor(24, curY);
+					tft.printf("%02d:%02d  %3d km\n", hour, min, u8Distance);
+				} else {
+					tft.drawRGBBitmap((int16_t)0, curY, picFalse, 15, 15, STDCOLOR.BLACK);
+					tft.printf("%02d:%02d  --- km\n", hour, min, u8Distance);
+				}
 			}
 			// マークを消して、元の状態に戻す
 			tft.fillRect(0, 320 - 20, 16, 16, STDCOLOR.SUPERDARK_GRAY);
-		} else { // それ以外の処理があればここに追加
+		} else {
+			// それ以外の処理があればここに追加
+			DispClock::show(64,30); // 時計の更新
 		}
 	}
 }

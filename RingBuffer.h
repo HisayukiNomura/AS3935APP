@@ -1,20 +1,59 @@
-#define DEFAULT_SIZE 5 // デフォルトのバッファサイズ
+// RingBufferT.h
+#pragma once
 
-class RingBuffer
+template <typename T>
+class RingBufferT
 {
   private:
-    int* buffer; // バッファ（動的配列）
-    int size;    // バッファサイズ
-    int front;   // 先頭
-    int rear;    // 末尾（次のデータを追加する位置）
-    int count;   // 現在のデータ数
-    int lastData;// 最後に取得したデータを記録
+	T* buffer;
+	int size;
+	int front;
+	int rear;
+	int count;
+	T lastData;
 
   public:
-    RingBuffer(int a_size = DEFAULT_SIZE);
-    ~RingBuffer();
-    void push(int data);
-    bool pop(int& data);
-    int getLastData() const;
-    int getFromLast(int n) const;
+	RingBufferT(int a_size)
+	{
+		size = a_size;
+		buffer = new T[size];
+		front = 0;
+		rear = 0;
+		count = 0;
+		lastData = 0;
+	}
+	~RingBufferT()
+	{
+		delete[] buffer;
+	}
+	void push(T data)
+	{
+		if (count == size) {
+			front = (front + 1) % size;
+		} else {
+			count++;
+		}
+		lastData = data;
+		buffer[rear] = data;
+		rear = (rear + 1) % size;
+	}
+	bool pop(T& data)
+	{
+		if (count == 0) return false;
+		data = buffer[front];
+		front = (front + 1) % size;
+		count--;
+		return true;
+	}
+	T getLastData() const
+	{
+		return lastData;
+	}
+	T getFromLast(int n) const
+	{
+		if (n < 0 || n >= count) return 0;
+		int idx = (rear - 1 - n + size) % size;
+		return buffer[idx];
+	}
+	int getCount() const { return count; }
 };

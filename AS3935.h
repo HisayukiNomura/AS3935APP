@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <queue>
+#include <ctime>
 #include "RingBuffer.h"
 #include "I2CBase.h"
 #include "lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h"
@@ -32,13 +33,10 @@ using namespace ardPort::spi;
 			"NONE", "雷の検出", "距離超過", "信号なし", "認識誤り", "雑音過大"
 		};
 
-		RingBuffer m_bufAlarmSummary;
-		RingBuffer m_bufAlarmDist;
-		RingBuffer m_bufAlarmStatus;
-
-		RingBuffer m_bufFalseAlarmSummary;
-		RingBuffer m_bufFalseAlarmDist;
-		RingBuffer m_bufFalseAlarmStatus;
+		RingBufferT<int> m_bufAlarmSummary;
+		RingBufferT<int> m_bufAlarmDist;
+		RingBufferT<int> m_bufAlarmStatus;
+		RingBufferT<long long> m_bufDateTime;
 
 	  public:
 		AS3935(Adafruit_ILI9341* a_pTft);
@@ -60,8 +58,9 @@ using namespace ardPort::spi;
 		 */
 		uint8_t readReg(uint8_t reg);
 
-		bool GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus);
-		bool GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus);
+		bool GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time);
+		bool GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time);
+		bool GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus,time_t& a_time);
 		const char* GetAlarmSummaryString(uint8_t a_u8AlarmSummary)
 		{
 			if (a_u8AlarmSummary < 6) {

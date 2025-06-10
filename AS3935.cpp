@@ -3,7 +3,7 @@
 #include "FreqCounter.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
-
+#include <ctime>
 // https://www.ne.jp/asahi/shared/o-family/ElecRoom/AVRMCOM/AS3935/AS3935_test.html
 // https://esphome.io/components/sensor/as3935.html
 
@@ -69,13 +69,10 @@ using namespace ardPort::spi;
 
 AS3935::AS3935(Adafruit_ILI9341* a_pTft) :
 	m_pTft(a_pTft),
-	m_bufAlarmSummary(20),
-	m_bufAlarmDist(20),
-	m_bufAlarmStatus(20),
-	m_bufFalseAlarmSummary(20),
-	m_bufFalseAlarmDist(20),
-	m_bufFalseAlarmStatus(20)
-
+	m_bufAlarmSummary(100),
+	m_bufAlarmDist(100),
+	m_bufAlarmStatus(100),
+	m_bufDateTime(100)
 {
 	// 必要ならここで初期化
 }
@@ -211,25 +208,30 @@ bool AS3935::validateSignal()
 			m_bufAlarmSummary.push(SUMM_THUNDER);
 			m_bufAlarmDist.push(u8Dist); // 距離をリングバッファに保存
 			m_bufAlarmStatus.push(u8Status); // ステータスをリングバッファに保存
-            return true;
+			m_bufDateTime.push(time(NULL));  // 現在時刻をリングバッファに保存
+			return true;
         } else {
 			if (u8Dist < 0 || u8Dist > 0x3F) {
 				m_bufAlarmSummary.push(SUMM_TOOFAR);
 			} else {
 				m_bufAlarmSummary.push(SUMM_NUMZERO);
 			}
-			m_bufFalseAlarmDist.push(u8Dist);     // 距離をリングバッファに保存
-			m_bufFalseAlarmStatus.push(u8Status); // ステータスをリングバッファに保存
+			m_bufAlarmDist.push(u8Dist);     // 距離をリングバッファに保存
+			m_bufAlarmStatus.push(u8Status); // ステータスをリングバッファに保存
+			m_bufDateTime.push(time(NULL)); // 現在時刻をリングバッファに保存
 			return false;                         // 距離が無効、またはノイズ/誤検出の場合はfalse
 		}
     } else if (u8IntSrc & INTNOISE_DISTERBERDETECT) {
-		m_bufFalseAlarmDist.push(SUMM_DISTERBER); // ディスターバ（誤検出）をリングバッファに保存;
-		m_bufFalseAlarmDist.push(0);     // 距離をリングバッファに保存
-		m_bufFalseAlarmStatus.push(0); // ステータスをリングバッファに保存
+		m_bufAlarmSummary.push(SUMM_DISTERBER); // ディスターバ（誤検出）をリングバッファに保存;
+		m_bufAlarmDist.push(0);     // 距離をリングバッファに保存
+		m_bufAlarmStatus.push(0); // ステータスをリングバッファに保存
+		m_bufDateTime.push(time(NULL)); // 現在時刻をリングバッファに保存
+
 	} else if (u8IntSrc & INTNOISE_TOHIGH) {
-		m_bufFalseAlarmDist.push(SUMM_NOISEHIGH); // ノイズレベル過大をリングバッファに保存
-		m_bufFalseAlarmDist.push(0);              // 距離をリングバッファに保存
-		m_bufFalseAlarmStatus.push(0);            // ステータスをリングバッファに保存
+		m_bufAlarmSummary.push(SUMM_NOISEHIGH); // ノイズレベル過大をリングバッファに保存
+		m_bufAlarmDist.push(0);              // 距離をリングバッファに保存
+		m_bufAlarmStatus.push(0);            // ステータスをリングバッファに保存
+		m_bufDateTime.push(time(NULL));           // 現在時刻をリングバッファに保存
 	}
 	return false;
 	
@@ -253,20 +255,51 @@ uint8_t AS3935::readReg(uint8_t reg)
     return val;
 }
 
-bool AS3935::GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus)
+bool AS3935::GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time)
 {
 	a_u8AlarmSummary = m_bufAlarmSummary.getFromLast(idx);
 	a_u8AlarmDist = m_bufAlarmDist.getFromLast(idx);
 	a_u8AlarmStatus = m_bufAlarmStatus.getFromLast(idx);
+	a_time = m_bufDateTime.getFromLast(idx);
 	if (a_u8AlarmSummary == 0) return false;
 	return true;
 }
-
-bool AS3935::GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus)
+bool AS3935::GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time)
 {
-	a_u8AlarmSummary = m_bufFalseAlarmSummary.getFromLast(idx);
-	a_u8AlarmDist = m_bufFalseAlarmDist.getFromLast(idx);
-	a_u8AlarmStatus = m_bufFalseAlarmStatus.getFromLast(idx);
-	if (a_u8AlarmSummary == 0) return false;
-	return true;
+    int found = 0;
+    int total = m_bufAlarmSummary.getCount(); // count()メソッドで要素数取得
+    for (int i = 0; i < total; ++i) {
+        int summary = m_bufAlarmSummary.getFromLast(i);
+        if (summary == SUMM_THUNDER) {
+            if (found == idx) {
+                a_u8AlarmSummary = summary;
+                a_u8AlarmDist = m_bufAlarmDist.getFromLast(i);
+                a_u8AlarmStatus = m_bufAlarmStatus.getFromLast(i);
+                a_time = m_bufDateTime.getFromLast(i);
+                return true;
+            }
+            found++;
+        }
+    }
+    return false;
+}
+
+bool AS3935::GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus,time_t& a_time)
+{
+	int found = 0;
+	int total = m_bufAlarmSummary.getCount(); // count()メソッドで要素数取得
+	for (int i = 0; i < total; ++i) {
+		int summary = m_bufAlarmSummary.getFromLast(i);
+		if (summary != SUMM_THUNDER) {
+			if (found == idx) {
+				a_u8AlarmSummary = summary;
+				a_u8AlarmDist = m_bufAlarmDist.getFromLast(i);
+				a_u8AlarmStatus = m_bufAlarmStatus.getFromLast(i);
+				a_time = m_bufDateTime.getFromLast(i);
+				return true;
+			}
+			found++;
+		}
+	}
+	return false;
 }

@@ -103,7 +103,7 @@
         "gfxmodule.h": "c",
         "*.bak": "cpp"
     },
-    "cortex-debug.variableUseNaturalFormat": false,
+    "cortex-debug.variableUseNaturalFormat": true,
     "github.copilot.enable": {
         "*": true,
         "plaintext": false,
