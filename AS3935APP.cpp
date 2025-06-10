@@ -214,7 +214,7 @@ int main()
 	}
 	// -- 時計表示部の初期化 --
 	{
-		DispClock::init(&tft);
+		DispClock::init(&tft,settings.isClock24Hour);
 	}
 	// --- DMA初期化 ---
 	{
@@ -308,7 +308,7 @@ int main()
 			tft.fillRect(0, 320 - 20, 16, 16, STDCOLOR.SUPERDARK_GRAY);
 		} else {
 			// それ以外の処理があればここに追加
-			DispClock::show(64,30); // 時計の更新
+			DispClock::show(32,30); // 時計の更新
 		}
 	}
 }

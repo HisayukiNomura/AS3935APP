@@ -11,8 +11,10 @@ using namespace ardPort::spi;
 class DispClock {
 public:
   static Adafruit_ILI9341* pTFT;
-
+  static bool isClock24Hour; // 24時間表示かどうかのフラグ
   static uint8_t prevHour;      // 前回表示した時
+  static uint8_t prevHourU; // 前回表示した分の十の位
+  static uint8_t prevHourL; // 前回表示した分の一の位
   static uint8_t prevMinutesU;   // 前回表示した分
   static uint8_t prevMinutesL;   // 前回表示した分の下位
   static uint8_t prevSeconds;   // 前回表示した秒
@@ -25,7 +27,7 @@ public:
    * @param x   ビットマップ表示のX座標
    * @param y   ビットマップ表示のY座標
    */
-  static void init(Adafruit_ILI9341* a_ptft);
+  static void init(Adafruit_ILI9341* a_ptft,bool a_isClock24Hour);
  
   static void show(int x = 0, int y = 0);
 };
