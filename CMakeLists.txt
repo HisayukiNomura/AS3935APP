@@ -56,6 +56,7 @@ FreqCounter.cpp
 FlashMem.cpp
 inetAction.cpp
 DispClock.cpp
+ScreenKeyboard.cpp
 
 lib-9341/misc/defines.cpp
 lib-9341/Adafruit_GFX_Library/Adafruit_GFX.cpp

@@ -9,7 +9,7 @@
 // ライブラリのヘッダファイル　　　　　　　　＜＜＜＜＜　追加　　（１）　
 #include "KanjiHelper.h"
 #include "lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h"
-
+#include "lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h"
 // 漢字フォント情報ファイル　　　　　　　　　＜＜＜＜＜　追加　　（４）　
 #include "Kanji/Fonts/JF-Dot-Shinonome16_16x16_ALL.inc"
 #include "pictData.h" // 画像データ
@@ -32,6 +32,9 @@ using namespace ardPort::spi;
 #define TFT_DC 20   // 液晶画面の DC
 #define TFT_RST 21  // 液晶画面の RST
 #define TFT_CS 22   // 液晶画面の CS
+
+#define TOUCH_MISO 16 // タッチパネルの MISO
+#define TOUCH_CS 17   // タッチパネルの CS
 
 // I2Cのポート番号とピン番号の定義
 #define I2C_PORT 1 // I2Cのポート番号として０
@@ -122,9 +125,6 @@ bool hartbeatCallback(repeating_timer_t* rt)
 	return true; // 割り込みを継続
 }
 
-
-
-
 /**
  * @brief メイン関数（エントリーポイント）
  * @details
@@ -139,21 +139,109 @@ bool hartbeatCallback(repeating_timer_t* rt)
  * @return 終了コード（正常終了時は0、初期化失敗時は-1）
  */
 
-Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
+enum APPMode {
+	APP_MODE_STARTING, // 通常モード
+	APP_MODE_NORMAL,   // キャリブレーションモード
+	APP_MODE_SETTING,  // エラーモード
+} appMode;
+bool mustRedraw = false;
+// 雷センサーの画面表示
+void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isBanner, bool isClock , bool isBody  = true)
+{
+	if (mustRedraw) {
+		isBanner = true;
+		isClock = true;
+		isBody = true;
+		mustRedraw = false; // 再描画フラグをリセット
+	}
+	if (isBanner) {
+		tft.fillScreen(STDCOLOR.SUPERDARK_GRAY); // 画面を暗い灰色で塗りつぶす
+		tft.setCursor(0, 2);
+		tft.fillRoundRect(0, 0, 240, 20, 4, STDCOLOR.DARK_GRAY); // 画面の上部に帯を描画
+		tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.WHITE);
+		tft.printf("Lightning Sensor\n");
+		tft.setCursor(0, 22);
+		if (settings.isEnableWifi) {
+			tft.drawRGBBitmap(240 - 16, 2, wifiIcon_OK, 16, 16, STDCOLOR.BLACK);
+		} else {
+			tft.drawRGBBitmap(240 - 16, 2, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
+		}
+	}
+	if (isBody){
+		uint8_t u8Summary;
+		uint8_t u8Distance;
+		uint8_t u8Status;
+		time_t eventtime;
+
+		tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
+		// 雷信号の検証
+		bool bRet = as3935.validateSignal();
+		if (bRet) {                                                 // 雷が検出された場合
+			tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
+			tft.setTextColor(STDCOLOR.RED, STDCOLOR.SUPERDARK_GRAY);
+			tft.setCursor(0, 100);
+			tft.printf("雷を検出しました！\n");
+			as3935.GetLatestAlarm(0, u8Summary, u8Distance, u8Status, eventtime);
+			tft.printf("距離:%3d km STAT：%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
+		} else {                                                    // 雷が検出されなかった場合
+			tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
+			tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
+			tft.setCursor(0, 100);
+			tft.printf("雷は検出されませんでした。\n");
+			as3935.GetLatestFalseAlarm(0, u8Summary, u8Distance, u8Status, eventtime);
+			tft.printf("距離:%3d km STAT:%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
+		}
+		tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
+
+		// 最新から5個のアラームをアイコンで表示
+		tft.setCursor(0, 150);
+
+		for (int i = 0; i < 10; i++) {
+			int16_t curY = tft.getCursorY();
+			bool bRet = as3935.GetLatestEvent(i, u8Summary, u8Distance, u8Status, eventtime);
+			if (bRet == false) {
+				break; // 取得できなかったら終了
+			}
+			struct tm* t = localtime(&eventtime);
+			int hour = t->tm_hour;
+			int min = t->tm_min;
+			if (u8Summary == as3935.SUMM_THUNDER) {
+				tft.drawRGBBitmap((int16_t)0, curY, picThndr, 15, 15, STDCOLOR.BLACK);
+				tft.setCursor(24, curY);
+				tft.printf("%02d:%02d  %3d km\n", hour, min, u8Distance);
+			} else {
+				tft.drawRGBBitmap((int16_t)0, curY, picFalse, 15, 15, STDCOLOR.BLACK);
+				tft.setCursor(24, curY);
+				tft.printf("%02d:%02d  --- km\n", hour, min, u8Distance);
+			}
+		}
+		// マークを消して、元の状態に戻す
+		tft.fillRect(0, 320 - 20, 16, 16, STDCOLOR.SUPERDARK_GRAY);
+	}
+
+	if (isClock) {
+		// それ以外の処理があればここに追加
+		DispClock::show(32, 30); // 時計の更新	
+	}
+
+}
+
 
 int main()
- {
+{
+	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
+	XPT2046_Touchscreen ts(TOUCH_CS);
+	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
+	FlashMem flash(31, 1);       // フラッシュメモリのブロック0を管理するインスタンスを作成
 
-	 FlashMem flash(31, 1); // フラッシュメモリのブロック0を管理するインスタンスを作成
-
-	 if (flash.read(0, (void*)(&settings), sizeof(Settings)) == false) {
-		 settings.setDefault();                                // チャンク識別子が一致しない場合はデフォルト値を設定
-		 flash.write(0, (void*)(&settings), sizeof(Settings)); // デフォルト値を書き込む
-	 } else {
-		 if (settings.isActive() == false) {
-			 settings.setDefault();                                // チャンク識別子が一致しない場合はデフォルト値を設定
-			 flash.write(0, (void*)(&settings), sizeof(Settings)); // デフォルト値を書き込む
-		 }
+	if (flash.read(0, (void*)(&settings), sizeof(Settings)) == false) {
+		settings.setDefault();                                // チャンク識別子が一致しない場合はデフォルト値を設定
+		flash.write(0, (void*)(&settings), sizeof(Settings)); // デフォルト値を書き込む
+	} else {
+		if (settings.isActive() == false) {
+			settings.setDefault();                                // チャンク識別子が一致しない場合はデフォルト値を設定
+			flash.write(0, (void*)(&settings), sizeof(Settings)); // デフォルト値を書き込む
+		}
 	}
 	InetAction iNet(settings, &tft); // InetActionのインスタンスを作成
 
@@ -170,6 +258,12 @@ int main()
 
 	// 文字の表示を高速化させる　　　　　　　　　　＜＜＜＜＜　追加　（４）　
 	tft.useWindowMode(true);
+
+	ts.begin();                             // タッチパネル初期化
+	ts.setRotation(TFTROTATION.NORMAL); // タッチパネルの回転を設定（液晶画面と合わせる）
+	ts.setCalibration(414, 320, 3813, 3670); // タッチパネルのキャリブレーションを設定
+	ts.setCalibration(414, 353, 3813, 3670); // タッチパネルのキャリブレーションを設定
+	// ts.setCalibration(353, 414, 3670, 3813); // タッチパネルのキャリブレーションを設定
 
 	// 画面を黒で塗りつぶす　　　　　　　　　　　　＜＜＜＜＜　追加　（５）　
 	tft.fillScreen(ILI9341_BLACK);
@@ -191,13 +285,11 @@ int main()
 		gpio_set_dir(AS3935_IRQ, GPIO_IN);
 	}
 
-
-
 	// --- Wi-Fi初期化・接続・時刻同期 ---
 	if (settings.isEnableWifi) {
 		tft.printf("Initializing Wifi ... ");
 		// Wi-Fiチップ初期化
-		if (iNet.init() == false) { 
+		if (iNet.init() == false) {
 			// 初期化失敗時はWi-Fi無効で継続
 			settings.isEnableWifi = false;
 		} else {
@@ -206,7 +298,7 @@ int main()
 			if (iRet != 0) {
 				settings.isEnableWifi = false;
 				tft.drawRGBBitmap(1, 240 - 16, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
-			} 
+			}
 		}
 		tft.drawRGBBitmap(1, 240 - 16, wifiIcon_OK, 16, 16, STDCOLOR.BLACK);
 		// SNTPで現在時刻を取得
@@ -214,7 +306,7 @@ int main()
 	}
 	// -- 時計表示部の初期化 --
 	{
-		DispClock::init(&tft,settings.isClock24Hour);
+		DispClock::init(&tft, settings.isClock24Hour);
 	}
 	// --- DMA初期化 ---
 	{
@@ -236,79 +328,48 @@ int main()
 	}
 
 	delay(1000);
-	// --- 画面初期化・タイトル表示 ---
-	tft.fillScreen(STDCOLOR.SUPERDARK_GRAY); // 画面を暗い灰色で塗りつぶす
-	tft.setCursor(0, 2);
-	tft.fillRoundRect(0, 0, 240, 20, 4, STDCOLOR.DARK_GRAY); // 画面の上部に帯を描画
-	tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.WHITE);
-	tft.printf("Lightning Sensor\n");
-	tft.setCursor(0, 22);
-	if (settings.isEnableWifi) {
-		tft.drawRGBBitmap(240 - 16,2, wifiIcon_OK, 16, 16, STDCOLOR.BLACK);
-	} else {
-		tft.drawRGBBitmap(240 - 16,2, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
-	}
+	
+	mainDisplay(tft, as3935, true,false, false); // 初期画面のバナー表示
 
+	// --- 画面初期化・タイトル表示 ---
 	// --- 割り込み・タイマー・メインループ ---
 	// AS3935のIRQ割り込みを有効化
 	gpio_set_irq_enabled_with_callback(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true, &as3935IRQCallback);
 	// 1秒ごとのハートビートタイマーを設定
 	repeating_timer_t timer;
 	add_repeating_timer_ms(500, hartbeatCallback, NULL, &timer);
-
+	appMode = APP_MODE_NORMAL;
 	while (true) {
-		isIRQTriggered = false;
-		__wfe();              // 割り込みが発生するまでスリープ
-		if (isIRQTriggered) { // IRQがトリガーされた場合
-			uint8_t u8Summary;
-			uint8_t u8Distance;
-			uint8_t u8Status;
-			time_t eventtime;
+		if (appMode == APP_MODE_NORMAL) {
 
-			tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
-			// 雷信号の検証
-			bool bRet = as3935.validateSignal();
-			if (bRet) { // 雷が検出された場合
-				tft.setTextColor(STDCOLOR.RED, STDCOLOR.SUPERDARK_GRAY);
-				tft.setCursor(0, 100);
-				tft.printf("雷を検出しました！\n");
-				as3935.GetLatestAlarm(0, u8Summary, u8Distance, u8Status,eventtime);
-				tft.printf("距離:%3d km STAT：%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
-			} else { // 雷が検出されなかった場合
-				tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
-				tft.setCursor(0, 100);
-				tft.printf("雷は検出されませんでした。\n");
-				as3935.GetLatestFalseAlarm(0, u8Summary, u8Distance, u8Status,eventtime);
-				tft.printf("距離:%3d km STAT:%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
-			}
-			tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
-
-			// 最新から5個のアラームをアイコンで表示
-			tft.setCursor(0, 150);
-
-			for (int i = 0; i < 10; i++) {
-				int16_t curY = tft.getCursorY();
-				bool bRet = as3935.GetLatestEvent(i, u8Summary, u8Distance, u8Status, eventtime);
-				if (bRet == false) {
-					break; // 取得できなかったら終了
+			isIRQTriggered = false;
+			__wfe();              // 割り込みが発生するまでスリープ
+			if (isIRQTriggered) { // IRQがトリガーされた場合
+				mainDisplay(tft, as3935, false,false,true); // 雷センサーの画面表示を更新
+			} else {
+				if (ts.touched()) {
+					TS_Point tPoint;
+					tPoint = ts.getPointOnScreen();
+					if (tPoint.y < 20) {
+						appMode = APP_MODE_SETTING; // 設定モードに切り替え
+					}	
+					
 				}
-				struct tm* t = localtime(&eventtime);
-				int hour = t->tm_hour;
-				int min = t->tm_min;
-				if  (u8Summary == as3935.SUMM_THUNDER) {
-					tft.drawRGBBitmap((int16_t)0, curY, picThndr, 15, 15, STDCOLOR.BLACK);
-					tft.setCursor(24, curY);
-					tft.printf("%02d:%02d  %3d km\n", hour, min, u8Distance);
-				} else {
-					tft.drawRGBBitmap((int16_t)0, curY, picFalse, 15, 15, STDCOLOR.BLACK);
-					tft.printf("%02d:%02d  --- km\n", hour, min, u8Distance);
+				// それ以外の処理があればここに追加
+				mainDisplay(tft, as3935, false, true, false); // 時計の更新
+			}
+		} else if (appMode == APP_MODE_SETTING) {
+			tft.setCursor(0, 0);
+			tft.printf("設定モード");
+
+			if (ts.touched()) {
+				TS_Point tPoint;
+				tPoint = ts.getPointOnScreen();
+				if (tPoint.y < 20) {
+					appMode = APP_MODE_NORMAL; // 設定モードに切り替え
+					mustRedraw = true;
 				}
 			}
-			// マークを消して、元の状態に戻す
-			tft.fillRect(0, 320 - 20, 16, 16, STDCOLOR.SUPERDARK_GRAY);
-		} else {
-			// それ以外の処理があればここに追加
-			DispClock::show(32,30); // 時計の更新
 		}
 	}
 }
