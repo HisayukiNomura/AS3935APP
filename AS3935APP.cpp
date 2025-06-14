@@ -17,6 +17,7 @@
 #include "Settings.h"
 #include "InetAction.h"
 #include "DispClock.h"
+#include "TouchCalibration.h"
 
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
@@ -161,7 +162,7 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isBanner, bool isC
 		tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.WHITE);
 		tft.printf("Lightning Sensor\n");
 		tft.setCursor(0, 22);
-		if (settings.isEnableWifi) {
+		if (settings.getIsEnableWifi()) {
 			tft.drawRGBBitmap(240 - 16, 2, wifiIcon_OK, 16, 16, STDCOLOR.BLACK);
 		} else {
 			tft.drawRGBBitmap(240 - 16, 2, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
@@ -176,18 +177,20 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isBanner, bool isC
 		tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
 		// 雷信号の検証
 		bool bRet = as3935.validateSignal();
+		time_t tm = time(NULL);
+		struct tm* t = localtime(&tm);
 		if (bRet) {                                                 // 雷が検出された場合
 			tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
-			tft.setTextColor(STDCOLOR.RED, STDCOLOR.SUPERDARK_GRAY);
+			tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
 			tft.setCursor(0, 100);
-			tft.printf("雷を検出しました！\n");
+			tft.printf("%02d/%02d %02d:%02d:%02d 雷を検出\n",t->tm_mon,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
 			as3935.GetLatestAlarm(0, u8Summary, u8Distance, u8Status, eventtime);
 			tft.printf("距離:%3d km STAT：%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
 		} else {                                                    // 雷が検出されなかった場合
 			tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
-			tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
+			tft.setTextColor(STDCOLOR.GRAY, STDCOLOR.SUPERDARK_GRAY);
 			tft.setCursor(0, 100);
-			tft.printf("雷は検出されませんでした。\n");
+			tft.printf("%02d/%02d %02d:%02d:%d 検出せず\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
 			as3935.GetLatestFalseAlarm(0, u8Summary, u8Distance, u8Status, eventtime);
 			tft.printf("距離:%3d km STAT:%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
 		}
@@ -226,25 +229,16 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isBanner, bool isC
 
 }
 
+Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
 {
-	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 	XPT2046_Touchscreen ts(TOUCH_CS);
 	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
-	FlashMem flash(31, 1);       // フラッシュメモリのブロック0を管理するインスタンスを作成
 
-	if (flash.read(0, (void*)(&settings), sizeof(Settings)) == false) {
-		settings.setDefault();                                // チャンク識別子が一致しない場合はデフォルト値を設定
-		flash.write(0, (void*)(&settings), sizeof(Settings)); // デフォルト値を書き込む
-	} else {
-		if (settings.isActive() == false) {
-			settings.setDefault();                                // チャンク識別子が一致しない場合はデフォルト値を設定
-			flash.write(0, (void*)(&settings), sizeof(Settings)); // デフォルト値を書き込む
-		}
-	}
+	settings.load(); 			// フラッシュメモリの内容を読み込む
+
 	InetAction iNet(settings, &tft); // InetActionのインスタンスを作成
-
 	stdio_init_all();
 	// ILI9341ディスプレイのインスタンスを作成　　＜＜＜＜＜　追加　（３）
 	SPI.setTX(TFT_MOSI); // SPI0のTX(MOSI)
@@ -261,9 +255,24 @@ int main()
 
 	ts.begin();                             // タッチパネル初期化
 	ts.setRotation(TFTROTATION.NORMAL); // タッチパネルの回転を設定（液晶画面と合わせる）
-	ts.setCalibration(414, 320, 3813, 3670); // タッチパネルのキャリブレーションを設定
-	ts.setCalibration(414, 353, 3813, 3670); // タッチパネルのキャリブレーションを設定
-	// ts.setCalibration(353, 414, 3670, 3813); // タッチパネルのキャリブレーションを設定
+	// 起動時にタッチさていれば、タッチパネルのキャリブレーションに
+	if (ts.touched()) {
+		int touchCnt = 0;
+		while(ts.touched()) {				// タッチされている間は待つ。ただし、ロングタップされているときはキャリブレーションに
+			delay(100);
+			touchCnt++;
+			if (touchCnt > 20) { // 2秒以上タッチされている場合はキャリブレーションを行う
+				touchCnt = 0; // タッチカウントをリセット
+				TouchCalibration tsCalib(&tft,&ts);				// タッチパネルのキャリブレーションを行うインスタンスを作成
+				bool bRet = tsCalib.run();									
+				if (bRet) {
+					settings.setCalibration(tsCalib.minX, tsCalib.minY, tsCalib.maxX, tsCalib.maxY); // キャリブレーション値を設定
+					settings.save(); // 設定をフラッシュメモリに保存
+				}
+			}
+		}
+	}
+	ts.setCalibration(settings.getMinX(), settings.getMinY(), settings.getMaxX(), settings.getMaxY());
 
 	// 画面を黒で塗りつぶす　　　　　　　　　　　　＜＜＜＜＜　追加　（５）　
 	tft.fillScreen(ILI9341_BLACK);
@@ -286,17 +295,17 @@ int main()
 	}
 
 	// --- Wi-Fi初期化・接続・時刻同期 ---
-	if (settings.isEnableWifi) {
+	if (settings.getIsEnableWifi()) {
 		tft.printf("Initializing Wifi ... ");
 		// Wi-Fiチップ初期化
 		if (iNet.init() == false) {
 			// 初期化失敗時はWi-Fi無効で継続
-			settings.isEnableWifi = false;
+			settings.setIsEnableWifi(false);
 		} else {
 			// Wi-Fi接続処理
 			int iRet = iNet.connect();
 			if (iRet != 0) {
-				settings.isEnableWifi = false;
+				settings.setIsEnableWifi(false);
 				tft.drawRGBBitmap(1, 240 - 16, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
 			}
 		}
@@ -306,7 +315,7 @@ int main()
 	}
 	// -- 時計表示部の初期化 --
 	{
-		DispClock::init(&tft, settings.isClock24Hour);
+		DispClock::init(&tft, settings.getIsClock24Hour());
 	}
 	// --- DMA初期化 ---
 	{
@@ -326,6 +335,7 @@ int main()
 		as3935.StartCalibration(100); // AS3935のキャリブレーションを実行
 		tft.printf("Done.\n");
 	}
+	
 
 	delay(1000);
 	

@@ -199,11 +199,13 @@ bool AS3935::validateSignal()
     // INTNOISE_DISTERBERDETECT: ディスターバ（誤検出）
     // INTNOISE_TOHIGH: ノイズレベル過大
     if (u8IntSrc & INTNOISE_LIGHTNINGINTR) {
-        // 距離推定値を取得（0x00: 検出なし, 0x01-0x3F: 距離, 0x3F: 遠すぎる）
-        uint8_t u8Dist = readReg(REG07_DIST) & 0x3F;
-        // ステータスレジスタでノイズ/誤検出を確認
-        uint8_t u8Status = readReg(REG02_CLSTAT_MINNUMLIGH_SREJ);
-        // 距離が有効範囲内かつ、ノイズ/誤検出でなければtrue
+		uint8_t u8Dist = 0;
+		uint8_t u8Status = 0;
+		
+		u8Dist = readReg(REG07_DIST) & 0x3F;              // 距離推定値を取得（0x00: 検出なし, 0x01-0x3F: 距離, 0x3F: 遠すぎる）
+		u8Status = readReg(REG02_CLSTAT_MINNUMLIGH_SREJ); // ステータスレジスタでノイズ/誤検出を確認
+
+		// 距離が有効範囲内かつ、ノイズ/誤検出でなければtrue
         if (u8Dist > 0 && u8Dist < 0x3F && (u8Status & 0x0F) == 0) {
 			m_bufAlarmSummary.push(SUMM_THUNDER);
 			m_bufAlarmDist.push(u8Dist); // 距離をリングバッファに保存

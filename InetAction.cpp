@@ -55,7 +55,7 @@ int InetAction::connect()
 {
 	pTft->printf("Connect Wi-Fi ... ");
 	settings.resetIP(); // IPアドレスをリセット
-	int iRet = cyw43_arch_wifi_connect_timeout_ms(settings.SSID, settings.PASSWORD, CYW43_AUTH_WPA3_WPA2_AES_PSK, 5000000);
+	int iRet = cyw43_arch_wifi_connect_timeout_ms(settings.getSSID(), settings.getPASSWORD(), CYW43_AUTH_WPA3_WPA2_AES_PSK, 5000000);
 	if (iRet != 0) {
 		printf("Failed(%d).\n", iRet);
 		return iRet;
