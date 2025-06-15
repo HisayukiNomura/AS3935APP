@@ -371,15 +371,11 @@ int main()
 		} else if (appMode == APP_MODE_SETTING) {
 			tft.setCursor(0, 0);
 			tft.printf("設定モード");
-
-			if (ts.touched()) {
-				TS_Point tPoint;
-				tPoint = ts.getPointOnScreen();
-				if (tPoint.y < 20) {
-					appMode = APP_MODE_NORMAL; // 設定モードに切り替え
-					mustRedraw = true;
-				}
-			}
+			settings.run(&tft, &ts); // 設定画面の実行
+			mustRedraw = true;
+			DispClock::setRedrawFlag(); // 時計の再描画フラグを立てる
+			appMode = APP_MODE_NORMAL; // 通常モードに戻す
+			
 		}
 	}
 }

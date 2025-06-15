@@ -28,6 +28,15 @@ public:
    * @param y   ビットマップ表示のY座標
    */
   static void init(Adafruit_ILI9341* a_ptft,bool a_isClock24Hour);
- 
+  
   static void show(int x = 0, int y = 0);
+  static void setRedrawFlag() {
+    prevHour = 0xFF; // 再描画フラグを立てる
+    prevHourU = 0xFF; // 十の位をリセット
+    prevHourL = 0xFF; // 一の位をリセット
+    prevMinutesU = 0xFF; // 分の十の位をリセット
+    prevMinutesL = 0xFF; // 分の一の位をリセット
+    prevSeconds = 0xFF; // 秒をリセット
+    prevAmPm = 0xFF; // AM/PMをリセット
+ }
 };

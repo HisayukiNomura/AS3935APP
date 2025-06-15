@@ -14,7 +14,7 @@ void ScreenKeyboard::show(int y) {
         case KB3: bmp = picKB3; break;
     }
     if (bmp) {
-        m_tft->drawRGBBitmap(0, y, bmp, KB_WIDTH, KB_HEIGHT, 0);
+        m_tft->drawRGBBitmap(0, y, bmp, KB_WIDTH, KB_HEIGHT);
     }
 }
 

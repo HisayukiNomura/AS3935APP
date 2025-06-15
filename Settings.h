@@ -4,6 +4,13 @@
 #include <cstdio>
 #include <cstring>
 #include "FlashMem.h"
+#include "lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h"
+#include "lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h"
+using namespace ardPort;
+using namespace ardPort::spi;
+
+
+
 
 class __attribute__((packed)) SettingValue
 {
@@ -27,7 +34,8 @@ class Settings
 {
   private:
 	FlashMem flash;
-
+	Adafruit_ILI9341* ptft;
+	XPT2046_Touchscreen* pts;
   public:
 	SettingValue value;
 
@@ -71,4 +79,6 @@ class Settings
 		strncpy(value.PASSWORD, s, sizeof(value.PASSWORD) - 1);
 		value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';
 	}
+	const void drawMenu();
+	const void run(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
 };
