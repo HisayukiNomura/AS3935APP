@@ -121,6 +121,48 @@ const void Settings::drawMenu()
 	ptft->printf("<<EXIT>>:");
 }
 
+const void Settings::EditBox(ScreenKeyboard sk, uint16_t a_x,uint16_t a_y, char* a_pText, size_t a_size)
+{
+	sk.show(200);
+	char* p = a_pText;
+	uint8_t edtCursor = strlen(a_pText);
+	uint8_t edtX = a_x;
+	uint8_t edtY = a_y;
+
+	while(true) {
+		uint8_t ret = sk.checkTouch();
+		if (ret == 0xff) {
+			continue;
+		}
+		// 特殊コードの処理
+		if (ret == 0x0d) {
+			break; // Enterキーが押されたら終了
+		} else if (ret == 0x1b) { // ESCキーが押されたら終了
+			break;
+		} else if (strlen(p) >= a_size - 1) {
+			continue; // 文字列が最大長に達している場合は何もしない
+		} 
+
+
+		// 一般文字の処理
+		if (ret == 0x08) { // Backspaceキーが押されたら削除
+			if (edtCursor > 0) {
+				edtCursor--;
+				p[edtCursor] = '\0'; // 文字列の終端を設定
+			} else {
+				continue; // カーソルが先頭にある場合は何もしない
+			}
+		} else if (p[edtCursor] == '\0') {			// カーソルが末尾にあるときは追加
+			p[edtCursor++] = ret;
+			p[edtCursor] = '\0';			// 文字列の終端を設定
+		}
+		// 文字の変化に伴う再描画
+		ptft->fillRect(edtX,edtY, 240 - edtX, 16,  STDCOLOR.BLACK); // 入力欄をクリア
+		ptft->setCursor(edtX, edtY);
+		ptft->printf(p);
+	}
+}
+
 const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 {
 	ptft = a_ptft;
@@ -133,7 +175,7 @@ const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 		if (pts->touched()) {
 			TS_Point p = pts->getPointOnScreen();
 			if YRANGE (32) {
-				sk.show(200);
+				EditBox(sk,10+9*8,40, value.SSID,sizeof(value.SSID)	);
 			} else if YRANGE (64) {
 			} else if YRANGE (96) {
 			} else if YRANGE (128) {

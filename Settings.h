@@ -8,7 +8,7 @@
 #include "lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h"
 using namespace ardPort;
 using namespace ardPort::spi;
-
+class ScreenKeyboard; // 前方宣言
 
 
 
@@ -80,5 +80,6 @@ class Settings
 		value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';
 	}
 	const void drawMenu();
+	const void EditBox(ScreenKeyboard sk, uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size);
 	const void run(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
 };
