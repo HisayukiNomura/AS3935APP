@@ -6,6 +6,7 @@
 #include "lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h"
 #include "lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h"
 #include "ScreenKeyboard.h"
+#include "GUIEditbox.h"
 using namespace ardPort;
 using namespace ardPort::spi;
 
@@ -120,31 +121,104 @@ const void Settings::drawMenu()
 	ptft->setCursor(10, 296);
 	ptft->printf("<<EXIT>>:");
 }
+#if false
+const void Settings::EdtDispCursor(int tick , bool isDeleteCursor)
+{
+	if (isDeleteCursor) {
+		ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
+		ptft->setCursor(edtX + edtCursor * 8, edtY);
+		ptft->print(p[edtCursor]); // カーソルを消去
+		ptft->drawFastHLine(edtX + edtCursor * 8, edtY + 17, 8, STDCOLOR.BLACK); // カーソルを消去
 
-const void Settings::EditBox(ScreenKeyboard sk, uint16_t a_x,uint16_t a_y, char* a_pText, size_t a_size)
+	} else if (isInsert) {
+		if (tick > 128) {
+			ptft->setTextColor(STDCOLOR.BLACK, STDCOLOR.WHITE);
+			ptft->setCursor(edtX + edtCursor * 8, edtY);
+			ptft->print(p[edtCursor]); // カーソルを表示
+		} else {
+			ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
+			ptft->setCursor(edtX + edtCursor * 8, edtY);
+			ptft->print(p[edtCursor]); // カーソルを消す
+		}
+
+	} else {
+		if (tick > 128) {
+			ptft->drawFastHLine(edtX + edtCursor * 8, edtY + 17, 8, STDCOLOR.WHITE); // カーソルを表示
+			/*
+			ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
+			ptft->setCursor(edtX + edtCursor * 8, edtY);
+			ptft->print(p[edtCursor]); // カーソルを表示
+			ptft->setCursor(edtX + edtCursor * 8, edtY);
+			ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.WHITE);
+			ptft->printf("_"); // カーソルを表示
+			*/
+		} else {
+			ptft->drawFastHLine(edtX + edtCursor * 8, edtY + 17, 8, STDCOLOR.BLACK); // カーソルを表示
+			/*
+			ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
+			ptft->setCursor(edtX + edtCursor * 8, edtY);
+			ptft->print(p[edtCursor]); // カーソルを消す
+			*/
+		}
+	}
+
+}
+
+
+const void Settings::EditBox(ScreenKeyboard sk, uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size)
 {
 	sk.show(200);
-	char* p = a_pText;
-	uint8_t edtCursor = strlen(a_pText);
-	uint8_t edtX = a_x;
-	uint8_t edtY = a_y;
+	p = a_pText;
+	 edtCursor = strlen(a_pText);
+	edtX = a_x;
+	edtY = a_y;
+	isInsert = false;
 
-	while(true) {
+	int waitCnt = 0;
+	while (true) {
 		uint8_t ret = sk.checkTouch();
-		if (ret == 0xff) {
+		if (ret == 0xff) { // タッチされていない場合はカーソルを点滅させたりする
+			waitCnt++;
+			waitCnt = waitCnt % 0xFF;
+			EdtDispCursor(waitCnt, false); // カーソルを点滅させる
+			delay(5); // 少し待つ
 			continue;
+		} else {
+			EdtDispCursor(waitCnt, true); // カーソルを消す
+			waitCnt = 0; // カーソルの点滅をリセット
 		}
 		// 特殊コードの処理
 		if (ret == 0x0d) {
-			break; // Enterキーが押されたら終了
+			break;                // Enterキーが押されたら終了
 		} else if (ret == 0x1b) { // ESCキーが押されたら終了
 			break;
-		} else if (strlen(p) >= a_size - 1) {
-			continue; // 文字列が最大長に達している場合は何もしない
-		} 
-
-
+		} else if (ret == 0x13) { // ↚キー
+			edtCursor--;
+			if (edtCursor < 0) {
+				edtCursor = 0; // カーソルが先頭を超えないようにする
+			}
+			if (edtCursor > strlen(p)) {
+				edtCursor = strlen(p); // カーソルが文字列の末尾を超えないようにする
+			}
+			ret = 0;
+		} else if (ret == 0x14) { // ⇒キー
+			if (p[edtCursor] == 0) {
+				continue;
+			}
+			edtCursor++;
+			ret = 0;
+		} else if (ret == 0x7e) {
+			isInsert = !isInsert;
+			ret = 0;
+		}
+		if (ret == 0) {
+			continue;
+		}
 		// 一般文字の処理
+		if (strlen(p) >= a_size - 1) {
+			continue; // 文字列が最大長に達している場合は何もしない
+		}
+
 		if (ret == 0x08) { // Backspaceキーが押されたら削除
 			if (edtCursor > 0) {
 				edtCursor--;
@@ -152,16 +226,42 @@ const void Settings::EditBox(ScreenKeyboard sk, uint16_t a_x,uint16_t a_y, char*
 			} else {
 				continue; // カーソルが先頭にある場合は何もしない
 			}
-		} else if (p[edtCursor] == '\0') {			// カーソルが末尾にあるときは追加
+		} else if (ret == 0x7F) { //
+			if (p[edtCursor] == 0) {
+				continue; // カーソルが末尾にある場合は何もしない
+			}
+			if (edtCursor < strlen(p)) { // Deleteキーが押されたら削除
+				for (size_t i = edtCursor; i < strlen(p); i++) {
+					p[i] = p[i + 1]; // 文字を左にシフト
+				}
+				p[strlen(p) - 1] = '\0'; // 文字列の終端を設定
+			}
+		} else if (p[edtCursor] == '\0') { // カーソルが末尾にあるときは追加
 			p[edtCursor++] = ret;
-			p[edtCursor] = '\0';			// 文字列の終端を設定
+			p[edtCursor] = '\0'; // 文字列の終端を設定
+		} else {
+			if (isInsert) { // 挿入モード
+				if (edtCursor < strlen(p)) {
+					for (size_t i = strlen(p); i > edtCursor; i--) {
+						p[i] = p[i - 1]; // 文字を右にシフト
+					}
+				}
+				p[edtCursor++] = ret; // 新しい文字を挿入
+				p[edtCursor] = '\0';  // 文字列の終端を設定
+			} else {                  // 上書きモード
+				p[edtCursor++] = ret; // 新しい文字で上書き
+				if (edtCursor >= a_size - 1) {
+					edtCursor = a_size - 1; // カーソルが最大長を超えないようにする
+				}
+			}
 		}
 		// 文字の変化に伴う再描画
-		ptft->fillRect(edtX,edtY, 240 - edtX, 16,  STDCOLOR.BLACK); // 入力欄をクリア
+		ptft->fillRect(edtX, edtY, 240 - edtX, 16, STDCOLOR.BLACK); // 入力欄をクリア
 		ptft->setCursor(edtX, edtY);
 		ptft->printf(p);
 	}
 }
+#endif
 
 const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 {
@@ -175,7 +275,9 @@ const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 		if (pts->touched()) {
 			TS_Point p = pts->getPointOnScreen();
 			if YRANGE (32) {
-				EditBox(sk,10+9*8,40, value.SSID,sizeof(value.SSID)	);
+				GUIEditBox editbox(ptft, pts, &sk);
+				editbox.show(10 + 9 * 8, 40, value.SSID, sizeof(value.SSID));
+				//	EditBox(sk, 10 + 9 * 8, 40, value.SSID, sizeof(value.SSID));
 			} else if YRANGE (64) {
 			} else if YRANGE (96) {
 			} else if YRANGE (128) {

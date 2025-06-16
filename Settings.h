@@ -80,6 +80,16 @@ class Settings
 		value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';
 	}
 	const void drawMenu();
-	const void EditBox(ScreenKeyboard sk, uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size);
+
+	
 	const void run(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
+	// エディットボックスの表示
+	char* p = nullptr; // 編集対象の文字列ポインタ
+	uint8_t edtCursor = 0;
+	uint16_t edtX = 0;
+	uint16_t edtY = 0;
+	bool isInsert = false;
+
+	const void EdtDispCursor(int tick, bool isDeleteCursor = false);
+	const void EditBox(ScreenKeyboard sk, uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size);
 };

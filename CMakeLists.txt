@@ -59,6 +59,7 @@ DispClock.cpp
 ScreenKeyboard.cpp
 TouchCalibration.cpp
 Settings.cpp
+GUIEditbox.cpp
 
 lib-9341/misc/defines.cpp
 lib-9341/Adafruit_GFX_Library/Adafruit_GFX.cpp

@@ -15,7 +15,7 @@ const uint8_t ScreenKeyboard::keycodes[3][ScreenKeyboard::KEY_COUNT] = {
 	{'!', '\"', '#', '$', '%', '&', '\'', '(', ')', '_',
 	 '^', '~', '|', '\\', '@', '{', '}', '[', ']', '?',
 	 '+', '-', '*', '/', '=', ':', ';', '<', '>', 0x0D,
-	 '`', ' ', ' ', ' ', ' ', 0x7E , 0x1B, ' ', 0x0f, 0x7F},
+	 '`', ' ', ' ', 0x13, 0x14, 0x7E , 0x1B, ' ', 0x0f, 0x7F},
 };
 
 ScreenKeyboard::ScreenKeyboard(Adafruit_ILI9341* tft, XPT2046_Touchscreen* ts)
