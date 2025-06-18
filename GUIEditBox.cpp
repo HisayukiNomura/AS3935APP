@@ -15,16 +15,25 @@ GUIEditBox::GUIEditBox(Adafruit_GFX* a_ptft, XPT2046_Touchscreen* a_pts, ScreenK
 {
     // 初期化処理が必要ならここに追加
 }
-bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size)
+bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,EditMode a_mode)
 {
-	psk->show(200);
+	mode = a_mode;
+	if(mode == MODE_NUMPADOVERWRITE) {
+		isInsert = false;
+		edtCursor = 0;                                    // カーソルを先頭に設定
+		psk->showNumPad(ptft->height() - psk->KB_HEIGHT); // キーボードを表示
+	} else {
+		edtCursor = strlen(a_pText);
+		psk->show(ptft->height() - psk->KB_HEIGHT); // キーボードを表示
+		isInsert = true;
+	}
 	p = a_pText;
-	edtCursor = strlen(a_pText);
 	edtX = a_x;
 	edtY = a_y;
-	isInsert = false;
 
 	int waitCnt = 0;
+	bool retReason = false;
+
 	while (true) {
 		uint8_t ret = psk->checkTouch();
 		if (ret == 0xff) { // タッチされていない場合はカーソルを点滅させたりする
@@ -39,8 +48,10 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size)
 		}
 		// 特殊コードの処理
 		if (ret == 0x0d) {
+			retReason = true;
 			break;                // Enterキーが押されたら終了
-		} else if (ret == 0x1b) { // ESCキーが押されたら終了
+		} else if (ret == 0x1b) { // ESCキーが押されたらキャンセル
+			retReason  = false;
 			break;
 		} else if (ret == 0x13) { // ↚キー
 			edtCursor--;
@@ -65,18 +76,20 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size)
 			continue;
 		}
 		// 一般文字の処理
-		if (strlen(p) >= a_size - 1) {
-			continue; // 文字列が最大長に達している場合は何もしない
-		}
+		//if (strlen(p) >= a_size - 1) {
+		//	continue; // 文字列が最大長に達している場合は何もしない
+		//}
 
 		if (ret == 0x08) { // Backspaceキーが押されたら削除
 			if (edtCursor > 0) {
+				for (size_t i = edtCursor - 1; i < strlen(p); i++) {
+					p[i] = p[i + 1]; // 文字を左にシフト
+				}
 				edtCursor--;
-				p[edtCursor] = '\0'; // 文字列の終端を設定
 			} else {
 				continue; // カーソルが先頭にある場合は何もしない
 			}
-		} else if (ret == 0x7F) { //
+		} else if (ret == 0x7F) { // DELETキーが押されたらその場の文字を削除
 			if (p[edtCursor] == 0) {
 				continue; // カーソルが末尾にある場合は何もしない
 			}
@@ -84,20 +97,23 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size)
 				for (size_t i = edtCursor; i < strlen(p); i++) {
 					p[i] = p[i + 1]; // 文字を左にシフト
 				}
-				p[strlen(p) - 1] = '\0'; // 文字列の終端を設定
 			}
-		} else if (p[edtCursor] == '\0') { // カーソルが末尾にあるときは追加
+		} else if (p[edtCursor] == '\0') { // 普通の文字の場合、カーソルが末尾にあるときは追加
+			if (edtCursor >= a_size) {
+				continue; // 文字列が最大長に達している場合は何もしない
+			}
 			p[edtCursor++] = ret;
 			p[edtCursor] = '\0'; // 文字列の終端を設定
 		} else {
 			if (isInsert) { // 挿入モード
-				if (edtCursor < strlen(p)) {
+				if (strlen(p) >= a_size - 1) {
+					continue; // 文字列が最大長に達している場合は何もしない
+				} else if (edtCursor < strlen(p)) {
 					for (size_t i = strlen(p); i > edtCursor; i--) {
 						p[i] = p[i - 1]; // 文字を右にシフト
 					}
 				}
 				p[edtCursor++] = ret; // 新しい文字を挿入
-				p[edtCursor] = '\0';  // 文字列の終端を設定
 			} else {                  // 上書きモード
 				p[edtCursor++] = ret; // 新しい文字で上書き
 				if (edtCursor >= a_size - 1) {
@@ -110,7 +126,7 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size)
 		ptft->setCursor(edtX, edtY);
 		ptft->printf(p);
 	}
-	return true;
+	return retReason; // trueならEnterキーが押された、falseならESCキーが押された
 }
 
 void GUIEditBox::dispCursor(int tick, bool isDeleteCursor)

@@ -17,6 +17,12 @@ const uint8_t ScreenKeyboard::keycodes[3][ScreenKeyboard::KEY_COUNT] = {
 	 '+', '-', '*', '/', '=', ':', ';', '<', '>', 0x0D,
 	 '`', ' ', ' ', 0x13, 0x14, 0x7E , 0x1B, ' ', 0x0f, 0x7F},
 };
+const uint8_t ScreenKeyboard::npCodes[ScreenKeyboard::NP_COUNT] = {
+    '7', '8', '9', 0x1B,
+    '4', '5', '6', 0x00,
+    '1', '2', '3', 0x00,
+    '0', 0x13,0x14,0x0D
+};
 
 ScreenKeyboard::ScreenKeyboard(Adafruit_ILI9341* tft, XPT2046_Touchscreen* ts)
     : m_tft(tft), m_ts(ts), m_kbType(KB1) {}
@@ -24,6 +30,7 @@ ScreenKeyboard::ScreenKeyboard(Adafruit_ILI9341* tft, XPT2046_Touchscreen* ts)
 void ScreenKeyboard::show(int y) {
     const uint16_t* bmp = nullptr;
 	keyboardY = y;
+    m_kbMode = KM_QWERTY_1; // デフォルトはQWERTYキーボード
 	switch (m_kbType) {
         case KB0: bmp = picKB0; break;
         case KB1: bmp = picKB1; break;
@@ -32,7 +39,24 @@ void ScreenKeyboard::show(int y) {
     if (bmp) {
         m_tft->drawRGBBitmap(0, y, bmp, KB_WIDTH, KB_HEIGHT);
     }
+    currWidth = KB_WIDTH;
+    currHeight = KB_HEIGHT;
+    currCols = KEY_COLS;
+    currRows = KEY_ROWS;
+    currSize = KEY_SIZE;
 }
+
+void ScreenKeyboard::showNumPad(int y) {
+	m_tft->drawRGBBitmap(0, y, picKBNum, NP_WIDTH, NP_HEIGHT);
+	keyboardY = y;
+    m_kbMode = KM_NUMPAD_1; // 数字キーボードモード
+    currWidth = NP_WIDTH;
+    currHeight = NP_HEIGHT;
+    currCols = NP_COLS;
+    currRows = NP_ROWS;
+    currSize = NP_SIZE;
+}
+
 
 
 
@@ -46,11 +70,11 @@ ScreenKeyboard::KBType ScreenKeyboard::getKBType() const {
 
 int ScreenKeyboard::getKeyFromTouch(int x, int y) const {
     // キーボード領域外なら-1
-    if (x < 0 || x >= KB_WIDTH || y < 0 || y >= KB_HEIGHT) return -1;
-    int col = x / KEY_SIZE;
-    int row = y / KEY_SIZE;
-    if (col >= KEY_COLS || row >= KEY_ROWS) return -1;
-    return row * KEY_COLS + col;
+    if (x < 0 || x >= currWidth || y < 0 || y >= currHeight) return -1;
+    int col = x / currSize;
+    int row = y / currSize;
+    if (col >= currCols || row >= currRows) return -1;
+    return row * currCols + col;
 }
 
 uint8_t ScreenKeyboard::checkTouch() {
@@ -58,8 +82,13 @@ uint8_t ScreenKeyboard::checkTouch() {
     if (!m_ts->touched()) return 0xFF;
 	TS_Point p = m_ts->getPointOnScreen();
 	p.y = p.y - keyboardY;
-    if (p.y <0 || p.y >= KB_HEIGHT) return 0xFF; // キーボード領域外なら-1
-    uint8_t code = keycodes[m_kbType][getKeyFromTouch(p.x, p.y)];
+    if (p.y <0 || p.y >= currHeight) return 0xFF; // キーボード領域外なら-1
+    uint8_t code = 0xFF;
+    if (m_kbMode == KM_NUMPAD_1) {
+		code = npCodes[getKeyFromTouch(p.x, p.y)];
+	} else {
+		code = keycodes[m_kbType][getKeyFromTouch(p.x, p.y)];
+	}
     while(m_ts->touched()) {        // キーが離されてから初めて入力されたと判断する
 		delay(100);
 	}

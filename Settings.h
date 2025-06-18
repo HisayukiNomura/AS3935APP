@@ -28,6 +28,15 @@ class __attribute__((packed)) SettingValue
 	uint16_t maxX;
 	uint16_t maxY;
 	char end[4]; // チャンクの終端を示す文字列（例: "ENDC"）
+
+
+	
+    SettingValue& operator=(const SettingValue& rhs) {
+        if (this != &rhs) {
+            memcpy(this, &rhs, sizeof(SettingValue));
+        }
+        return *this;
+    }
 };
 
 class Settings
@@ -38,6 +47,8 @@ class Settings
 	XPT2046_Touchscreen* pts;
   public:
 	SettingValue value;
+
+	bool isMustSave = false; // 設定が変更されたかどうかのフラグ
 
   public:
 	Settings();

@@ -229,10 +229,12 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isBanner, bool isC
 
 }
 
+Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
 {
 	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
+
 	XPT2046_Touchscreen ts(TOUCH_CS);
 	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
 
@@ -255,7 +257,7 @@ int main()
 
 	ts.begin();                             // タッチパネル初期化
 	ts.setRotation(TFTROTATION.NORMAL); // タッチパネルの回転を設定（液晶画面と合わせる）
-	// 起動時にタッチさていれば、タッチパネルのキャリブレーションに
+	// 起動時にタッチさていれば、設定値のリセット
 	if (ts.touched()) {
 		int touchCnt = 0;
 		while(ts.touched()) {				// タッチされている間は待つ。ただし、ロングタップされているときはキャリブレーションに
@@ -263,12 +265,16 @@ int main()
 			touchCnt++;
 			if (touchCnt > 20) { // 2秒以上タッチされている場合はキャリブレーションを行う
 				touchCnt = 0; // タッチカウントをリセット
-				TouchCalibration tsCalib(&tft,&ts);				// タッチパネルのキャリブレーションを行うインスタンスを作成
-				bool bRet = tsCalib.run();									
-				if (bRet) {
-					settings.setCalibration(tsCalib.minX, tsCalib.minY, tsCalib.maxX, tsCalib.maxY); // キャリブレーション値を設定
-					settings.save(); // 設定をフラッシュメモリに保存
-				}
+				settings.setDefault();
+				settings.save(); // 設定をフラッシュメモリに保存
+				/*
+								TouchCalibration tsCalib(&tft,&ts);				// タッチパネルのキャリブレーションを行うインスタンスを作成
+								bool bRet = tsCalib.run();
+								if (bRet) {
+									settings.setCalibration(tsCalib.minX, tsCalib.minY, tsCalib.maxX, tsCalib.maxY); // キャリブレーション値を設定
+									settings.save(); // 設定をフラッシュメモリに保存
+								}
+				*/
 			}
 		}
 	}

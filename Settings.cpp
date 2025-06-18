@@ -2,11 +2,16 @@
 #include <cstring>
 #include <cstdio>
 #include "FlashMem.h"
+#include <ctime>
+#include "pico/stdlib.h"
+#include "lwip/apps/sntp.h"
 
 #include "lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h"
 #include "lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h"
 #include "ScreenKeyboard.h"
 #include "GUIEditbox.h"
+#include "hardware/rtc.h"
+#include "TouchCalibration.h"
 using namespace ardPort;
 using namespace ardPort::spi;
 
@@ -23,7 +28,7 @@ void Settings::setDefault()
 	value.isEnableWifi = true;
 	strncpy(value.SSID, "NOMGUEST", sizeof(value.SSID) - 1);
 	value.SSID[sizeof(value.SSID) - 1] = '\0';
-	strncpy(value.PASSWORD, "value.0422111111", sizeof(value.PASSWORD) - 1);
+	strncpy(value.PASSWORD, "0422111111", sizeof(value.PASSWORD) - 1);
 	value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';
 	value.isClock24Hour = true;
 	strcpy(value.localeStr, "ja_JP.UTF-8");
@@ -109,183 +114,108 @@ const void Settings::drawMenu()
 	ptft->setCursor(10, 104);
 	ptft->printf("    TIME:%s", (value.isClock24Hour ? "24H" : "12H"));
 	ptft->setCursor(10, 136);
-	ptft->printf("--------:");
+	ptft->printf("DATETIME:");
 	ptft->setCursor(10, 168);
 	ptft->printf("--------:");
 	ptft->setCursor(10, 200);
 	ptft->printf("--------:");
 	ptft->setCursor(10, 232);
-	ptft->printf("--------:");
-	ptft->setCursor(10, 264);
-	ptft->printf("--------:");
+	ptft->printf("<<< Calibrate Touchscreen>>>");
+	ptft->setCursor(0, 264);
+	ptft->printf("---------+---------+---------+");
 	ptft->setCursor(10, 296);
-	ptft->printf("<<EXIT>>:");
+	ptft->printf("  [ OK ]            [CANCEL]");
 }
-#if false
-const void Settings::EdtDispCursor(int tick , bool isDeleteCursor)
-{
-	if (isDeleteCursor) {
-		ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
-		ptft->setCursor(edtX + edtCursor * 8, edtY);
-		ptft->print(p[edtCursor]); // カーソルを消去
-		ptft->drawFastHLine(edtX + edtCursor * 8, edtY + 17, 8, STDCOLOR.BLACK); // カーソルを消去
-
-	} else if (isInsert) {
-		if (tick > 128) {
-			ptft->setTextColor(STDCOLOR.BLACK, STDCOLOR.WHITE);
-			ptft->setCursor(edtX + edtCursor * 8, edtY);
-			ptft->print(p[edtCursor]); // カーソルを表示
-		} else {
-			ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
-			ptft->setCursor(edtX + edtCursor * 8, edtY);
-			ptft->print(p[edtCursor]); // カーソルを消す
-		}
-
-	} else {
-		if (tick > 128) {
-			ptft->drawFastHLine(edtX + edtCursor * 8, edtY + 17, 8, STDCOLOR.WHITE); // カーソルを表示
-			/*
-			ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
-			ptft->setCursor(edtX + edtCursor * 8, edtY);
-			ptft->print(p[edtCursor]); // カーソルを表示
-			ptft->setCursor(edtX + edtCursor * 8, edtY);
-			ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.WHITE);
-			ptft->printf("_"); // カーソルを表示
-			*/
-		} else {
-			ptft->drawFastHLine(edtX + edtCursor * 8, edtY + 17, 8, STDCOLOR.BLACK); // カーソルを表示
-			/*
-			ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
-			ptft->setCursor(edtX + edtCursor * 8, edtY);
-			ptft->print(p[edtCursor]); // カーソルを消す
-			*/
-		}
-	}
-
-}
-
-
-const void Settings::EditBox(ScreenKeyboard sk, uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size)
-{
-	sk.show(200);
-	p = a_pText;
-	 edtCursor = strlen(a_pText);
-	edtX = a_x;
-	edtY = a_y;
-	isInsert = false;
-
-	int waitCnt = 0;
-	while (true) {
-		uint8_t ret = sk.checkTouch();
-		if (ret == 0xff) { // タッチされていない場合はカーソルを点滅させたりする
-			waitCnt++;
-			waitCnt = waitCnt % 0xFF;
-			EdtDispCursor(waitCnt, false); // カーソルを点滅させる
-			delay(5); // 少し待つ
-			continue;
-		} else {
-			EdtDispCursor(waitCnt, true); // カーソルを消す
-			waitCnt = 0; // カーソルの点滅をリセット
-		}
-		// 特殊コードの処理
-		if (ret == 0x0d) {
-			break;                // Enterキーが押されたら終了
-		} else if (ret == 0x1b) { // ESCキーが押されたら終了
-			break;
-		} else if (ret == 0x13) { // ↚キー
-			edtCursor--;
-			if (edtCursor < 0) {
-				edtCursor = 0; // カーソルが先頭を超えないようにする
-			}
-			if (edtCursor > strlen(p)) {
-				edtCursor = strlen(p); // カーソルが文字列の末尾を超えないようにする
-			}
-			ret = 0;
-		} else if (ret == 0x14) { // ⇒キー
-			if (p[edtCursor] == 0) {
-				continue;
-			}
-			edtCursor++;
-			ret = 0;
-		} else if (ret == 0x7e) {
-			isInsert = !isInsert;
-			ret = 0;
-		}
-		if (ret == 0) {
-			continue;
-		}
-		// 一般文字の処理
-		if (strlen(p) >= a_size - 1) {
-			continue; // 文字列が最大長に達している場合は何もしない
-		}
-
-		if (ret == 0x08) { // Backspaceキーが押されたら削除
-			if (edtCursor > 0) {
-				edtCursor--;
-				p[edtCursor] = '\0'; // 文字列の終端を設定
-			} else {
-				continue; // カーソルが先頭にある場合は何もしない
-			}
-		} else if (ret == 0x7F) { //
-			if (p[edtCursor] == 0) {
-				continue; // カーソルが末尾にある場合は何もしない
-			}
-			if (edtCursor < strlen(p)) { // Deleteキーが押されたら削除
-				for (size_t i = edtCursor; i < strlen(p); i++) {
-					p[i] = p[i + 1]; // 文字を左にシフト
-				}
-				p[strlen(p) - 1] = '\0'; // 文字列の終端を設定
-			}
-		} else if (p[edtCursor] == '\0') { // カーソルが末尾にあるときは追加
-			p[edtCursor++] = ret;
-			p[edtCursor] = '\0'; // 文字列の終端を設定
-		} else {
-			if (isInsert) { // 挿入モード
-				if (edtCursor < strlen(p)) {
-					for (size_t i = strlen(p); i > edtCursor; i--) {
-						p[i] = p[i - 1]; // 文字を右にシフト
-					}
-				}
-				p[edtCursor++] = ret; // 新しい文字を挿入
-				p[edtCursor] = '\0';  // 文字列の終端を設定
-			} else {                  // 上書きモード
-				p[edtCursor++] = ret; // 新しい文字で上書き
-				if (edtCursor >= a_size - 1) {
-					edtCursor = a_size - 1; // カーソルが最大長を超えないようにする
-				}
-			}
-		}
-		// 文字の変化に伴う再描画
-		ptft->fillRect(edtX, edtY, 240 - edtX, 16, STDCOLOR.BLACK); // 入力欄をクリア
-		ptft->setCursor(edtX, edtY);
-		ptft->printf(p);
-	}
-}
-#endif
 
 const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 {
+	SettingValue valuePush;
+	valuePush = value; // 現在の設定値を保存
+
 	ptft = a_ptft;
 	pts = a_pts;
 
 	ScreenKeyboard sk(ptft, pts);
+	isMustSave = false;
 	drawMenu();
+	uint8_t prevSec = 0xFF;
 #define YRANGE(__Y) (p.y >= __Y && p.y < (__Y + 32))
 	while (true) {
+		time_t now = time(NULL);
+		struct tm* local = localtime(&now);
+		static char timeBuf[15];
+
+		if (prevSec != local->tm_sec) {
+			snprintf(timeBuf, sizeof(timeBuf), "%04d%02d%02d%02d%02d%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
+			ptft->setCursor(80, 136);
+			ptft->printf(timeBuf);
+			prevSec = local->tm_sec;
+		}
+
 		if (pts->touched()) {
 			TS_Point p = pts->getPointOnScreen();
-			if YRANGE (32) {
+			if YRANGE (32) {							// SSID
 				GUIEditBox editbox(ptft, pts, &sk);
-				editbox.show(10 + 9 * 8, 40, value.SSID, sizeof(value.SSID));
-				//	EditBox(sk, 10 + 9 * 8, 40, value.SSID, sizeof(value.SSID));
+				bool bRet = editbox.show(10 + 9 * 8, 40, value.SSID, 18,EditMode::MODE_TEXT);
+				if (bRet) {
+					isMustSave = true; // SSIDが変更された
+				}
+				drawMenu();
 			} else if YRANGE (64) {
+				GUIEditBox editbox(ptft, pts, &sk);
+				bool bRet = editbox.show(10 + 9 * 8, 72, value.PASSWORD, 18,EditMode::MODE_TEXT);
+				if (bRet) {
+					isMustSave = true; // PASSWORDが変更された
+				}
+				drawMenu();
 			} else if YRANGE (96) {
-			} else if YRANGE (128) {
+				value.isClock24Hour  = !value.isClock24Hour; // 24時間表示の切り替え
+				drawMenu();
+				isMustSave = true; // 24時間表示が変更された
+			} else if YRANGE (128) {						// 日時設定
+				GUIEditBox editbox(ptft, pts, &sk);
+				bool bRet = editbox.show(80, 136, timeBuf, sizeof(timeBuf),EditMode::MODE_NUMPADOVERWRITE);
+				if (bRet == true) {
+					// timeBufの内容を解析して、必要な設定を行う
+					int year, month, day, hour, minute, second;
+					if (sscanf(timeBuf, "%04d%02d%02d%02d%02d%02d", &year, &month, &day, &hour, &minute, &second) == 6) {
+						struct tm newTime = {0};
+						newTime.tm_year = year - 1900; // tm_yearは1900年からの年数
+						newTime.tm_mon = month - 1;    // tm_monは0から11まで
+						newTime.tm_mday = day;
+						newTime.tm_hour = hour;
+						newTime.tm_min = minute;
+						newTime.tm_sec = second;
+						time_t t = mktime(&newTime);
+						struct timeval tv;
+						tv.tv_sec = now;
+						tv.tv_usec = 0;
+						settimeofday(&tv, NULL);
+
+					}
+				}
+				drawMenu();
 			} else if YRANGE (160) {
 			} else if YRANGE (192) {
 			} else if YRANGE (224) {
 			} else if YRANGE (256) {
+				TouchCalibration tsCalib(ptft, pts); // タッチパネルのキャリブレーションを行うインスタンスを作成
+				bool bRet = tsCalib.run();
+				if (bRet) {
+					setCalibration(tsCalib.minX, tsCalib.minY, tsCalib.maxX, tsCalib.maxY); // キャリブレーション値を設定
+				}
 			} else if YRANGE (288) {
+				if(p.x < 80) { // OKボタン
+					if (isMustSave) {
+						save(); // 設定を保存
+					}
+					ptft->fillScreen(ILI9341_BLACK);
+					return; // メニューを閉じる
+				} else if (p.x > 160) { // CANCELボタン
+					value = valuePush; // 変更を破棄
+					ptft->fillScreen(ILI9341_BLACK);
+					return; // メニューを閉じる
+				}
 				return;
 			} else {
 			}
