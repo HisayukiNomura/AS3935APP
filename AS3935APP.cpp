@@ -152,7 +152,7 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isBanner, bool isC
 	if (mustRedraw) {
 		isBanner = true;
 		isClock = true;
-		isBody = true;
+		isBody = false; // 矯正再描画の場合、bodyはfalseにしない。IRQがトリガーされていないのにvalidateSignalを呼びだしてレジスタアクセスしないようにするため。
 		mustRedraw = false; // 再描画フラグをリセット
 	}
 	if (isBanner) {
@@ -233,8 +233,6 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
 {
-	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
-
 	XPT2046_Touchscreen ts(TOUCH_CS);
 	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
 
@@ -367,6 +365,7 @@ int main()
 					TS_Point tPoint;
 					tPoint = ts.getPointOnScreen();
 					if (tPoint.y < 20) {
+
 						appMode = APP_MODE_SETTING; // 設定モードに切り替え
 					}	
 					
@@ -375,13 +374,15 @@ int main()
 				mainDisplay(tft, as3935, false, true, false); // 時計の更新
 			}
 		} else if (appMode == APP_MODE_SETTING) {
+			cancel_repeating_timer(&timer); // ハートビートタイマーを停止
 			tft.setCursor(0, 0);
 			tft.printf("設定モード");
 			settings.run(&tft, &ts); // 設定画面の実行
 			mustRedraw = true;
 			DispClock::setRedrawFlag(); // 時計の再描画フラグを立てる
 			appMode = APP_MODE_NORMAL; // 通常モードに戻す
-			
+			add_repeating_timer_ms(500, hartbeatCallback, NULL, &timer);
+			//as3935.Reset(); // AS3935のリセット
 		}
 	}
 }

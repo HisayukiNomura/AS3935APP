@@ -142,6 +142,9 @@ void AS3935::StartCalibration(uint16_t a_timeCalibration)
 	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap)); // キャリブレーションされたキャパシタの値を設定、IRQピンへの出力をオフにする
 }
 
+
+
+
 /**
  * @brief AS3935のキャリブレーションを実行する。
  * @details
@@ -305,3 +308,11 @@ bool AS3935::GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t
 	}
 	return false;
 }
+
+void AS3935::Reset()
+{
+	PresetDefault();
+	writeRegAndData_1(REG00_AFEGB_PWD, AFE_GB_INDOOR);
+	writeRegAndData_1(REG01_NFLEV_WDTH, NFLEV_DEF | WDTH); // ノイズレベルとウォッチドッグスレッショルドを設定
+	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap)); // キャリブレーションされたキャパシタの値を設定、IRQピンへの出力をオフにする
+}	

@@ -57,7 +57,7 @@ using namespace ardPort::spi;
 		 * @return 読み出した値
 		 */
 		uint8_t readReg(uint8_t reg);
-
+		void Reset();
 		bool GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time);
 		bool GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time);
 		bool GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus,time_t& a_time);
