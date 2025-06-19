@@ -3,6 +3,7 @@
 #include "FreqCounter.h"
 #include "hardware/gpio.h"
 #include "hardware/i2c.h"
+#include "settings.h"
 #include <ctime>
 // https://www.ne.jp/asahi/shared/o-family/ElecRoom/AVRMCOM/AS3935/AS3935_test.html
 // https://esphome.io/components/sensor/as3935.html
@@ -26,26 +27,7 @@ using namespace ardPort::spi;
 
 #define REG3A_TRCO_CALIBRSLT 0x3A // Calibration of TRCO done (1=successful) / Calibration of TRCO unsuccessful(1 = not successful)
 #define REG3B_SRCO_CALIBRSLT 0x3B // Calibration of SRCO done (1=successful) / Calibration of SRCO unsuccessful(1 = not successful)
-//  Analog Front End Gain Boost
-#define AFE_GB_MIN (0b00000 << 1)     // ANALOG FRONT END GAIN BOOST = 0 (min)
-#define AFE_GB_OUTDOOR (0b01110 << 1) // ANALOG FRONT END GAIN BOOST = 14 (outdoor)
-#define AFE_GB_INDOOR (0b10010 << 1)  // ANALOG FRONT END GAIN BOOST = 18 (indoor)
-#define AFE_GB_MAX (0b11111 << 1)     // ANALOG FRONT END GAIN BOOST = 31 (max)
 
-// Noise Floor Level
-#define NFLEV_0 (0x00 << 4) // NOISE FLOOR LEVEL = 0 (min)
-#define NFLEV_1 (0x01 << 4) // NOISE FLOOR LEVEL = 1
-#define NFLEV_2 (0x02 << 4) // NOISE FLOOR LEVEL = 2(default)
-#define NFLEV_3 (0x03 << 4) // NOISE FLOOR LEVEL = 3
-#define NFLEV_4 (0x04 << 4) // NOISE FLOOR LEVEL = 4
-#define NFLEV_5 (0x05 << 4) // NOISE FLOOR LEVEL = 5
-#define NFLEV_6 (0x06 << 4) // NOISE FLOOR LEVEL = 6
-#define NFLEV_7 (0x07 << 4) // NOISE FLOOR LEVEL = 7 (max)
-#define NFLEV_DEF (NFLEV_2) // デフォルトのノイズレベルを設定
-
-// Watchdog Threshold  (0～10)
-#define WDTH_DEFAULT 0x02   // WATCH DOG THRESHOLD 0x00 to 0x0F
-#define WDTH (WDTH_DEFAULT) // デフォルトのウォッチドッグスレッショルドを設定
 
 // Frequency Division Ratio
 #define FDIV_RATIO_1_16 (0x00 << 6)  // LCO Frequency Division Ratio = 1/16
@@ -66,6 +48,12 @@ using namespace ardPort::spi;
 #define DISPLCO_ON (0x1 << 7)
 #define DISPLCO_OFF (0x0 << 7)
 #define TUN_CAP_MASK (0x0F) // Tuning Capacitors (from 0 to 120pF in steps of 8pF)
+
+
+// 設定情報
+extern Settings settings;
+
+
 
 AS3935::AS3935(Adafruit_ILI9341* a_pTft) :
 	m_pTft(a_pTft),
@@ -132,8 +120,12 @@ void AS3935::StartCalibration(uint16_t a_timeCalibration)
 	if (m_timeCalibration == 0) {
 		m_u8calibratedCap = 4;
 	} else {
-		writeRegAndData_1(REG00_AFEGB_PWD, AFE_GB_INDOOR);
-		writeRegAndData_1(REG01_NFLEV_WDTH, NFLEV_DEF | WDTH);                              // ノイズレベルとウォッチドッグスレッショルドを設定
+		writeRegAndData_1(REG00_AFEGB_PWD, (settings.value.gainBoost << 1));
+		writeRegAndData_1(REG01_NFLEV_WDTH, (settings.value.noiseFloor << 4) | settings.value.watchDogThreshold); // ノイズレベルとウォッチドッグスレッショルドを設定
+		/*
+		writeRegAndData_1(REG00_AFEGB_PWD, (AFE_GB_INDOOR << 1));
+		writeRegAndData_1(REG01_NFLEV_WDTH, (NFLEV_DEF << 4) | WDTH_DEFAULT);               // ノイズレベルとウォッチドッグスレッショルドを設定
+		*/
 		writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE); // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
 		writeWord(CALIB_RCO);                                                               // RCOキャリブレーションを開始するためのダイレクトコマンドを送信
 		m_FreqCalibration = Calibrate();                                                    // キャリブレーションを実行
@@ -376,7 +368,11 @@ bool AS3935::GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t
 void AS3935::Reset()
 {
 	PresetDefault();
-	writeRegAndData_1(REG00_AFEGB_PWD, AFE_GB_INDOOR);
-	writeRegAndData_1(REG01_NFLEV_WDTH, NFLEV_DEF | WDTH);                         // ノイズレベルとウォッチドッグスレッショルドを設定
-	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap)); // キャリブレーションされたキャパシタの値を設定、IRQピンへの出力をオフにする
+	writeRegAndData_1(REG00_AFEGB_PWD, (settings.value.gainBoost << 1));
+	writeRegAndData_1(REG01_NFLEV_WDTH, (settings.value.noiseFloor << 4) | settings.value.watchDogThreshold); // ノイズレベルとウォッチドッグスレッショルドを設定
+	/*
+	writeRegAndData_1(REG00_AFEGB_PWD, (AFE_GB_INDOOR << 1));
+	writeRegAndData_1(REG01_NFLEV_WDTH, (NFLEV_DEF << 4) | WDTH_DEFAULT);               // ノイズレベルとウォッチドッグスレッショルドを設定
+	*/
+	writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE); // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
 }

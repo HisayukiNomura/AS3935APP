@@ -12,6 +12,8 @@
 #include "GUIEditbox.h"
 #include "hardware/rtc.h"
 #include "TouchCalibration.h"
+#include "AS3935.h"
+
 using namespace ardPort;
 using namespace ardPort::spi;
 
@@ -39,6 +41,9 @@ void Settings::setDefault()
 	value.minY = 374;
 	value.maxX = 3773;
 	value.maxY = 3638;
+	value.gainBoost = AFE_GB_INDOOR; // AFEのゲインブースト設定（0-31）
+	value.noiseFloor = NFLEV_DEF;    // ノイズフロアレベル（0-7）
+	value.watchDogThreshold = 0; // ウォッチドッグスレッショル
 }
 
 void Settings::save()
@@ -116,7 +121,7 @@ const void Settings::drawMenu()
 	ptft->setCursor(10, 136);
 	ptft->printf("DATETIME:");
 	ptft->setCursor(10, 168);
-	ptft->printf("--------:");
+	ptft->printf("GB/NF/WD:－%02d＋/＋%1d－/＋%02d－",value.gainBoost, value.noiseFloor, value.watchDogThreshold);
 	ptft->setCursor(10, 200);
 	ptft->printf("--------:");
 	ptft->setCursor(10, 232);
