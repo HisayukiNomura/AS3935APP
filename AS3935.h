@@ -10,7 +10,11 @@
 using namespace ardPort;
 using namespace ardPort::spi;
 
-	
+	enum AS3935_SIGNAL {
+		NONE = 0, // 信号が無効(信号なし)
+		VALID = 1,   // 信号が有効（雷の検出）
+		INVALID = 2, // 信号が無効（ノイズや誤検出など）
+	};
 
 	class AS3935 : public I2CBase
 	{
@@ -21,6 +25,12 @@ using namespace ardPort::spi;
 		uint8_t m_u8calibratedCap;
 		uint16_t m_timeCalibration;
 		uint32_t m_FreqCalibration;
+
+		AS3935_SIGNAL m_latestSignalValid = AS3935_SIGNAL::NONE; // 最新の信号が有効かどうか
+		uint8_t m_latestBufAlarmSummary = 0;
+		int m_latestBufAlarmDist = 0;
+		int m_latestBufAlarmStatus = 0;
+		time_t m_latestBufDateTime = 0; // 最新の日時
 
 	  public:
 		const uint8_t SUMM_NONE = 0x00; // アラームサマリー
@@ -33,10 +43,18 @@ using namespace ardPort::spi;
 			"NONE", "雷の検出", "距離超過", "信号なし", "認識誤り", "雑音過大"
 		};
 
-		RingBufferT<int> m_bufAlarmSummary;
-		RingBufferT<int> m_bufAlarmDist;
-		RingBufferT<int> m_bufAlarmStatus;
+		RingBufferT<uint8_t> m_bufAlarmSummary;
+		RingBufferT<uint8_t> m_bufAlarmDist;
+		RingBufferT<uint8_t> m_bufAlarmStatus;
 		RingBufferT<long long> m_bufDateTime;
+
+
+		AS3935_SIGNAL getLatestSignalValid() const { return m_latestSignalValid; }
+		int getLatestSummary() const { return m_latestBufAlarmSummary; }
+		int getLatestDist() const { return m_latestBufAlarmDist; }
+		int getLatestStatus() const { return m_latestBufAlarmStatus; }
+		time_t getLatestDateTime() const { return m_latestBufDateTime; }
+		const char* getLatestSummaryStr()  { return GetAlarmSummaryString(m_latestBufAlarmSummary); }
 
 	  public:
 		AS3935(Adafruit_ILI9341* a_pTft);
@@ -47,7 +65,7 @@ using namespace ardPort::spi;
 		void PresetDefault();
 		void StartCalibration(uint16_t a_timeCalibration = 1000); // デフォルトで1秒間キャリブレーションを行う
 
-		bool validateSignal();
+		AS3935_SIGNAL validateSignal();
 		/**
 		 * @brief 指定レジスタから1バイト読み出す
 		 * @details

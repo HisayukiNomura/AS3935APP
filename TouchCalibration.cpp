@@ -54,12 +54,12 @@ bool TouchCalibration::run() {
 void TouchCalibration::showMenu() {
     m_tft->fillScreen(ILI9341_BLACK);
     m_tft->setTextColor(ILI9341_WHITE);
-    m_tft->setCursor(10, 40);
-    m_tft->printf("<<タッチの調整>>\n");
-    m_tft->setCursor(10, 180);
-    m_tft->printf("<<タッチのテスト>>\n");
-    m_tft->setCursor(10, 280);
-    m_tft->printf("<<終了>>\n");
+    m_tft->setCursor(0, 40);
+    m_tft->printf("<<タッチの調整>>\nタッチスクリーンの調整を行います。指示に従って画面をタップしてください。一度開始すると、調整が完了するまで中断することはできません。");
+    m_tft->setCursor(0, 180);
+    m_tft->printf("<<タッチのテスト>>\nタッチスクリーンの確認を行います。画面を実際にタップし確認、必要なら再度調整してください。ロングタップで終了します。");
+    m_tft->setCursor(0, 280);
+    m_tft->printf("<<終了>>\n終了してメニューに戻ります");
 }
 
 void TouchCalibration::waitLongTap() {

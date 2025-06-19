@@ -126,6 +126,10 @@ bool hartbeatCallback(repeating_timer_t* rt)
 	return true; // 割り込みを継続
 }
 
+
+
+
+
 /**
  * @brief メイン関数（エントリーポイント）
  * @details
@@ -147,12 +151,13 @@ enum APPMode {
 } appMode;
 bool mustRedraw = false;
 // 雷センサーの画面表示
-void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isBanner, bool isClock , bool isBody  = true)
+void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool isBanner, bool isClock , bool isBody)
 {
 	if (mustRedraw) {
 		isBanner = true;
 		isClock = true;
-		isBody = false; // 矯正再描画の場合、bodyはfalseにしない。IRQがトリガーされていないのにvalidateSignalを呼びだしてレジスタアクセスしないようにするため。
+		isBody = true; 
+		isSignal = false;   // 強制再描画の場合、信号検出は行わない。IRQがトリガーされていないのにvalidateSignalを呼びだしてレジスタアクセスしないようにするため。
 		mustRedraw = false; // 再描画フラグをリセット
 	}
 	if (isBanner) {
@@ -174,25 +179,42 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isBanner, bool isC
 		uint8_t u8Status;
 		time_t eventtime;
 
+
+
 		tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
+		// 最新情報表示エリアをクリア
+		tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
+		tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
+		tft.setCursor(0, 100);
+
 		// 雷信号の検証
-		bool bRet = as3935.validateSignal();
-		time_t tm = time(NULL);
-		struct tm* t = localtime(&tm);
-		if (bRet) {                                                 // 雷が検出された場合
-			tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
-			tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
-			tft.setCursor(0, 100);
-			tft.printf("%02d/%02d %02d:%02d:%02d 雷を検出\n",t->tm_mon,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
+		AS3935_SIGNAL sigValid;
+		if (isSignal) {
+			sigValid = as3935.validateSignal();
+			time_t tm = time(NULL);
+			struct tm* t = localtime(&tm);
+			if (sigValid == AS3935_SIGNAL::VALID || sigValid == AS3935_SIGNAL::INVALID) {                                             // 雷が検出された場合
+				tft.printf("%02d/%02d %02d:%02d:%02d %s\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (sigValid == AS3935_SIGNAL::VALID) ? "雷を検出" : "検出せず");
+				tft.printf("距離:%3d km STAT：%s(%02X)", as3935.getLatestDist(), as3935.getLatestSummaryStr(), as3935.getLatestStatus());
+			} else {
+				tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
+				tft.setTextColor(STDCOLOR.GRAY, STDCOLOR.SUPERDARK_GRAY);
+				tft.setCursor(0, 100);
+			}
+		} else {
+			AS3935_SIGNAL sigValid = as3935.getLatestSignalValid();
+			if (sigValid == AS3935_SIGNAL::VALID || sigValid == AS3935_SIGNAL::INVALID) { // 雷が検出された場合
+				time_t tm = as3935.getLatestDateTime();
+				struct tm* t = localtime(&tm);
+				tft.printf("%02d/%02d %02d:%02d:%02d %s\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (sigValid== AS3935_SIGNAL::VALID) ? "雷を検出" : "検出せず");
+				tft.printf("距離:%3d km STAT：%s(%02X)",as3935.getLatestDist(),as3935.getLatestSummaryStr(),as3935.getLatestStatus());
+			} else {
+				tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
+				tft.setTextColor(STDCOLOR.GRAY, STDCOLOR.SUPERDARK_GRAY);
+				tft.setCursor(0, 100);
+			}
 			as3935.GetLatestAlarm(0, u8Summary, u8Distance, u8Status, eventtime);
-			tft.printf("距離:%3d km STAT：%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
-		} else {                                                    // 雷が検出されなかった場合
-			tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
-			tft.setTextColor(STDCOLOR.GRAY, STDCOLOR.SUPERDARK_GRAY);
-			tft.setCursor(0, 100);
-			tft.printf("%02d/%02d %02d:%02d:%d 検出せず\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
-			as3935.GetLatestFalseAlarm(0, u8Summary, u8Distance, u8Status, eventtime);
-			tft.printf("距離:%3d km STAT:%s(%02X)", u8Distance, as3935.GetAlarmSummaryString(u8Summary), u8Status);
+
 		}
 		tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
 
@@ -343,7 +365,7 @@ int main()
 
 	delay(1000);
 	
-	mainDisplay(tft, as3935, true,false, false); // 初期画面のバナー表示
+	mainDisplay(tft, as3935, false,true,false, false); // 初期画面のバナー表示
 
 	// --- 画面初期化・タイトル表示 ---
 	// --- 割り込み・タイマー・メインループ ---
@@ -359,7 +381,7 @@ int main()
 			isIRQTriggered = false;
 			__wfe();              // 割り込みが発生するまでスリープ
 			if (isIRQTriggered) { // IRQがトリガーされた場合
-				mainDisplay(tft, as3935, false,false,true); // 雷センサーの画面表示を更新
+				mainDisplay(tft, as3935, true, false,false,true); // 雷センサーの画面表示を更新
 			} else {
 				if (ts.touched()) {
 					TS_Point tPoint;
@@ -371,7 +393,7 @@ int main()
 					
 				}
 				// それ以外の処理があればここに追加
-				mainDisplay(tft, as3935, false, true, false); // 時計の更新
+				mainDisplay(tft, as3935, false, false, true, false); // 時計の更新
 			}
 		} else if (appMode == APP_MODE_SETTING) {
 			cancel_repeating_timer(&timer); // ハートビートタイマーを停止

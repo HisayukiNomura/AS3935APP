@@ -154,27 +154,28 @@ const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 
 		if (pts->touched()) {
 			TS_Point p = pts->getPointOnScreen();
-			if YRANGE (32) {							// SSID
+			while (pts->touched()) {}					// タッチが終わるまで待つ
+			if YRANGE (32) { // SSID
 				GUIEditBox editbox(ptft, pts, &sk);
-				bool bRet = editbox.show(10 + 9 * 8, 40, value.SSID, 18,EditMode::MODE_TEXT);
+				bool bRet = editbox.show(10 + 9 * 8, 40, value.SSID, 18, EditMode::MODE_TEXT);
 				if (bRet) {
 					isMustSave = true; // SSIDが変更された
 				}
 				drawMenu();
 			} else if YRANGE (64) {
 				GUIEditBox editbox(ptft, pts, &sk);
-				bool bRet = editbox.show(10 + 9 * 8, 72, value.PASSWORD, 18,EditMode::MODE_TEXT);
+				bool bRet = editbox.show(10 + 9 * 8, 72, value.PASSWORD, 18, EditMode::MODE_TEXT);
 				if (bRet) {
 					isMustSave = true; // PASSWORDが変更された
 				}
 				drawMenu();
 			} else if YRANGE (96) {
-				value.isClock24Hour  = !value.isClock24Hour; // 24時間表示の切り替え
+				value.isClock24Hour = !value.isClock24Hour; // 24時間表示の切り替え
 				drawMenu();
-				isMustSave = true; // 24時間表示が変更された
-			} else if YRANGE (128) {						// 日時設定
+				isMustSave = true;   // 24時間表示が変更された
+			} else if YRANGE (128) { // 日時設定
 				GUIEditBox editbox(ptft, pts, &sk);
-				bool bRet = editbox.show(80, 136, timeBuf, sizeof(timeBuf),EditMode::MODE_NUMPADOVERWRITE);
+				bool bRet = editbox.show(80, 136, timeBuf, sizeof(timeBuf), EditMode::MODE_NUMPADOVERWRITE);
 				if (bRet == true) {
 					// timeBufの内容を解析して、必要な設定を行う
 					int year, month, day, hour, minute, second;
@@ -191,28 +192,29 @@ const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 						tv.tv_sec = now;
 						tv.tv_usec = 0;
 						settimeofday(&tv, NULL);
-
 					}
 				}
 				drawMenu();
 			} else if YRANGE (160) {
 			} else if YRANGE (192) {
 			} else if YRANGE (224) {
-			} else if YRANGE (256) {
 				TouchCalibration tsCalib(ptft, pts); // タッチパネルのキャリブレーションを行うインスタンスを作成
 				bool bRet = tsCalib.run();
 				if (bRet) {
 					setCalibration(tsCalib.minX, tsCalib.minY, tsCalib.maxX, tsCalib.maxY); // キャリブレーション値を設定
+					isMustSave = true;                                                      // キャリブレーション結果を保存
 				}
+				drawMenu();
+			} else if YRANGE (256) {
 			} else if YRANGE (288) {
-				if(p.x < 80) { // OKボタン
+				if (p.x < 80) { // OKボタン
 					if (isMustSave) {
 						save(); // 設定を保存
 					}
 					ptft->fillScreen(ILI9341_BLACK);
-					return; // メニューを閉じる
+					return;             // メニューを閉じる
 				} else if (p.x > 160) { // CANCELボタン
-					value = valuePush; // 変更を破棄
+					value = valuePush;  // 変更を破棄
 					ptft->fillScreen(ILI9341_BLACK);
 					return; // メニューを閉じる
 				}

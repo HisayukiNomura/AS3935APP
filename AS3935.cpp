@@ -136,14 +136,11 @@ void AS3935::StartCalibration(uint16_t a_timeCalibration)
 		writeRegAndData_1(REG01_NFLEV_WDTH, NFLEV_DEF | WDTH);                              // ノイズレベルとウォッチドッグスレッショルドを設定
 		writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE); // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
 		writeWord(CALIB_RCO);                                                               // RCOキャリブレーションを開始するためのダイレクトコマンドを送信
-		m_FreqCalibration = Calibrate();                                                       // キャリブレーションを実行
+		m_FreqCalibration = Calibrate();                                                    // キャリブレーションを実行
 	}
 	m_pTft->printf("Cap:%3dpF Freq:%4.1fKHz\n", m_u8calibratedCap * 8, (float)m_FreqCalibration / 1000);
 	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap)); // キャリブレーションされたキャパシタの値を設定、IRQピンへの出力をオフにする
 }
-
-
-
 
 /**
  * @brief AS3935のキャリブレーションを実行する。
@@ -194,52 +191,119 @@ uint32_t AS3935::Calibrate()
  *
  * @return 有効な雷信号と判定した場合true、ノイズや誤検出の場合はfalse
  */
-bool AS3935::validateSignal()
+AS3935_SIGNAL AS3935::validateSignal()
 {
-    // 割り込み発生時にREG03_LCOFDIV_MDIST_INTのINTフラグを確認
-    uint8_t u8IntSrc = readReg(REG03_LCOFDIV_MDIST_INT) & 0x0F;
-    // INTNOISE_LIGHTNINGINTR: 雷検出
-    // INTNOISE_DISTERBERDETECT: ディスターバ（誤検出）
-    // INTNOISE_TOHIGH: ノイズレベル過大
-    if (u8IntSrc & INTNOISE_LIGHTNINGINTR) {
+	/*
+	テスト。検出を強制的に登録する
+	*/
+#if false
+	static uint8_t callcnt = 0;
+	if (callcnt % 4 == 0) {
+		m_bufAlarmSummary.push(SUMM_THUNDER);
+		m_bufAlarmDist.push(0x20);                  // 距離をリングバッファに保存
+		m_bufAlarmStatus.push(0x01);                // ステータスをリングバッファに保存
+		m_bufDateTime.push(time(NULL));             // 現在時刻をリングバッファに保存
+		m_latestSignalValid = AS3935_SIGNAL::VALID; // 最新の信号が有効かどうかを保存
+		m_latestBufAlarmSummary = SUMM_THUNDER;
+		m_latestBufAlarmDist = 0x20;
+		m_latestBufAlarmStatus = 0x01;
+		m_latestBufDateTime = m_bufDateTime.getLastData();
+	} else if (callcnt % 4 == 1) {
+		m_bufAlarmSummary.push(SUMM_NOISEHIGH);
+		m_bufAlarmDist.push(0);                       // 距離をリングバッファに保存
+		m_bufAlarmStatus.push(0);                     // ステータスをリングバッファに保存
+		m_bufDateTime.push(time(NULL));               // 現在時刻をリングバッファに保存
+		m_latestSignalValid = AS3935_SIGNAL::INVALID; // 最新の信号が有効かどうかを保存
+		m_latestBufAlarmSummary = SUMM_NOISEHIGH;
+		m_latestBufAlarmDist = 0;
+		m_latestBufAlarmStatus = 0;
+		m_latestBufDateTime = m_bufDateTime.getLastData();
+	} else if (callcnt % 4 == 2) {
+		m_bufAlarmSummary.push(SUMM_DISTERBER);
+		m_bufAlarmDist.push(0);                       // 距離をリングバッファに保存
+		m_bufAlarmStatus.push(0);                     // ステータスをリングバッファに保存
+		m_bufDateTime.push(time(NULL));               // 現在時刻をリングバッファに保存
+		m_latestSignalValid = AS3935_SIGNAL::INVALID; // 最新の信号が有効かどうかを保存
+		m_latestBufAlarmSummary = SUMM_DISTERBER;
+		m_latestBufAlarmDist = 0;
+		m_latestBufAlarmStatus = 0;
+		m_latestBufDateTime = m_bufDateTime.getLastData();
+	} else if (callcnt % 4 == 3) {
+		m_bufAlarmSummary.push(SUMM_TOOFAR);
+		m_bufAlarmDist.push(0x3F);                  // 距離をリングバッファに保存（遠すぎる）
+		m_bufAlarmStatus.push(0);                   // ステータスをリングバッファに保存
+		m_bufDateTime.push(time(NULL));             // 現在時刻をリングバッファに保存
+		m_latestSignalValid = AS3935_SIGNAL::INVALID; // 最新の信号が有効かどうかを保存
+		m_latestBufAlarmSummary = SUMM_TOOFAR;
+		m_latestBufAlarmDist = 0x3F;
+		m_latestBufAlarmStatus = 0;
+		m_latestBufDateTime = m_bufDateTime.getLastData();
+	} else {
+		m_latestSignalValid = AS3935_SIGNAL::NONE; // 信号が存在しない
+		m_latestBufAlarmSummary = SUMM_NONE;
+		m_latestBufAlarmDist = 0;
+		m_latestBufAlarmStatus = 0;
+		m_latestBufDateTime = m_bufDateTime.getLastData();
+	}
+	callcnt++;
+	if (callcnt > 100) callcnt = 0; // カウントをリセット
+	return m_latestSignalValid;
+#endif	
+
+	// 割り込み発生時にREG03_LCOFDIV_MDIST_INTのINTフラグを確認
+	uint8_t u8IntSrc = readReg(REG03_LCOFDIV_MDIST_INT) & 0x0F;
+	// INTNOISE_LIGHTNINGINTR: 雷検出
+	// INTNOISE_DISTERBERDETECT: ディスターバ（誤検出）
+	// INTNOISE_TOHIGH: ノイズレベル過大
+	if (u8IntSrc & INTNOISE_LIGHTNINGINTR) {
 		uint8_t u8Dist = 0;
 		uint8_t u8Status = 0;
-		
+
 		u8Dist = readReg(REG07_DIST) & 0x3F;              // 距離推定値を取得（0x00: 検出なし, 0x01-0x3F: 距離, 0x3F: 遠すぎる）
 		u8Status = readReg(REG02_CLSTAT_MINNUMLIGH_SREJ); // ステータスレジスタでノイズ/誤検出を確認
 
 		// 距離が有効範囲内かつ、ノイズ/誤検出でなければtrue
-        if (u8Dist > 0 && u8Dist < 0x3F && (u8Status & 0x0F) == 0) {
+		if (u8Dist > 0 && u8Dist < 0x3F && (u8Status & 0x0F) == 0) {
 			m_bufAlarmSummary.push(SUMM_THUNDER);
-			m_bufAlarmDist.push(u8Dist); // 距離をリングバッファに保存
-			m_bufAlarmStatus.push(u8Status); // ステータスをリングバッファに保存
-			m_bufDateTime.push(time(NULL));  // 現在時刻をリングバッファに保存
-			return true;
-        } else {
+			m_bufAlarmDist.push(u8Dist);                // 距離をリングバッファに保存
+			m_bufAlarmStatus.push(u8Status);            // ステータスをリングバッファに保存
+			m_bufDateTime.push(time(NULL));             // 現在時刻をリングバッファに保存
+			m_latestSignalValid = AS3935_SIGNAL::VALID; // 雷が検出された場合
+		} else {
 			if (u8Dist < 0 || u8Dist > 0x3F) {
 				m_bufAlarmSummary.push(SUMM_TOOFAR);
 			} else {
 				m_bufAlarmSummary.push(SUMM_NUMZERO);
 			}
-			m_bufAlarmDist.push(u8Dist);     // 距離をリングバッファに保存
-			m_bufAlarmStatus.push(u8Status); // ステータスをリングバッファに保存
-			m_bufDateTime.push(time(NULL)); // 現在時刻をリングバッファに保存
-			return false;                         // 距離が無効、またはノイズ/誤検出の場合はfalse
+			m_bufAlarmDist.push(u8Dist);                  // 距離をリングバッファに保存
+			m_bufAlarmStatus.push(u8Status);              // ステータスをリングバッファに保存
+			m_bufDateTime.push(time(NULL));               // 現在時刻をリングバッファに保存
+			m_latestSignalValid = AS3935_SIGNAL::INVALID; // 距離が無効、またはノイズ/誤検出の場合
 		}
-    } else if (u8IntSrc & INTNOISE_DISTERBERDETECT) {
-		m_bufAlarmSummary.push(SUMM_DISTERBER); // ディスターバ（誤検出）をリングバッファに保存;
-		m_bufAlarmDist.push(0);     // 距離をリングバッファに保存
-		m_bufAlarmStatus.push(0); // ステータスをリングバッファに保存
-		m_bufDateTime.push(time(NULL)); // 現在時刻をリングバッファに保存
+	} else if (u8IntSrc & INTNOISE_DISTERBERDETECT) {
+		m_bufAlarmSummary.push(SUMM_DISTERBER);       // ディスターバ（誤検出）をリングバッファに保存;
+		m_bufAlarmDist.push(0);                       // 距離をリングバッファに保存
+		m_bufAlarmStatus.push(0);                     // ステータスをリングバッファに保存
+		m_bufDateTime.push(time(NULL));               // 現在時刻をリングバッファに保存
+		m_latestSignalValid = AS3935_SIGNAL::INVALID; // 距離が無効、またはノイズ/誤検出の場合
 
 	} else if (u8IntSrc & INTNOISE_TOHIGH) {
-		m_bufAlarmSummary.push(SUMM_NOISEHIGH); // ノイズレベル過大をリングバッファに保存
-		m_bufAlarmDist.push(0);              // 距離をリングバッファに保存
-		m_bufAlarmStatus.push(0);            // ステータスをリングバッファに保存
-		m_bufDateTime.push(time(NULL));           // 現在時刻をリングバッファに保存
+		m_bufAlarmSummary.push(SUMM_NOISEHIGH);       // ノイズレベル過大をリングバッファに保存
+		m_bufAlarmDist.push(0);                       // 距離をリングバッファに保存
+		m_bufAlarmStatus.push(0);                     // ステータスをリングバッファに保存
+		m_bufDateTime.push(time(NULL));               // 現在時刻をリングバッファに保存
+		m_latestSignalValid = AS3935_SIGNAL::INVALID; // 距離が無効、またはノイズ/誤検出の場合
+	} else {
+		m_latestSignalValid = AS3935_SIGNAL::NONE; // 信号が存在しない
 	}
-	return false;
-	
+	// 最新の情報を取得しておく（信号が存在しない - リングバッファに格納されていない場合でも）
+	m_latestSignalValid = m_latestSignalValid; // 最新の信号が有効かどうかを保存
+	m_latestBufAlarmSummary = m_bufAlarmSummary.getLastData();
+	m_latestBufAlarmDist = m_bufAlarmDist.getLastData();
+	m_latestBufAlarmStatus = m_bufAlarmStatus.getLastData();
+	m_latestBufDateTime = m_bufDateTime.getLastData(); // 最新の日時を保存
+
+	return m_latestSignalValid; // 最新の信号が有効かどうかを返す
 }
 
 /**
@@ -252,12 +316,12 @@ bool AS3935::validateSignal()
  */
 uint8_t AS3935::readReg(uint8_t reg)
 {
-    uint8_t val = 0;
-    // レジスタアドレス送信（リピートスタート）
-    i2c_write_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, &reg, 1, true);
-    // データ受信
-    i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, &val, 1, false);
-    return val;
+	uint8_t val = 0;
+	// レジスタアドレス送信（リピートスタート）
+	i2c_write_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, &reg, 1, true);
+	// データ受信
+	i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, &val, 1, false);
+	return val;
 }
 
 bool AS3935::GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time)
@@ -271,25 +335,25 @@ bool AS3935::GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u
 }
 bool AS3935::GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time)
 {
-    int found = 0;
-    int total = m_bufAlarmSummary.getCount(); // count()メソッドで要素数取得
-    for (int i = 0; i < total; ++i) {
-        int summary = m_bufAlarmSummary.getFromLast(i);
-        if (summary == SUMM_THUNDER) {
-            if (found == idx) {
-                a_u8AlarmSummary = summary;
-                a_u8AlarmDist = m_bufAlarmDist.getFromLast(i);
-                a_u8AlarmStatus = m_bufAlarmStatus.getFromLast(i);
-                a_time = m_bufDateTime.getFromLast(i);
-                return true;
-            }
-            found++;
-        }
-    }
-    return false;
+	int found = 0;
+	int total = m_bufAlarmSummary.getCount(); // count()メソッドで要素数取得
+	for (int i = 0; i < total; ++i) {
+		int summary = m_bufAlarmSummary.getFromLast(i);
+		if (summary == SUMM_THUNDER) {
+			if (found == idx) {
+				a_u8AlarmSummary = summary;
+				a_u8AlarmDist = m_bufAlarmDist.getFromLast(i);
+				a_u8AlarmStatus = m_bufAlarmStatus.getFromLast(i);
+				a_time = m_bufDateTime.getFromLast(i);
+				return true;
+			}
+			found++;
+		}
+	}
+	return false;
 }
 
-bool AS3935::GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus,time_t& a_time)
+bool AS3935::GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time)
 {
 	int found = 0;
 	int total = m_bufAlarmSummary.getCount(); // count()メソッドで要素数取得
@@ -313,6 +377,6 @@ void AS3935::Reset()
 {
 	PresetDefault();
 	writeRegAndData_1(REG00_AFEGB_PWD, AFE_GB_INDOOR);
-	writeRegAndData_1(REG01_NFLEV_WDTH, NFLEV_DEF | WDTH); // ノイズレベルとウォッチドッグスレッショルドを設定
+	writeRegAndData_1(REG01_NFLEV_WDTH, NFLEV_DEF | WDTH);                         // ノイズレベルとウォッチドッグスレッショルドを設定
 	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap)); // キャリブレーションされたキャパシタの値を設定、IRQピンへの出力をオフにする
-}	
+}
