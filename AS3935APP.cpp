@@ -176,7 +176,7 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 	if (isBody){
 		uint8_t u8Summary;
 		uint8_t u8Distance;
-		uint8_t u8Status;
+		long lEnergy;
 		time_t eventtime;
 
 
@@ -190,12 +190,13 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 		// 雷信号の検証
 		AS3935_SIGNAL sigValid;
 		if (isSignal) {
+			sleep_ms(2); // 300ミリ秒待機してから信号を検証
 			sigValid = as3935.validateSignal();
 			time_t tm = time(NULL);
 			struct tm* t = localtime(&tm);
 			if (sigValid == AS3935_SIGNAL::VALID || sigValid == AS3935_SIGNAL::INVALID) {                                             // 雷が検出された場合
-				tft.printf("%02d/%02d %02d:%02d:%02d %s\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (sigValid == AS3935_SIGNAL::VALID) ? "雷を検出" : "検出せず");
-				tft.printf("距離:%3d km STAT：%s(%02X)", as3935.getLatestDist(), as3935.getLatestSummaryStr(), as3935.getLatestStatus());
+				tft.printf("%02d/%02d %02d:%02d:%02d %s %s\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (sigValid == AS3935_SIGNAL::VALID) ? "検出" : "ーー", as3935.getLatestSummaryStr());
+				tft.printf("距離:%3d km 強さ:%d\n",as3935.getLatestDist(), as3935.getLatestEnergy());
 			} else {
 				tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
 				tft.setTextColor(STDCOLOR.GRAY, STDCOLOR.SUPERDARK_GRAY);
@@ -206,14 +207,14 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 			if (sigValid == AS3935_SIGNAL::VALID || sigValid == AS3935_SIGNAL::INVALID) { // 雷が検出された場合
 				time_t tm = as3935.getLatestDateTime();
 				struct tm* t = localtime(&tm);
-				tft.printf("%02d/%02d %02d:%02d:%02d %s\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (sigValid== AS3935_SIGNAL::VALID) ? "雷を検出" : "検出せず");
-				tft.printf("距離:%3d km STAT：%s(%02X)",as3935.getLatestDist(),as3935.getLatestSummaryStr(),as3935.getLatestStatus());
+				tft.printf("%02d/%02d %02d:%02d:%02d %s %s\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (sigValid == AS3935_SIGNAL::VALID) ? "検出" : "ーー", as3935.getLatestSummaryStr());
+				tft.printf("距離:%3d km 強さ:%d\n", as3935.getLatestDist(), as3935.getLatestEnergy());
 			} else {
 				tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
 				tft.setTextColor(STDCOLOR.GRAY, STDCOLOR.SUPERDARK_GRAY);
 				tft.setCursor(0, 100);
 			}
-			as3935.GetLatestAlarm(0, u8Summary, u8Distance, u8Status, eventtime);
+			as3935.GetLatestAlarm(0, u8Summary, u8Distance, lEnergy, eventtime);
 
 		}
 		tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
@@ -221,9 +222,9 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 		// 最新から5個のアラームをアイコンで表示
 		tft.setCursor(0, 150);
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 8; i++) {
 			int16_t curY = tft.getCursorY();
-			bool bRet = as3935.GetLatestEvent(i, u8Summary, u8Distance, u8Status, eventtime);
+			bool bRet = as3935.GetLatestEvent(i, u8Summary, u8Distance, lEnergy, eventtime);
 			if (bRet == false) {
 				break; // 取得できなかったら終了
 			}
@@ -233,7 +234,7 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 			if (u8Summary == as3935.SUMM_THUNDER) {
 				tft.drawRGBBitmap((int16_t)0, curY, picThndr, 15, 15, STDCOLOR.BLACK);
 				tft.setCursor(24, curY);
-				tft.printf("%02d:%02d  %3d km\n", hour, min, u8Distance);
+				tft.printf("%02d:%02d  %3d km 強さ %d\n", hour, min, u8Distance ,lEnergy );
 			} else {
 				tft.drawRGBBitmap((int16_t)0, curY, picFalse, 15, 15, STDCOLOR.BLACK);
 				tft.setCursor(24, curY);

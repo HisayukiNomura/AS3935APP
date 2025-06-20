@@ -56,6 +56,7 @@ enum AS3935_SIGNAL {
 	NONE = 0,    // 信号が無効(信号なし)
 	VALID = 1,   // 信号が有効（雷の検出）
 	INVALID = 2, // 信号が無効（ノイズや誤検出など）
+	STATCLEAR = 3, // ステータスクリア（距離の古いイベントがパージされたため、距離推定が変更された）
 };
 
 class AS3935 : public I2CBase
@@ -71,7 +72,7 @@ class AS3935 : public I2CBase
 	AS3935_SIGNAL m_latestSignalValid = AS3935_SIGNAL::NONE; // 最新の信号が有効かどうか
 	uint8_t m_latestBufAlarmSummary = 0;
 	int m_latestBufAlarmDist = 0;
-	int m_latestBufAlarmStatus = 0;
+	int m_latestBufSingleEnergy = 0;
 	time_t m_latestBufDateTime = 0; // 最新の日時
 
   public:
@@ -82,17 +83,17 @@ class AS3935 : public I2CBase
 	const uint8_t SUMM_DISTERBER = 0x4; // ディスターバ（誤検出）
 	const uint8_t SUMM_NOISEHIGH = 0x5; // ノイズレベル課題
 	const char* SUMM_STRINGS[6] = {
-		"NONE", "雷の検出", "距離超過", "信号なし", "認識誤り", "雑音過大"};
+		"なし　", "　雷　", "距離超", "信号無", "誤信号", "雑音多"};
 
 	RingBufferT<uint8_t> m_bufAlarmSummary;
 	RingBufferT<uint8_t> m_bufAlarmDist;
-	RingBufferT<uint8_t> m_bufAlarmStatus;
+	RingBufferT<long> m_bufSingleEnergy;
 	RingBufferT<long long> m_bufDateTime;
 
 	AS3935_SIGNAL getLatestSignalValid() const { return m_latestSignalValid; }
 	int getLatestSummary() const { return m_latestBufAlarmSummary; }
 	int getLatestDist() const { return m_latestBufAlarmDist; }
-	int getLatestStatus() const { return m_latestBufAlarmStatus; }
+	int getLatestEnergy() const { return m_latestBufSingleEnergy; }
 	time_t getLatestDateTime() const { return m_latestBufDateTime; }
 	const char* getLatestSummaryStr() { return GetAlarmSummaryString(m_latestBufAlarmSummary); }
 
@@ -116,9 +117,9 @@ class AS3935 : public I2CBase
 	 */
 	uint8_t readReg(uint8_t reg);
 	void Reset();
-	bool GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time);
-	bool GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time);
-	bool GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, uint8_t& a_u8AlarmStatus, time_t& a_time);
+	bool GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, long& a_lEnergy, time_t& a_time);
+	bool GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, long& a_lEnergy, time_t& a_time);
+	bool GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, long& a_lEnergy, time_t& a_time);
 	const char* GetAlarmSummaryString(uint8_t a_u8AlarmSummary)
 	{
 		if (a_u8AlarmSummary < 6) {
