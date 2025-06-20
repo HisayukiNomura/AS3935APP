@@ -103,7 +103,7 @@ class AS3935 : public I2CBase
 	// キャリブレーション実行
 	uint32_t Calibrate();
 	// その他、AS3935の操作メソッドをここに追加
-	void PresetDefault();
+	bool PresetDefault();
 	void StartCalibration(uint16_t a_timeCalibration = 1000); // デフォルトで1秒間キャリブレーションを行う
 
 	AS3935_SIGNAL validateSignal();

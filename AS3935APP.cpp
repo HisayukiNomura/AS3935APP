@@ -252,10 +252,10 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 
 }
 
-Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
 {
+	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 	XPT2046_Touchscreen ts(TOUCH_CS);
 	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
 
@@ -307,15 +307,18 @@ int main()
 	tft.setCursor(0, 0);
 	tft.printf("Start initializing...\n");
 
+	bool isI2cInitialized = false; // I2Cの初期化フラグ
 	// --- I2C初期化とAS3935のIRQピン設定 ---
 	{
 		tft.printf("Initializing i2C ... ");
-		bool bRet = as3935.Init(AS3935_ADDRESS, I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
+		bool bRet = as3935.Init(settings.value.i2cAddr, I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
 		if (bRet) {
 			tft.printf("Success!\n");
+			isI2cInitialized = true; // I2Cの初期化が成功した場合はフラグを立てる
 		} else {
 			tft.printf("Failed.\n");
-			return -1; // 初期化に失敗した場合は終了
+			sleep_ms(10000); // 初期化に失敗した場合は、失敗を表示した後しばらく停止、そのまま次に進む
+			isI2cInitialized = false; // I2Cの初期化が失敗した場合はフラグを立てない
 		}
 		gpio_init(AS3935_IRQ);
 		gpio_set_dir(AS3935_IRQ, GPIO_IN);
@@ -356,8 +359,8 @@ int main()
 		}
 	}
 
-	// --- AS3935の初期化・キャリブレーション ---
-	{
+	// --- AS3935の初期化・キャリブレーション。I２C初期化エラーのときはやらない ---
+	if (isI2cInitialized){
 		tft.printf("Calibrating AS3935\n");
 		as3935.StartCalibration(100); // AS3935のキャリブレーションを実行
 		tft.printf("Done.\n");

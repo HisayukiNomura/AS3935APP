@@ -30,7 +30,7 @@ class __attribute__((packed)) SettingValue
 	uint8_t  gainBoost; // AFEのゲインブースト設定（0-31）
 	uint8_t  noiseFloor; // ノイズフロアレベル（0-7）
 	uint8_t  watchDogThreshold; // ウォッチドッグスレッショルド（0-15）
-	
+	uint8_t i2cAddr;
 	char end[4]; // チャンクの終端を示す文字列（例: "ENDC"）
 
 

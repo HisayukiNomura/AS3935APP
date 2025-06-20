@@ -43,7 +43,8 @@ void Settings::setDefault()
 	value.maxY = 3638;
 	value.gainBoost = AFE_GB_INDOOR; // AFEのゲインブースト設定（0-31）
 	value.noiseFloor = NFLEV_DEF;    // ノイズフロアレベル（0-7）
-	value.watchDogThreshold = 0; // ウォッチドッグスレッショル
+	value.watchDogThreshold = 0;     // ウォッチドッグスレッショル
+	value.i2cAddr = 0x03;            // I2Cアドレス（デフォルトは0x00）
 }
 
 void Settings::save()
@@ -113,17 +114,17 @@ const void Settings::drawMenu()
 	ptft->fillScreen(ILI9341_BLACK);
 	ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
 	ptft->setCursor(10, 40);
-	ptft->printf("    SSID:%s", value.SSID);
+	ptft->printf(" I2CAddr: %d" , value.i2cAddr);
 	ptft->setCursor(10, 72);
-	ptft->printf("PASSWORD:%s", value.PASSWORD);
+	ptft->printf("    SSID:%s", value.SSID);
 	ptft->setCursor(10, 104);
-	ptft->printf("    TIME:%s", (value.isClock24Hour ? "24H" : "12H"));
+	ptft->printf("PASSWORD:%s", value.PASSWORD);
 	ptft->setCursor(10, 136);
-	ptft->printf("DATETIME:");
+	ptft->printf("    TIME:%s", (value.isClock24Hour ? "24H" : "12H"));
 	ptft->setCursor(10, 168);
-	ptft->printf("GB/NF/WD:－%02d＋/＋%1d－/＋%02d－",value.gainBoost, value.noiseFloor, value.watchDogThreshold);
+	ptft->printf("DATETIME:");
 	ptft->setCursor(10, 200);
-	ptft->printf("--------:");
+	ptft->printf("GB/NF/WD:＋%02dー/＋%1d－/＋%02dー", value.gainBoost, value.noiseFloor, value.watchDogThreshold);
 	ptft->setCursor(10, 232);
 	ptft->printf("<<< Calibrate Touchscreen>>>");
 	ptft->setCursor(0, 264);
@@ -152,33 +153,42 @@ const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 
 		if (prevSec != local->tm_sec) {
 			snprintf(timeBuf, sizeof(timeBuf), "%04d%02d%02d%02d%02d%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
-			ptft->setCursor(80, 136);
+			ptft->setCursor(80, 168);
 			ptft->printf(timeBuf);
 			prevSec = local->tm_sec;
 		}
 
 		if (pts->touched()) {
 			TS_Point p = pts->getPointOnScreen();
-			while (pts->touched()) {}					// タッチが終わるまで待つ
-			if YRANGE (32) { // SSID
+			while (pts->touched()) {} // タッチが終わるまで待つ
+			if YRANGE (32) {          // SSID
+				value.i2cAddr++;
+				if (value.i2cAddr == 4) value.i2cAddr = 0;
+				ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
+				ptft->setCursor(10, 40);
+				isMustSave = true; // I2Cアドレスが変更された
+				ptft->printf(" I2CAddr: %d", value.i2cAddr);
+			} else if YRANGE (64) {   // SSID
 				GUIEditBox editbox(ptft, pts, &sk);
-				bool bRet = editbox.show(10 + 9 * 8, 40, value.SSID, 18, EditMode::MODE_TEXT);
+				bool bRet = editbox.show(10 + 9 * 8, 72, value.SSID, 18, EditMode::MODE_TEXT);
 				if (bRet) {
 					isMustSave = true; // SSIDが変更された
 				}
 				drawMenu();
-			} else if YRANGE (64) {
+			} else if YRANGE (96) {
 				GUIEditBox editbox(ptft, pts, &sk);
-				bool bRet = editbox.show(10 + 9 * 8, 72, value.PASSWORD, 18, EditMode::MODE_TEXT);
+				bool bRet = editbox.show(10 + 9 * 8, 104, value.PASSWORD, 18, EditMode::MODE_TEXT);
 				if (bRet) {
 					isMustSave = true; // PASSWORDが変更された
 				}
 				drawMenu();
-			} else if YRANGE (96) {
+			} else if YRANGE (128) {
 				value.isClock24Hour = !value.isClock24Hour; // 24時間表示の切り替え
 				drawMenu();
 				isMustSave = true;   // 24時間表示が変更された
-			} else if YRANGE (128) { // 日時設定
+				ptft->setCursor(10, 136);
+				ptft->printf("    TIME:%s", (value.isClock24Hour ? "24H" : "12H"));
+			} else if YRANGE (160) { // 日時設定
 				GUIEditBox editbox(ptft, pts, &sk);
 				bool bRet = editbox.show(80, 136, timeBuf, sizeof(timeBuf), EditMode::MODE_NUMPADOVERWRITE);
 				if (bRet == true) {
@@ -200,9 +210,9 @@ const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 					}
 				}
 				drawMenu();
-			} else if YRANGE (160) {
 			} else if YRANGE (192) {
 			} else if YRANGE (224) {
+			} else if YRANGE (256) {
 				TouchCalibration tsCalib(ptft, pts); // タッチパネルのキャリブレーションを行うインスタンスを作成
 				bool bRet = tsCalib.run();
 				if (bRet) {
@@ -210,7 +220,6 @@ const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 					isMustSave = true;                                                      // キャリブレーション結果を保存
 				}
 				drawMenu();
-			} else if YRANGE (256) {
 			} else if YRANGE (288) {
 				if (p.x < 80) { // OKボタン
 					if (isMustSave) {

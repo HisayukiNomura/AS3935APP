@@ -95,15 +95,17 @@ bool AS3935::Init(uint8_t a_u8I2CAddress, uint8_t a_u8I2cPort, uint8_t a_u8SdaPi
 	gpio_set_dir(m_u8IrqPin, GPIO_IN);
 
 	// AS3935の初期化処理
-	PresetDefault();
+	bRet = PresetDefault();
 
-	return bRet; // 初期化成功
+	return bRet; 
 }
 /// @brief AS3935をデフォルトにリセットするためのダイレクトコマンド（データーシートのAS3935–23)を送信する
 /// @details この関数は、AS3935センサーをデフォルトの状態にリセットします。
-void AS3935::PresetDefault()
+bool AS3935::PresetDefault()
 {
-	writeWord(PRESET_DEFAULT); // デフォルト値にリセットするためのダイレクトコマンドを送信
+	int ret = writeWord(PRESET_DEFAULT); // デフォルト値にリセットするためのダイレクトコマンドを送信
+	if (ret < 0) return false;
+	return true;
 }
 /**
  * @brief AS3935の初期化を行う。
