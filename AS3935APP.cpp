@@ -248,7 +248,7 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 	if (isClock) {
 		// それ以外の処理があればここに追加
 		DispClock::show(32, 30); // 時計の更新	
-	}
+	} 
 
 }
 
@@ -403,7 +403,8 @@ int main()
 			cancel_repeating_timer(&timer); // ハートビートタイマーを停止
 			tft.setCursor(0, 0);
 			tft.printf("設定モード");
-			settings.run(&tft, &ts); // 設定画面の実行
+			//			settings.run(&tft, &ts); // 設定画面の実行
+			settings.run2(&tft, &ts); // 設定画面の実行
 			mustRedraw = true;
 			DispClock::setRedrawFlag(); // 時計の再描画フラグを立てる
 			appMode = APP_MODE_NORMAL; // 通常モードに戻す

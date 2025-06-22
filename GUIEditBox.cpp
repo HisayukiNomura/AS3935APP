@@ -122,7 +122,7 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,E
 			}
 		}
 		// 文字の変化に伴う再描画
-		ptft->fillRect(edtX, edtY, 240 - edtX, 16, STDCOLOR.BLACK); // 入力欄をクリア
+		ptft->fillRect(edtX, edtY, 8*a_size, 16, STDCOLOR.BLACK); // 入力欄をクリア
 		ptft->setCursor(edtX, edtY);
 		ptft->printf(p);
 	}

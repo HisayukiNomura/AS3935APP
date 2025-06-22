@@ -136,9 +136,14 @@ void AS3935::StartCalibration(uint16_t a_timeCalibration)
 	m_pTft->printf("Cap:%3dpF Freq:%4.1fKHz\n", m_u8calibratedCap * 8, (float)m_FreqCalibration / 1000);
 	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap)); // キャリブレーションされたキャパシタの値を設定、IRQピンへの出力をオフにする
 	// AFEのゲインブースト、ノイズフロアレベル、ウォッチドッグスレッショルドを設定
+	Reset(); // AS3935をリセットして、設定を適用する
+
+	/*
 	writeRegAndData_1(REG00_AFEGB_PWD, (settings.value.gainBoost << 1));
 	writeRegAndData_1(REG01_NFLEV_WDTH, (settings.value.noiseFloor << 4) | settings.value.watchDogThreshold); // ノイズレベルとウォッチドッグスレッショルドを設定
-	writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE);                       // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
+	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, (settings.value.minimumEvent << 4) || settings.value.spikeReject); // 最小イベント数とスパイクリジェクトを設定
+	writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE);                                // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
+	*/
 }
 
 /**
@@ -394,5 +399,9 @@ void AS3935::Reset()
 	// PresetDefault();
 	writeRegAndData_1(REG00_AFEGB_PWD, (settings.value.gainBoost << 1));
 	writeRegAndData_1(REG01_NFLEV_WDTH, (settings.value.noiseFloor << 4) | settings.value.watchDogThreshold); // ノイズレベルとウォッチドッグスレッショルドを設定
-	writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE); // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
+	writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE);                                // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
+	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b01000000 | (settings.value.minimumEvent << 4) || settings.value.spikeReject); // 最小イベント数とスパイクリジェクトを設定
+	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b00000000 | (settings.value.minimumEvent << 4) || settings.value.spikeReject); // 最小イベント数とスパイクリジェクトを設定
+	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b01000000 | (settings.value.minimumEvent << 4) || settings.value.spikeReject); // 最小イベント数とスパイクリジェクトを設定
+	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap));                                                  // キャリブレーションされたキャパシタの値を設定する
 }

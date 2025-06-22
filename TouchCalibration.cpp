@@ -27,8 +27,8 @@ bool TouchCalibration::run() {
                     m_tft->setTextColor(ILI9341_WHITE);
                     m_tft->setCursor(10, 40);
                     m_tft->printf("終了します\n");
-                    sleep_ms(1000);
-
+					if (m_ts->touched()) {};
+					sleep_ms(1000);
                     if (isCalibDone) {
                         if (minX != 0 && maxX != 0xFFFF && minY != 0 && maxY != 0xFFFF) {
 							return true;
@@ -41,10 +41,12 @@ bool TouchCalibration::run() {
         if (m_mode == MODE_CALIBRATE) {
             runCalibrateMode();
             m_mode = MODE_SELECT;
-        } else if (m_mode == MODE_TEST) {
+			if (m_ts->touched()) {};
+		} else if (m_mode == MODE_TEST) {
             runTestMode();
             m_mode = MODE_SELECT;
-        } else {
+			if (m_ts->touched()) {};
+		} else {
             break;
         }
     }
@@ -54,7 +56,12 @@ bool TouchCalibration::run() {
 void TouchCalibration::showMenu() {
     m_tft->fillScreen(ILI9341_BLACK);
     m_tft->setTextColor(ILI9341_WHITE);
-    m_tft->setCursor(0, 40);
+	m_tft->fillRect(0, 0, 240, 24, STDCOLOR.BLUE);
+	m_tft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLUE);
+	m_tft->setCursor(10, 4);
+	m_tft->printf("設定 - タッチスクリーン調整");
+
+	m_tft->setCursor(0, 40);
     m_tft->printf("<<タッチの調整>>\nタッチスクリーンの調整を行います。指示に従って画面をタップしてください。一度開始すると、調整が完了するまで中断することはできません。");
     m_tft->setCursor(0, 180);
     m_tft->printf("<<タッチのテスト>>\nタッチスクリーンの確認を行います。画面を実際にタップし確認、必要なら再度調整してください。ロングタップで終了します。");
@@ -88,6 +95,7 @@ void TouchCalibration::runTestMode() {
                 sleep_ms(100); // タッチが続いている間は待機
 				touchCnt++;
                 if (touchCnt > 20) {
+
 					return; // キャリブレーション後は終了
 				}
 			}

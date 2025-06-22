@@ -27,8 +27,22 @@ using namespace ardPort::spi;
 #define NFLEV_7 0x07  // NOISE FLOOR LEVEL = 7 (max)
 #define NFLEV_DEF NFLEV_2 // デフォルトのノイズレベルを設定
 
+
 // Watchdog Threshold  (0～0x0F)
+#define WDTH_MAX 0x0F // WATCH DOG THRESHOLD 0x00 to 0x0F
 #define WDTH_DEFAULT 0x02   // デフォルトのウォッチドッグスレッショルドを設定
+#define WDTH_MIN 0x00 // 最小値は0x00
+
+
+// REG_02
+#define SREJ_MIN 0x00 // SPIKE REJECTION = 0 (min)
+#define SREJ_DEFAULT 0x02 // デフォルトのスパイクリジェクション設定
+#define SREJ_MAX 0x0B // SPIKE REJECTION = 11 (max)
+
+#define NUMLIGHT_MIN 0x00 // MINIMUM NUMBER OF LIGHTNING = 0 (min)
+#define NUMLIGHT_DEFAULT 0x00 // デフォルトの最小雷数設定
+#define NUMLIGHT_MAX 0x03 // MINIMUM NUMBER OF LIGHTNING = 3 (max)
+
 
 /*
 #define AFE_GB_MIN (0b00000 << 1)     // ANALOG FRONT END GAIN BOOST = 0 (min)

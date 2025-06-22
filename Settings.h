@@ -30,6 +30,8 @@ class __attribute__((packed)) SettingValue
 	uint8_t  gainBoost; // AFEのゲインブースト設定（0-31）
 	uint8_t  noiseFloor; // ノイズフロアレベル（0-7）
 	uint8_t  watchDogThreshold; // ウォッチドッグスレッショルド（0-15）
+	uint8_t spikeReject; // スパイクリジェクト（0-3）
+	uint8_t minimumEvent;			// 最小イベント数（0-3）
 	uint8_t i2cAddr;
 	char end[4]; // チャンクの終端を示す文字列（例: "ENDC"）
 
@@ -94,10 +96,21 @@ class Settings
 		strncpy(value.PASSWORD, s, sizeof(value.PASSWORD) - 1);
 		value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';
 	}
-	const void drawMenu();
 
-	
+	uint8_t menuMode = 0;
+	const void drawMenuBottom();
+	const void drawMenu();
+	const void drawMenu2_root();
+	const void drawMenu2_system();
+	const void drawMenu2_wifi();
+	const void drawMenu2_as3935();
+
 	const void run(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
+	const void run2(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
+	const void run2_system();
+	const void run2_wifi();
+	const void run2_as3935();
+
 	// エディットボックスの表示
 	char* p = nullptr; // 編集対象の文字列ポインタ
 	uint8_t edtCursor = 0;
