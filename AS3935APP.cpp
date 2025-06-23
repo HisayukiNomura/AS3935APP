@@ -181,7 +181,6 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 
 
 
-		tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
 		// 最新情報表示エリアをクリア
 		tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
 		tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
@@ -194,15 +193,28 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 			sigValid = as3935.validateSignal();
 			time_t tm = time(NULL);
 			struct tm* t = localtime(&tm);
+			//　こちらは信号を検出したことに伴うもの
+			if (sigValid == AS3935_SIGNAL::VALID) {
+				tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.RED); // 検出された場合は黄色の丸を表示
+			} else if (sigValid == AS3935_SIGNAL::INVALID) {
+				tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.YELLOW); // 無効な信号の場合は赤色の丸を表示
+			} else if (sigValid == AS3935_SIGNAL::STATCLEAR) {
+				tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.GREEN); // 信号がない場合は青色の丸を表示
+			} else {
+				tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.DARK_BLUE); // その他の場合は灰色の丸を表示
+			}
+
 			if (sigValid == AS3935_SIGNAL::VALID || sigValid == AS3935_SIGNAL::INVALID) {                                             // 雷が検出された場合
 				tft.printf("%02d/%02d %02d:%02d:%02d %s %s\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (sigValid == AS3935_SIGNAL::VALID) ? "検出" : "ーー", as3935.getLatestSummaryStr());
 				tft.printf("距離:%3d km 強さ:%d\n",as3935.getLatestDist(), as3935.getLatestEnergy());
 			} else {
+				tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
 				tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
 				tft.setTextColor(STDCOLOR.GRAY, STDCOLOR.SUPERDARK_GRAY);
 				tft.setCursor(0, 100);
 			}
 		} else {
+			// こちらは画面再描画に伴うもの
 			AS3935_SIGNAL sigValid = as3935.getLatestSignalValid();
 			if (sigValid == AS3935_SIGNAL::VALID || sigValid == AS3935_SIGNAL::INVALID) { // 雷が検出された場合
 				time_t tm = as3935.getLatestDateTime();

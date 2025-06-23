@@ -1,3 +1,10 @@
+/**
+ * @file GUIEditBox.cpp
+ * @brief 画面エディットボックスの実装
+ * @details
+ * 画面上にキーボードと連動したエディットボックスを表示し、
+ * 文字列編集・カーソル制御・挿入/上書きモード・特殊キー処理などを提供する。
+ */
 #include "Settings.h"
 #include <cstring>
 #include <cstdio>
@@ -10,11 +17,44 @@
 using namespace ardPort;
 using namespace ardPort::spi;
 
+/**
+ * @brief GUIEditBoxクラスのコンストラクタ
+ * @details
+ * ディスプレイ・タッチスクリーン・キーボードのポインタを受け取る。
+ * @param a_ptft ディスプレイ制御用ポインタ
+ * @param a_pts タッチスクリーン制御用ポインタ
+ * @param a_psk スクリーンキーボード用ポインタ
+ */
 GUIEditBox::GUIEditBox(Adafruit_GFX* a_ptft, XPT2046_Touchscreen* a_pts, ScreenKeyboard* a_psk)
     : ptft(static_cast<Adafruit_ILI9341*>(a_ptft)), pts(a_pts), psk(a_psk)
 {
     // 初期化処理が必要ならここに追加
 }
+
+/**
+ * @brief エディットボックスを表示し、文字列編集を行う
+ * @details
+ * - 編集欄の座標・バッファ・サイズ・編集モードを指定して呼び出す。
+ * - テキストモードならQWERTYキーボード、数字上書きモードならテンキーを画面下部に表示。
+ * - カーソル位置・挿入/上書きモードを初期化。
+ * - ループ内でタッチ入力を監視し、
+ *   - 何も押されていなければカーソルを点滅表示。
+ *   - キーが押されたら、
+ *     - Enter(0x0d)で編集確定（trueを返す）
+ *     - ESC(0x1b)でキャンセル（falseを返す）
+ *     - カーソル移動（0x13:左, 0x14:右）、挿入/上書き切替（0x7e）
+ *     - バックスペース(0x08)・デリート(0x7F)・通常文字の挿入/上書き
+ *   - 文字列長やカーソル範囲はバッファサイズを超えないよう制御
+ *   - 入力内容が変化したら都度再描画
+ * - ループを抜けた時点で、trueなら編集内容確定、falseならキャンセル
+ *
+ * @param a_x 編集欄X座標
+ * @param a_y 編集欄Y座標
+ * @param a_pText 編集対象文字列バッファ
+ * @param a_size バッファサイズ
+ * @param a_mode 編集モード
+ * @return Enterでtrue、ESCでfalse
+ */
 bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,EditMode a_mode)
 {
 	mode = a_mode;
@@ -129,6 +169,13 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,E
 	return retReason; // trueならEnterキーが押された、falseならESCキーが押された
 }
 
+/**
+ * @brief カーソルの表示・点滅・消去を行う
+ * @details
+ * 挿入/上書きモードやtick値に応じて、カーソルや文字の描画・消去を行う。
+ * @param tick 点滅用カウンタ
+ * @param isDeleteCursor trueでカーソル消去、falseで点滅
+ */
 void GUIEditBox::dispCursor(int tick, bool isDeleteCursor)
 {
 	if (isDeleteCursor) {

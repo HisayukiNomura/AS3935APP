@@ -1,3 +1,10 @@
+/**
+ * @file Settings.cpp
+ * @brief システム設定値の保存・管理クラスの実装
+ * @details
+ * フラッシュメモリへの保存・読込、Wi-Fiや画面設定、AS3935等の各種パラメータを一元管理する。
+ * 設定値はSettingValue構造体で保持し、アクセッサや編集用メソッドを提供する。
+ */
 #include "Settings.h"
 #include <cstring>
 #include <cstdio>
@@ -17,12 +24,23 @@
 using namespace ardPort;
 using namespace ardPort::spi;
 
+/**
+ * @brief Settingsクラスのコンストラクタ
+ * @details
+ * フラッシュメモリ管理インスタンスを初期化し、デフォルト値を設定する。
+ */
 Settings::Settings() :
 	flash(31, 1) // フラッシュメモリのブロック0を管理するインスタンスを作成
 {
 
 	setDefault();
 }
+
+/**
+ * @brief 設定値をデフォルト値に初期化
+ * @details
+ * Wi-Fiや画面補正、AS3935用パラメータなど、全システム設定値を初期値でセットする。
+ */
 void Settings::setDefault()
 {
 
@@ -49,11 +67,18 @@ void Settings::setDefault()
 	value.minimumEvent = NUMLIGHT_DEFAULT; // 最小イベント数（0-3）
 }
 
+/**
+ * @brief 設定値をフラッシュメモリに保存
+ */
 void Settings::save()
 {
 	flash.write(0, (void*)(&value), sizeof(value));
 }
 
+/**
+ * @brief フラッシュメモリから設定値を読込
+ * @return 成功時true
+ */
 bool Settings::load()
 {
 	if (flash.read(0, (void*)(&value), sizeof(value)) == false) {
@@ -66,6 +91,11 @@ bool Settings::load()
 	}
 	return true;
 }
+
+/**
+ * @brief 設定値が有効か（チャンク識別子・終端チェック）
+ * @return 有効な場合true
+ */
 bool Settings::isActive()
 {
 	if (strncmp(value.chunk, "HNTE", 4) != 0) return false;
@@ -73,6 +103,10 @@ bool Settings::isActive()
 	return true;
 }
 
+/**
+ * @brief IPアドレスを文字列で取得
+ * @return IPアドレス文字列
+ */
 const char* Settings::getIpString() const
 {
 	static char ipStr[16];
@@ -80,11 +114,21 @@ const char* Settings::getIpString() const
 	return ipStr;
 }
 
+/**
+ * @brief IPアドレスを0クリア
+ */
 void Settings::resetIP()
 {
 	value.ipAddr[0] = value.ipAddr[1] = value.ipAddr[2] = value.ipAddr[3] = 0;
 }
 
+/**
+ * @brief IPアドレスを設定
+ * @param a_u8Ip0 1バイト目
+ * @param a_u8Ip1 2バイト目
+ * @param a_u8Ip2 3バイト目
+ * @param a_u8Ip3 4バイト目
+ */
 void Settings::setIP(uint8_t a_u8Ip0, uint8_t a_u8Ip1, uint8_t a_u8Ip2, uint8_t a_u8Ip3)
 {
 	value.ipAddr[0] = a_u8Ip0;
@@ -93,6 +137,13 @@ void Settings::setIP(uint8_t a_u8Ip0, uint8_t a_u8Ip1, uint8_t a_u8Ip2, uint8_t 
 	value.ipAddr[3] = a_u8Ip3;
 }
 
+/**
+ * @brief タッチパネルキャリブレーション値を設定
+ * @param a_minX X最小
+ * @param a_minY Y最小
+ * @param a_maxX X最大
+ * @param a_maxY Y最大
+ */
 void Settings::setCalibration(uint16_t a_minX, uint16_t a_minY, uint16_t a_maxX, uint16_t a_maxY)
 {
 	value.minX = a_minX;
@@ -101,16 +152,27 @@ void Settings::setCalibration(uint16_t a_minX, uint16_t a_minY, uint16_t a_maxX,
 	value.maxY = a_maxY;
 }
 
+/**
+ * @brief ロケール文字列取得
+ * @return ロケール文字列
+ */
 const char* Settings::getLocaleStr() const
 {
 	return value.localeStr;
 }
 
+/**
+ * @brief タイムゾーン文字列取得
+ * @return タイムゾーン文字列
+ */
 const char* Settings::getTzStr() const
 {
 	return value.tzStr;
 }
 
+/**
+ * @brief メニュー下部の共通描画
+ */
 const void Settings::drawMenuBottom()
 {
 	ptft->fillRect(0, 320 - ScreenKeyboard::KB_HEIGHT, 320, ScreenKeyboard::KB_HEIGHT, STDCOLOR.BLACK);
@@ -118,6 +180,9 @@ const void Settings::drawMenuBottom()
 	ptft->printlocf(10, 296, "  [ OK ]            [CANCEL]");
 }
 
+/**
+ * @brief メイン設定メニュー画面を描画
+ */
 const void Settings::drawMenu()
 {
 	ptft->fillScreen(ILI9341_BLACK);
@@ -139,6 +204,11 @@ const void Settings::drawMenu()
 	drawMenuBottom();
 }
 
+/**
+ * @brief メイン設定メニューの実行ループ
+ * @param a_ptft ディスプレイ制御用
+ * @param a_pts タッチスクリーン制御用
+ */
 const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 {
 	SettingValue valuePush;
@@ -246,6 +316,9 @@ const void Settings::run(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 	}
 }
 
+/**
+ * @brief ルートメニュー画面を描画
+ */
 const void Settings::drawMenu2_root()
 {
 	ptft->fillScreen(ILI9341_BLACK);
@@ -272,12 +345,11 @@ const void Settings::drawMenu2_root()
 	drawMenuBottom();
 }
 
-#define YRANGE(__Y) (p.y >= __Y && p.y < (__Y + 32))
-
-/// @brief ルートメニュ
-/// @param a_ptft
-/// @param a_pts
-/// @return
+/**
+ * @brief ルートメニューの実行ループ
+ * @param a_ptft ディスプレイ制御用
+ * @param a_pts タッチスクリーン制御用
+ */
 const void Settings::run2(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 {
 	SettingValue valuePush;
@@ -343,6 +415,10 @@ const void Settings::run2(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 		delay(100); // 少し待つ
 	}
 }
+
+/**
+ * @brief システム設定メニュー画面を描画
+ */
 const void Settings::drawMenu2_system()
 {
 	ptft->fillScreen(ILI9341_BLACK);
@@ -357,6 +433,9 @@ const void Settings::drawMenu2_system()
 	drawMenuBottom();
 }
 
+/**
+ * @brief システム設定メニューの実行ループ
+ */
 const void Settings::run2_system()
 {
 	SettingValue valuePush;
@@ -435,6 +514,9 @@ const void Settings::run2_system()
 	}
 }
 
+/**
+ * @brief Wi-Fi設定メニュー画面を描画
+ */
 const void Settings::drawMenu2_wifi()
 {
 	ptft->fillScreen(ILI9341_BLACK);
@@ -449,6 +531,9 @@ const void Settings::drawMenu2_wifi()
 	drawMenuBottom();
 }
 
+/**
+ * @brief Wi-Fi設定メニューの実行ループ
+ */
 const void Settings::run2_wifi()
 {
 	SettingValue valuePush;
@@ -502,6 +587,10 @@ const void Settings::run2_wifi()
 		delay(100); // 少し待つ
 	}
 }
+
+/**
+ * @brief AS3935設定メニュー画面を描画
+ */
 const void Settings::drawMenu2_as3935()
 {
 	uint8_t minEvtTbl[] = {1, 5, 9, 16};
@@ -520,6 +609,9 @@ const void Settings::drawMenu2_as3935()
 	drawMenuBottom();
 }
 
+/**
+ * @brief AS3935設定メニューの実行ループ
+ */
 const void Settings::run2_as3935()
 {
 	SettingValue valuePush;
