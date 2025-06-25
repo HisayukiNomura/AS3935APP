@@ -18,6 +18,7 @@
 #include "InetAction.h"
 #include "DispClock.h"
 #include "TouchCalibration.h"
+#include "GUIMsgBox.h"
 
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
@@ -264,15 +265,14 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 
 }
 
+Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
 {
-	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 	XPT2046_Touchscreen ts(TOUCH_CS);
 	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
 
 	settings.load(); 			// フラッシュメモリの内容を読み込む
-
 	InetAction iNet(settings, &tft); // InetActionのインスタンスを作成
 	stdio_init_all();
 	// ILI9341ディスプレイのインスタンスを作成　　＜＜＜＜＜　追加　（３）
@@ -296,18 +296,15 @@ int main()
 		while(ts.touched()) {				// タッチされている間は待つ。ただし、ロングタップされているときはキャリブレーションに
 			delay(100);
 			touchCnt++;
-			if (touchCnt > 20) { // 2秒以上タッチされている場合はキャリブレーションを行う
+			if (touchCnt > 20) { // 2秒以上タッチされている場合は設定を初期化する
+				tft.fillScreen(ILI9341_BLACK); // 画面を黒で塗りつぶす
 				touchCnt = 0; // タッチカウントをリセット
-				settings.setDefault();
-				settings.save(); // 設定をフラッシュメモリに保存
-				/*
-								TouchCalibration tsCalib(&tft,&ts);				// タッチパネルのキャリブレーションを行うインスタンスを作成
-								bool bRet = tsCalib.run();
-								if (bRet) {
-									settings.setCalibration(tsCalib.minX, tsCalib.minY, tsCalib.maxX, tsCalib.maxY); // キャリブレーション値を設定
-									settings.save(); // 設定をフラッシュメモリに保存
-								}
-				*/
+				GUIMsgBox msgbox(&tft,&ts);
+				bool bRet = msgbox.showOKCancel(30, 100, "確認", "設定を初期化します", "  OK  ", " CANCEL");
+				if (bRet) {
+					settings.setDefault();
+					settings.save(); // 設定をフラッシュメモリに保存
+				}
 			}
 		}
 	}
@@ -396,6 +393,9 @@ int main()
 
 			isIRQTriggered = false;
 			__wfe();              // 割り込みが発生するまでスリープ
+			// 割り込みが発生し、その処理を行っている間は新しい割り込みは起こさない
+			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, false); // IRQ割り込みを一時的に無効化
+
 			if (isIRQTriggered) { // IRQがトリガーされた場合
 				mainDisplay(tft, as3935, true, false,false,true); // 雷センサーの画面表示を更新
 			} else {
@@ -411,7 +411,11 @@ int main()
 				// それ以外の処理があればここに追加
 				mainDisplay(tft, as3935, false, false, true, false); // 時計の更新
 			}
+			// IRQ割り込みを再度有効化
+			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true); // IRQ割り込みを再度有効化
 		} else if (appMode == APP_MODE_SETTING) {
+			// 設定中はIRQ割り込みを禁止する
+			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, false); // IRQ割り込みを一時的に無効化
 			cancel_repeating_timer(&timer); // ハートビートタイマーを停止
 			tft.setCursor(0, 0);
 			tft.printf("設定モード");
@@ -422,6 +426,8 @@ int main()
 			appMode = APP_MODE_NORMAL; // 通常モードに戻す
 			add_repeating_timer_ms(500, hartbeatCallback, NULL, &timer);
 			//as3935.Reset(); // AS3935のリセット
+			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true); // 設定が終わったらIRQ割り込みを復旧
 		}
+
 	}
 }

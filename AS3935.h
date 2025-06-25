@@ -97,7 +97,7 @@ class AS3935 : public I2CBase
 	const uint8_t SUMM_DISTERBER = 0x4; // ディスターバ（誤検出）
 	const uint8_t SUMM_NOISEHIGH = 0x5; // ノイズレベル課題
 	const char* SUMM_STRINGS[6] = {
-		"なし　", "　雷　", "距離超", "信号無", "誤信号", "雑音多"};
+		"なし　", "　雷　", "距離超", "距離０", "誤信号", "雑音多"};
 
 	RingBufferT<uint8_t> m_bufAlarmSummary;
 	RingBufferT<uint8_t> m_bufAlarmDist;
@@ -129,6 +129,9 @@ class AS3935 : public I2CBase
 	 * @param reg レジスタアドレス
 	 * @return 読み出した値
 	 */
+	void readBlockReg(uint8_t* pReg);
+	
+
 	uint8_t readReg(uint8_t reg);
 	void Reset();
 	bool GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, long& a_lEnergy, time_t& a_time);

@@ -12,7 +12,7 @@
 #include <ctime>
 #include "pico/stdlib.h"
 #include "lwip/apps/sntp.h"
-
+#include "hardware/watchdog.h"
 #include "lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h"
 #include "lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h"
 #include "ScreenKeyboard.h"
@@ -20,6 +20,7 @@
 #include "hardware/rtc.h"
 #include "TouchCalibration.h"
 #include "AS3935.h"
+#include "GUIMsgBox.h"
 
 using namespace ardPort;
 using namespace ardPort::spi;
@@ -402,13 +403,21 @@ const void Settings::run2(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 						isMustSave = false; // 保存後はフラグをリセット
 					}
 					ptft->fillScreen(ILI9341_BLACK);
-					return;             // メニューを閉じる
+					if (isMustReboot) {
+						// 再起動問い合わせ
+						GUIMsgBox msgbox(ptft, pts);
+						bool bRet = msgbox.showOKCancel(30, 100, "確認", "設定を反映するには\n再起動が必要です", "再起動", " 中断 ");
+						if (bRet) {
+							watchdog_reboot(0, 0, 0);
+						} else {
+							drawMenu2_root();
+						}
+					}
 				} else if (p.x > 160) { // CANCELボタン
 					value = valuePush;  // 変更を破棄
 					ptft->fillScreen(ILI9341_BLACK);
 					return; // メニューを閉じる
 				}
-				return;
 			} else {
 			}
 		}
@@ -449,7 +458,7 @@ const void Settings::run2_system()
 	while (true) {
 		time_t now = time(NULL);
 		struct tm* local = localtime(&now);
-		static char timeBuf[15];
+		static char timeBuf[15];		// YYYYMMDDhhmmss
 
 		if (prevSec != local->tm_sec) {
 			snprintf(timeBuf, sizeof(timeBuf), "%04d%02d%02d%02d%02d%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
@@ -466,7 +475,7 @@ const void Settings::run2_system()
 				ptft->printf("時刻表示: %s", (value.isClock24Hour ? "24H" : "12H"));
 			} else if YRANGE (64) { // 日時
 				GUIEditBox editbox(ptft, pts, &sk);
-				bool bRet = editbox.show(80, 72, timeBuf, sizeof(timeBuf), EditMode::MODE_NUMPADOVERWRITE);
+				bool bRet = editbox.show(80, 72, timeBuf, 14, EditMode::MODE_NUMPADOVERWRITE);
 				if (bRet == true) {
 					// timeBufの内容を解析して、必要な設定を行う
 					int year, month, day, hour, minute, second;
@@ -480,7 +489,7 @@ const void Settings::run2_system()
 						newTime.tm_sec = second;
 						time_t t = mktime(&newTime);
 						struct timeval tv;
-						tv.tv_sec = now;
+						tv.tv_sec = t;
 						tv.tv_usec = 0;
 						settimeofday(&tv, NULL);
 					}
@@ -574,6 +583,7 @@ const void Settings::run2_wifi()
 						isMustSave = false; // 保存後はフラグをリセット
 					}
 					ptft->fillScreen(ILI9341_BLACK);
+					isMustReboot = true; // Wi-Fi設定が変更されたので再起動が必要
 					return;             // メニューを閉じる
 				} else if (p.x > 160) { // CANCELボタン
 					value = valuePush;  // 変更を破棄
@@ -706,6 +716,7 @@ const void Settings::run2_as3935()
 						isMustSave = false; // 保存後はフラグをリセット
 					}
 					ptft->fillScreen(ILI9341_BLACK);
+					isMustReboot = true; // Wi-Fi設定が変更されたので再起動が必要
 					return;             // メニューを閉じる
 				} else if (p.x > 160) { // CANCELボタン
 					value = valuePush;  // 変更を破棄

@@ -74,6 +74,7 @@ class Settings
   public:
 	SettingValue value; ///< 現在の設定値
 
+	bool isMustReboot = false; ///< 設定変更後、再起動が必要かどうか
 	bool isMustSave = false; ///< 設定が変更されたかどうか
 
   public:
