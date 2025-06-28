@@ -26,37 +26,38 @@ class ScreenKeyboard; // 前方宣言
 class __attribute__((packed)) SettingValue
 {
   public:
-	char chunk[4];              ///< チャンク識別子（"HNTE"）
-	bool isEnableWifi;          ///< Wi-Fiを有効にするか
-	char SSID[32];              ///< Wi-Fi SSID
-	char PASSWORD[32];          ///< Wi-Fiパスワード
-	uint8_t ipAddr[4];          ///< IPアドレス
-	bool isClock24Hour;         ///< 24時間表示か
-	char localeStr[32];         ///< ロケール文字列（例: "ja_JP.UTF-8"）
-	char tzStr[16];             ///< タイムゾーン文字列（例: "JST-9"）
-	uint16_t minX;              ///< タッチパネルX最小値
-	uint16_t minY;              ///< タッチパネルY最小値
-	uint16_t maxX;              ///< タッチパネルX最大値
-	uint16_t maxY;              ///< タッチパネルY最大値
-	uint8_t  gainBoost;         ///< AFEゲインブースト（0-31）
-	uint8_t  noiseFloor;        ///< ノイズフロアレベル（0-7）
-	uint8_t  watchDogThreshold; ///< ウォッチドッグスレッショルド（0-15）
-	uint8_t  spikeReject;       ///< スパイクリジェクト（0-3）
-	uint8_t  minimumEvent;      ///< 最小イベント数（0-3）
-	uint8_t  i2cAddr;           ///< I2Cアドレス
-	char end[4];                ///< チャンク終端（"ENDC"）
+	char chunk[4];             ///< チャンク識別子（"HNTE"）
+	bool isEnableWifi;         ///< Wi-Fiを有効にするか
+	char SSID[32];             ///< Wi-Fi SSID
+	char PASSWORD[32];         ///< Wi-Fiパスワード
+	uint8_t ipAddr[4];         ///< IPアドレス
+	bool isClock24Hour;        ///< 24時間表示か
+	char localeStr[32];        ///< ロケール文字列（例: "ja_JP.UTF-8"）
+	char tzStr[16];            ///< タイムゾーン文字列（例: "JST-9"）
+	uint16_t minX;             ///< タッチパネルX最小値
+	uint16_t minY;             ///< タッチパネルY最小値
+	uint16_t maxX;             ///< タッチパネルX最大値
+	uint16_t maxY;             ///< タッチパネルY最大値
+	uint8_t gainBoost;         ///< AFEゲインブースト（0-31）
+	uint8_t noiseFloor;        ///< ノイズフロアレベル（0-7）
+	uint8_t watchDogThreshold; ///< ウォッチドッグスレッショルド（0-15）
+	uint8_t spikeReject;       ///< スパイクリジェクト（0-3）
+	uint8_t minimumEvent;      ///< 最小イベント数（0-3）
+	uint8_t i2cAddr;           ///< I2Cアドレス
+	char end[4];               ///< チャンク終端（"ENDC"）
 
-    /**
-     * @brief 代入演算子（ディープコピー）
-     * @param rhs コピー元
-     * @return 自身への参照
-     */
-    SettingValue& operator=(const SettingValue& rhs) {
-        if (this != &rhs) {
-            memcpy(this, &rhs, sizeof(SettingValue));
-        }
-        return *this;
-    }
+	/**
+	 * @brief 代入演算子（ディープコピー）
+	 * @param rhs コピー元
+	 * @return 自身への参照
+	 */
+	SettingValue& operator=(const SettingValue& rhs)
+	{
+		if (this != &rhs) {
+			memcpy(this, &rhs, sizeof(SettingValue));
+		}
+		return *this;
+	}
 };
 
 /**
@@ -68,14 +69,14 @@ class __attribute__((packed)) SettingValue
 class Settings
 {
   private:
-	FlashMem flash; ///< フラッシュメモリ管理用
-	Adafruit_ILI9341* ptft; ///< ディスプレイ制御用
+	FlashMem flash;           ///< フラッシュメモリ管理用
+	Adafruit_ILI9341* ptft;   ///< ディスプレイ制御用
 	XPT2046_Touchscreen* pts; ///< タッチスクリーン制御用
   public:
 	SettingValue value; ///< 現在の設定値
 
 	bool isMustReboot = false; ///< 設定変更後、再起動が必要かどうか
-	bool isMustSave = false; ///< 設定が変更されたかどうか
+	bool isMustSave = false;   ///< 設定が変更されたかどうか
 
   public:
 	/**
@@ -138,26 +139,26 @@ class Settings
 	const char* getTzStr() const;
 
 	// --- アクセッサ ---
-	bool getIsEnableWifi() const { return value.isEnableWifi; } ///< Wi-Fi有効フラグ取得
-	void setIsEnableWifi(bool v) { value.isEnableWifi = v; }   ///< Wi-Fi有効フラグ設定
-	const char* getLocale() const { return value.localeStr; }  ///< ロケール取得
-	uint16_t getMinX() const { return value.minX; }           ///< X最小取得
-	uint16_t getMinY() const { return value.minY; }           ///< Y最小取得
-	uint16_t getMaxX() const { return value.maxX; }           ///< X最大取得
-	uint16_t getMaxY() const { return value.maxY; }           ///< Y最大取得
-	void setMinX(uint16_t v) { value.minX = v; }              ///< X最小設定
-	void setMinY(uint16_t v) { value.minY = v; }              ///< Y最小設定
-	void setMaxX(uint16_t v) { value.maxX = v; }              ///< X最大設定
-	void setMaxY(uint16_t v) { value.maxY = v; }              ///< Y最大設定
+	bool getIsEnableWifi() const { return value.isEnableWifi; }   ///< Wi-Fi有効フラグ取得
+	void setIsEnableWifi(bool v) { value.isEnableWifi = v; }      ///< Wi-Fi有効フラグ設定
+	const char* getLocale() const { return value.localeStr; }     ///< ロケール取得
+	uint16_t getMinX() const { return value.minX; }               ///< X最小取得
+	uint16_t getMinY() const { return value.minY; }               ///< Y最小取得
+	uint16_t getMaxX() const { return value.maxX; }               ///< X最大取得
+	uint16_t getMaxY() const { return value.maxY; }               ///< Y最大取得
+	void setMinX(uint16_t v) { value.minX = v; }                  ///< X最小設定
+	void setMinY(uint16_t v) { value.minY = v; }                  ///< Y最小設定
+	void setMaxX(uint16_t v) { value.maxX = v; }                  ///< X最大設定
+	void setMaxY(uint16_t v) { value.maxY = v; }                  ///< Y最大設定
 	bool getIsClock24Hour() const { return value.isClock24Hour; } ///< 24時間表示取得
-	void setIsClock24Hour(bool v) { value.isClock24Hour = v; }     ///< 24時間表示設定
+	void setIsClock24Hour(bool v) { value.isClock24Hour = v; }    ///< 24時間表示設定
 	const char* getSSID() const { return value.SSID; }            ///< SSID取得
 	void setSSID(const char* s)
 	{
 		strncpy(value.SSID, s, sizeof(value.SSID) - 1);
 		value.SSID[sizeof(value.SSID) - 1] = '\0';
 	}
-	const char* getPASSWORD() const { return value.PASSWORD; }    ///< パスワード取得
+	const char* getPASSWORD() const { return value.PASSWORD; } ///< パスワード取得
 	void setPASSWORD(const char* s)
 	{
 		strncpy(value.PASSWORD, s, sizeof(value.PASSWORD) - 1);
@@ -173,18 +174,21 @@ class Settings
 	const void drawMenu2_as3935();
 
 	const void run(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
-	const void run2(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
+	const bool run2(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
 	const void run2_system();
 	const void run2_wifi();
 	const void run2_as3935();
 
 	// エディットボックスの表示
-	char* p = nullptr; ///< 編集対象の文字列ポインタ
+	char* p = nullptr;     ///< 編集対象の文字列ポインタ
 	uint8_t edtCursor = 0; ///< 編集カーソル位置
-	uint16_t edtX = 0; ///< 編集ボックスX座標
-	uint16_t edtY = 0; ///< 編集ボックスY座標
+	uint16_t edtX = 0;     ///< 編集ボックスX座標
+	uint16_t edtY = 0;     ///< 編集ボックスY座標
 	bool isInsert = false; ///< 挿入モード
 
 	const void EdtDispCursor(int tick, bool isDeleteCursor = false);
 	const void EditBox(ScreenKeyboard sk, uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size);
+
+  public:
+	static const char* getPicoErrorSummary(int code);
 };

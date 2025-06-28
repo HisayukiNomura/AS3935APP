@@ -24,6 +24,8 @@
 #include "pico/stdlib.h"
 #include "hardware/sync.h" // WFE（Wait For Event）を扱うためのライブラリ
 
+#include "printfDebug.h"
+
 // 名前空間の使用を宣言　　　　　　　　　　　　＜＜＜＜＜　追加　（２）
 using namespace ardPort;
 using namespace ardPort::spi;
@@ -127,10 +129,6 @@ bool hartbeatCallback(repeating_timer_t* rt)
 	return true; // 割り込みを継続
 }
 
-
-
-
-
 /**
  * @brief メイン関数（エントリーポイント）
  * @details
@@ -152,12 +150,12 @@ enum APPMode {
 } appMode;
 bool mustRedraw = false;
 // 雷センサーの画面表示
-void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool isBanner, bool isClock , bool isBody)
+void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935, bool isSignal, bool isBanner, bool isClock, bool isBody)
 {
 	if (mustRedraw) {
 		isBanner = true;
 		isClock = true;
-		isBody = true; 
+		isBody = true;
 		isSignal = false;   // 強制再描画の場合、信号検出は行わない。IRQがトリガーされていないのにvalidateSignalを呼びだしてレジスタアクセスしないようにするため。
 		mustRedraw = false; // 再描画フラグをリセット
 	}
@@ -174,13 +172,11 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 			tft.drawRGBBitmap(240 - 16, 2, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
 		}
 	}
-	if (isBody){
+	if (isBody) {
 		uint8_t u8Summary;
 		uint8_t u8Distance;
 		long lEnergy;
 		time_t eventtime;
-
-
 
 		// 最新情報表示エリアをクリア
 		tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
@@ -194,7 +190,7 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 			sigValid = as3935.validateSignal();
 			time_t tm = time(NULL);
 			struct tm* t = localtime(&tm);
-			//　こちらは信号を検出したことに伴うもの
+			// 　こちらは信号を検出したことに伴うもの
 			if (sigValid == AS3935_SIGNAL::VALID) {
 				tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.RED); // 検出された場合は黄色の丸を表示
 			} else if (sigValid == AS3935_SIGNAL::INVALID) {
@@ -205,9 +201,9 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 				tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.DARK_BLUE); // その他の場合は灰色の丸を表示
 			}
 
-			if (sigValid == AS3935_SIGNAL::VALID || sigValid == AS3935_SIGNAL::INVALID) {                                             // 雷が検出された場合
+			if (sigValid == AS3935_SIGNAL::VALID || sigValid == AS3935_SIGNAL::INVALID) { // 雷が検出された場合
 				tft.printf("%02d/%02d %02d:%02d:%02d %s %s\n", t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (sigValid == AS3935_SIGNAL::VALID) ? "検出" : "ーー", as3935.getLatestSummaryStr());
-				tft.printf("距離:%3d km 強さ:%d\n",as3935.getLatestDist(), as3935.getLatestEnergy());
+				tft.printf("距離:%3d km 強さ:%d\n", as3935.getLatestDist(), as3935.getLatestEnergy());
 			} else {
 				tft.fillRoundRect(0, 320 - 20, 16, 16, 2, STDCOLOR.BLUE);
 				tft.fillRect(0, 100, 240, 32, STDCOLOR.SUPERDARK_GRAY); // 前のメッセージを消す
@@ -228,7 +224,6 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 				tft.setCursor(0, 100);
 			}
 			as3935.GetLatestAlarm(0, u8Summary, u8Distance, lEnergy, eventtime);
-
 		}
 		tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.SUPERDARK_GRAY);
 
@@ -247,7 +242,7 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 			if (u8Summary == as3935.SUMM_THUNDER) {
 				tft.drawRGBBitmap((int16_t)0, curY, picThndr, 15, 15, STDCOLOR.BLACK);
 				tft.setCursor(24, curY);
-				tft.printf("%02d:%02d  %3d km 強さ %d\n", hour, min, u8Distance ,lEnergy );
+				tft.printf("%02d:%02d  %3d km 強さ %d\n", hour, min, u8Distance, lEnergy);
 			} else {
 				tft.drawRGBBitmap((int16_t)0, curY, picFalse, 15, 15, STDCOLOR.BLACK);
 				tft.setCursor(24, curY);
@@ -260,9 +255,123 @@ void mainDisplay(Adafruit_ILI9341& tft, AS3935& as3935 , bool isSignal , bool is
 
 	if (isClock) {
 		// それ以外の処理があればここに追加
-		DispClock::show(32, 30); // 時計の更新	
-	} 
+		DispClock::show(32, 30); // 時計の更新
+	}
+}
 
+void Initialize(Adafruit_ILI9341& tft, XPT2046_Touchscreen& ts, AS3935& as3935 , InetAction& iNet)
+{
+	// 画面を黒で塗りつぶす　　　　　　　　　　　　＜＜＜＜＜　追加　（５）　
+	tft.fillScreen(ILI9341_BLACK);
+
+	tft.fillRect(0, 0, 240, 24, STDCOLOR.BLUE);
+	tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.BLUE);
+	tft.setCursor(10, 4);
+	tft.printf("Initializing");
+
+	tft.setCursor(0, 20);
+	tft.setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
+	bool isI2cInitialized = false; // I2Cの初期化フラグ
+	// --- I2C初期化とAS3935のIRQピン設定 ---
+	{
+		tft.printlocf(0, 20, "I2C");
+		bool bRet = as3935.Init(settings.value.i2cAddr, I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
+		if (bRet) {
+			tft.printlocf(200, 20, "〇\n");
+			isI2cInitialized = true; // I2Cの初期化が成功した場合はフラグを立てる
+		} else {
+			tft.printlocf(200, 20, "×\n");
+			sleep_ms(10000);          // 初期化に失敗した場合は、失敗を表示した後しばらく停止、そのまま次に進む
+			isI2cInitialized = false; // I2Cの初期化が失敗した場合はフラグを立てない
+		}
+		gpio_init(AS3935_IRQ);
+		gpio_set_dir(AS3935_IRQ, GPIO_IN);
+	}
+
+	// --- Wi-Fi初期化・接続・時刻同期 ---
+	if (settings.getIsEnableWifi()) {
+		tft.printlocf(0, 40, "WIFI INIT");
+		// Wi-Fiチップ初期化
+		if (iNet.init() == false) {
+			settings.setIsEnableWifi(false);				// エラーが起こっても、Wifiを無効にしない。
+			tft.printlocf(200, 40, "×\n");
+		} else {
+			tft.printlocf(200, 40, "〇\n");
+
+			// Wi-Fi接続処理
+			tft.printlocf(0, 60, "WIFI CONNECT");
+			int iRet = iNet.connect();
+			if (iRet != 0) {
+				tft.printlocf(200, 60, "×");
+				tft.printlocf(10, 80, "Err:%s", iNet.getConLasterror()); // エラーコードを表示
+				settings.setIsEnableWifi(false);
+			} else {
+				tft.printlocf(200, 60, "〇");
+				tft.printlocf(10, 80, "IP: %s", settings.getIpString()); // IPアドレスを表示
+			}
+		}
+		// SNTPで現在時刻を取得
+		tft.printlocf(0, 100, "SNTP");
+		bool bRet = iNet.setTime();
+		if (bRet) {
+			tft.printlocf(200, 100, "〇");
+			time_t now = time(NULL);
+			struct tm* local = localtime(&now);
+			char timeStr[32];
+			sprintf(timeStr, "%d-%02d-%02d %02d:%02d:%02d\n", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
+			tft.printlocf(10, 120, "Time:%s", timeStr); // 現在時刻を表示
+		} else {
+			tft.printlocf(200, 100, "×");
+			tft.printlocf(10, 120, "Err:%s", iNet.getSntpLasterror()); // エラーコードを表示
+		}
+	}
+	// -- 時計表示部の初期化 --
+	{
+		DispClock::init(&tft, settings.getIsClock24Hour());
+	}
+	// --- DMA初期化 ---
+	{
+		tft.printlocf(0, 140, "DMA");
+		bool bRet = InitDMA(); // DMAの初期化関数を呼び出す
+		if (bRet) {
+			tft.printlocf(200, 140, "〇");
+		} else {
+			tft.printlocf(200, 140, "×");
+		}
+	}
+
+	// --- AS3935の初期化・キャリブレーション。I２C初期化エラーのときはやらない ---
+	if (isI2cInitialized) {
+		tft.printlocf(0, 160, "CALIB AS3935");
+		as3935.StartCalibration(100); // AS3935のキャリブレーションを実行
+		tft.printlocf(200, 160, "〇");
+		tft.printlocf(10, 180, "Freq:%4.1fKHz at %3dpF", ((float)as3935.getFreqCalibration() / 1000), as3935.getCalibratedCap() * 8); // キャリブレーションされたキャパシタの値を表示
+	}
+
+	// タッチされるか、時間が過ぎるのを待つ。
+
+	{
+		tft.printlocf(0, 300, "Initialize done."); // キャリブレーションされたキャパシタの値を表示
+#ifdef DEBUG_STDOUT
+		int timeOut = 300; // タッチされるまでのタイムアウト時間 (30秒)
+#else
+		int timeOut = 10; // タッチされるまでのタイムアウト
+#endif
+
+		while (true) {
+			if (ts.touched()) {
+				while (ts.touched()) {
+					sleep_ms(100);
+				}
+				break; // ループを抜けてメイン画面へ
+			}
+			timeOut--;
+			if (timeOut <= 0) {
+				break; // タイムアウトしたらループを抜けてメイン画面へ
+			}
+			sleep_ms(100); // 100ミリ秒待機
+		}
+	}
 }
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
@@ -272,7 +381,7 @@ int main()
 	XPT2046_Touchscreen ts(TOUCH_CS);
 	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
 
-	settings.load(); 			// フラッシュメモリの内容を読み込む
+	settings.load();                 // フラッシュメモリの内容を読み込む
 	InetAction iNet(settings, &tft); // InetActionのインスタンスを作成
 	stdio_init_all();
 	// ILI9341ディスプレイのインスタンスを作成　　＜＜＜＜＜　追加　（３）
@@ -288,18 +397,18 @@ int main()
 	// 文字の表示を高速化させる　　　　　　　　　　＜＜＜＜＜　追加　（４）　
 	tft.useWindowMode(true);
 
-	ts.begin();                             // タッチパネル初期化
+	ts.begin();                         // タッチパネル初期化
 	ts.setRotation(TFTROTATION.NORMAL); // タッチパネルの回転を設定（液晶画面と合わせる）
 	// 起動時にタッチさていれば、設定値のリセット
 	if (ts.touched()) {
 		int touchCnt = 0;
-		while(ts.touched()) {				// タッチされている間は待つ。ただし、ロングタップされているときはキャリブレーションに
+		while (ts.touched()) { // タッチされている間は待つ。ただし、ロングタップされているときはキャリブレーションに
 			delay(100);
 			touchCnt++;
-			if (touchCnt > 20) { // 2秒以上タッチされている場合は設定を初期化する
+			if (touchCnt > 20) {               // 2秒以上タッチされている場合は設定を初期化する
 				tft.fillScreen(ILI9341_BLACK); // 画面を黒で塗りつぶす
-				touchCnt = 0; // タッチカウントをリセット
-				GUIMsgBox msgbox(&tft,&ts);
+				touchCnt = 0;                  // タッチカウントをリセット
+				GUIMsgBox msgbox(&tft, &ts);
 				bool bRet = msgbox.showOKCancel(30, 100, "確認", "設定を初期化します", "  OK  ", " CANCEL");
 				if (bRet) {
 					settings.setDefault();
@@ -310,75 +419,21 @@ int main()
 	}
 	ts.setCalibration(settings.getMinX(), settings.getMinY(), settings.getMaxX(), settings.getMaxY());
 
-	// 画面を黒で塗りつぶす　　　　　　　　　　　　＜＜＜＜＜　追加　（５）　
-	tft.fillScreen(ILI9341_BLACK);
-
-	tft.setCursor(0, 0);
-	tft.printf("Start initializing...\n");
-
-	bool isI2cInitialized = false; // I2Cの初期化フラグ
-	// --- I2C初期化とAS3935のIRQピン設定 ---
+// シリアルデバッグが有効な場合、ここでしばらく待ち、ポートの接続を行う
+#ifdef DEBUG_STDOUT
 	{
-		tft.printf("Initializing i2C ... ");
-		bool bRet = as3935.Init(settings.value.i2cAddr, I2C_PORT, I2C_SDA, I2C_SCL, AS3935_IRQ); // AS3935の初期化関数を呼び出す
-		if (bRet) {
-			tft.printf("Success!\n");
-			isI2cInitialized = true; // I2Cの初期化が成功した場合はフラグを立てる
-		} else {
-			tft.printf("Failed.\n");
-			sleep_ms(10000); // 初期化に失敗した場合は、失敗を表示した後しばらく停止、そのまま次に進む
-			isI2cInitialized = false; // I2Cの初期化が失敗した場合はフラグを立てない
-		}
-		gpio_init(AS3935_IRQ);
-		gpio_set_dir(AS3935_IRQ, GPIO_IN);
+		GUIMsgBox msgbox(&tft, &ts);
+		tft.fillScreen(ILI9341_BLACK); // 画面を黒で塗りつぶす
+		msgbox.showOK(30, 100, "シリアルデバッグ", "COMポートを接続後、\nOKを押してください。", "  OK  ");
 	}
+#endif
 
-	// --- Wi-Fi初期化・接続・時刻同期 ---
-	if (settings.getIsEnableWifi()) {
-		tft.printf("Initializing Wifi ... ");
-		// Wi-Fiチップ初期化
-		if (iNet.init() == false) {
-			// 初期化失敗時はWi-Fi無効で継続
-			settings.setIsEnableWifi(false);
-		} else {
-			// Wi-Fi接続処理
-			int iRet = iNet.connect();
-			if (iRet != 0) {
-				settings.setIsEnableWifi(false);
-				tft.drawRGBBitmap(1, 240 - 16, wifiIcon_NG, 16, 16, STDCOLOR.BLACK);
-			}
-		}
-		tft.drawRGBBitmap(1, 240 - 16, wifiIcon_OK, 16, 16, STDCOLOR.BLACK);
-		// SNTPで現在時刻を取得
-		iNet.setTime();
-	}
-	// -- 時計表示部の初期化 --
-	{
-		DispClock::init(&tft, settings.getIsClock24Hour());
-	}
-	// --- DMA初期化 ---
-	{
-		tft.printf("Initializing DMA ... ");
-		bool bRet = InitDMA(); // DMAの初期化関数を呼び出す
-		if (bRet) {
-			tft.printf("Success!\n");
-		} else {
-			tft.printf("Failed.\n");
-			return -1; // 初期化に失敗した場合は終了
-		}
-	}
+	Initialize(tft, ts, as3935 , iNet); // 初期化関数を呼び出す
 
-	// --- AS3935の初期化・キャリブレーション。I２C初期化エラーのときはやらない ---
-	if (isI2cInitialized){
-		tft.printf("Calibrating AS3935\n");
-		as3935.StartCalibration(100); // AS3935のキャリブレーションを実行
-		tft.printf("Done.\n");
-	}
-	
 
 	delay(1000);
-	
-	mainDisplay(tft, as3935, false,true,false, false); // 初期画面のバナー表示
+
+	mainDisplay(tft, as3935, false, true, false, false); // 初期画面のバナー表示
 
 	// --- 画面初期化・タイトル表示 ---
 	// --- 割り込み・タイマー・メインループ ---
@@ -392,12 +447,12 @@ int main()
 		if (appMode == APP_MODE_NORMAL) {
 
 			isIRQTriggered = false;
-			__wfe();              // 割り込みが発生するまでスリープ
+			__wfe(); // 割り込みが発生するまでスリープ
 			// 割り込みが発生し、その処理を行っている間は新しい割り込みは起こさない
 			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, false); // IRQ割り込みを一時的に無効化
 
-			if (isIRQTriggered) { // IRQがトリガーされた場合
-				mainDisplay(tft, as3935, true, false,false,true); // 雷センサーの画面表示を更新
+			if (isIRQTriggered) {                                   // IRQがトリガーされた場合
+				mainDisplay(tft, as3935, true, false, false, true); // 雷センサーの画面表示を更新
 			} else {
 				if (ts.touched()) {
 					TS_Point tPoint;
@@ -405,8 +460,7 @@ int main()
 					if (tPoint.y < 20) {
 
 						appMode = APP_MODE_SETTING; // 設定モードに切り替え
-					}	
-					
+					}
 				}
 				// それ以外の処理があればここに追加
 				mainDisplay(tft, as3935, false, false, true, false); // 時計の更新
@@ -416,18 +470,17 @@ int main()
 		} else if (appMode == APP_MODE_SETTING) {
 			// 設定中はIRQ割り込みを禁止する
 			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, false); // IRQ割り込みを一時的に無効化
-			cancel_repeating_timer(&timer); // ハートビートタイマーを停止
+			cancel_repeating_timer(&timer);                              // ハートビートタイマーを停止
 			tft.setCursor(0, 0);
 			tft.printf("設定モード");
 			//			settings.run(&tft, &ts); // 設定画面の実行
 			settings.run2(&tft, &ts); // 設定画面の実行
 			mustRedraw = true;
 			DispClock::setRedrawFlag(); // 時計の再描画フラグを立てる
-			appMode = APP_MODE_NORMAL; // 通常モードに戻す
+			appMode = APP_MODE_NORMAL;  // 通常モードに戻す
 			add_repeating_timer_ms(500, hartbeatCallback, NULL, &timer);
-			//as3935.Reset(); // AS3935のリセット
+			// as3935.Reset(); // AS3935のリセット
 			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true); // 設定が終わったらIRQ割り込みを復旧
 		}
-
 	}
 }

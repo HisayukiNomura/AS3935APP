@@ -14,6 +14,8 @@
 
 #include <ctime>
 
+#include "printfDebug.h"
+
 /**
  * @brief InetActionクラスのコンストラクタ
  * @details Wi-FiやSNTPなどのネットワーク関連処理の初期化に必要な情報を受け取ります。
@@ -34,13 +36,10 @@ bool InetAction::init()
 {
 	// Wi-Fiチップの初期化
 	if (cyw43_arch_init()) {
-		pTft->printf("cyw43_arch_init failed\n");
 		return false;
 	} else {
-		pTft->printf("Success!\n");
 	}
 	// ステーションモード有効化
-	pTft->printf("Enable Wifi on station mode\n");
 	cyw43_arch_enable_sta_mode();
 	return true;
 }
@@ -53,17 +52,28 @@ bool InetAction::init()
  */
 int InetAction::connect()
 {
-	pTft->printf("Connect Wi-Fi ... ");
+	dbgprintf("Connect Wi-Fi ... ");
 	settings.resetIP(); // IPアドレスをリセット
 	int iRet = cyw43_arch_wifi_connect_timeout_ms(settings.getSSID(), settings.getPASSWORD(), CYW43_AUTH_WPA3_WPA2_AES_PSK, 30000);
+	// CYWと、PICOのエラーコードを変換して保存
+	if (iRet == -1) {
+		lastErr_Connect = PICO_ERROR_TIMEOUT;
+	} else if (iRet == -2) {
+		lastErr_Connect = PICO_ERROR_BADAUTH;
+	} else if (iRet == -3) {
+		lastErr_Connect = PICO_ERROR_CONNECT_FAILED;
+	} else  {			// ドライバの内部エラー。不明なのでそのまま保存
+		lastErr_Connect = iRet;
+	}
+
 	if (iRet != 0) {
-		printf("Failed(%d).\n", iRet);
+		dbgprintf("Failed(%d).\n", iRet);
 		return iRet;
 	}
 	uint8_t* ip_addr = (uint8_t*)&(cyw43_state.netif[0].ip_addr.addr);
 	settings.setIP(ip_addr[0], ip_addr[1], ip_addr[2], ip_addr[3]);
-	pTft->printf("Success!\n");
-	pTft->printf("IP address: %s\n", settings.getIpString());
+	dbgprintf("Success!\n");
+	dbgprintf("IP address: %s\n", settings.getIpString());
 	return 0;
 }
 
@@ -100,7 +110,7 @@ bool InetAction::getHostByName(const char* hostname, int timeout_ms)
 		addrSNTP.addr = addr.addr; // キャッシュから取得したIPアドレスを設定
 		return true;
 	} else if (err != ERR_INPROGRESS) {
-		pTft->printf("DNS ERROR: %s, (%d)\n", hostname, err);
+		dbgprintf("DNS ERROR: %s, (%d)\n", hostname, err);
 		return false; // 初期化に失敗
 	} else {
 		// 非同期の場合はポーリングで待機
@@ -110,12 +120,12 @@ bool InetAction::getHostByName(const char* hostname, int timeout_ms)
 			if (isDNSFinished == 1) { // 成功
 				return true;
 			} else if (isDNSFinished == 2) {
-				pTft->printf("UNKNOWN ERROR: %s\n", hostname);
+				dbgprintf("UNKNOWN ERROR: %s\n", hostname);
 				return false; // 失敗
 			}
 			timeout_ms -= 100;
 		}
-		pTft->printf("DNS TIMEOUT: %s\n", hostname);
+		dbgprintf("DNS TIMEOUT: %s\n", hostname);
 		return false;
 	}
 }
@@ -126,15 +136,14 @@ bool InetAction::getHostByName(const char* hostname, int timeout_ms)
 #define NTP_TEST_TIME (30 * 1000)
 #define NTP_RESEND_TIME (10 * 1000)
 
-
 /// @brief NTP の状態を保持する構造体。コールバック関数とクラス本体の間でやり取りするために使われる
 typedef struct NTP_T_ {
-	uint8_t status;							// NTPの状態 0...取得中 1...成功 2...失敗 3...タイムアウト
-	ip_addr_t ntp_server_address;			// NTPサーバーのIPアドレス
-//	bool dns_request_sent;					// DNSリクエストが送信されたかどうか
-	struct udp_pcb* ntp_pcb;				// NTP用のUDPプロトコル制御ブロック
+	uint8_t status;               // NTPの状態 0...取得中 1...成功 2...失敗 3...タイムアウト
+	ip_addr_t ntp_server_address; // NTPサーバーのIPアドレス
+								  //	bool dns_request_sent;					// DNSリクエストが送信されたかどうか
+	struct udp_pcb* ntp_pcb;      // NTP用のUDPプロトコル制御ブロック
 	absolute_time_t ntp_test_time;
-	alarm_id_t ntp_resend_alarm;			// NTPリクエストのタイムアウトアラームのハンドル
+	alarm_id_t ntp_resend_alarm; // NTPリクエストのタイムアウトアラームのハンドル
 } NTP_T;
 
 extern "C" void setRTC(u32_t sec)
@@ -151,9 +160,9 @@ extern "C" void setRTC(u32_t sec)
 		.sec = (int8_t)t->tm_sec};
 	bool bRet = rtc_set_datetime(&dt);
 	if (bRet == false) {
-		printf("rtc_set_datetime failed\n");
+		dbgprintf("rtc_set_datetime failed\n");
 	} else {
-		printf("rtc_set_datetime success: %04d/%02d/%02d %02d:%02d:%02d\n", dt.year, dt.month, dt.day, dt.hour, dt.min, dt.sec);
+		dbgprintf("rtc_set_datetime success: %04d/%02d/%02d %02d:%02d:%02d\n", dt.year, dt.month, dt.day, dt.hour, dt.min, dt.sec);
 		time_t now;
 		rtc_get_datetime(&dt);
 		struct tm t;
@@ -183,7 +192,6 @@ extern "C" int64_t ntp_failed_handler(alarm_id_t id, void* user_data)
 	return 0;
 }
 
-
 extern "C" void ntp_recv(void* arg, struct udp_pcb* pcb, struct pbuf* p, const ip_addr_t* addr, u16_t port)
 {
 	NTP_T* state = (NTP_T*)arg;
@@ -199,9 +207,9 @@ extern "C" void ntp_recv(void* arg, struct udp_pcb* pcb, struct pbuf* p, const i
 		uint32_t seconds_since_1970 = seconds_since_1900 - NTP_DELTA;
 		time_t epoch = seconds_since_1970;
 
-		//結果の表示など
+		// 結果の表示など
 		struct tm* utc = gmtime(&epoch);
-//		printf("got ntp response: %02d/%02d/%04d %02d:%02d:%02d\n", utc->tm_mday,  utc->tm_mon + 1, utc->tm_year + 1900, utc->tm_hour, utc->tm_min, utc->tm_sec);
+		//		printf("got ntp response: %02d/%02d/%04d %02d:%02d:%02d\n", utc->tm_mday,  utc->tm_mon + 1, utc->tm_year + 1900, utc->tm_hour, utc->tm_min, utc->tm_sec);
 		// 成功によるタイマーのキャンセル
 		if (state->ntp_resend_alarm > 0) {
 			cancel_alarm(state->ntp_resend_alarm);
@@ -209,8 +217,8 @@ extern "C" void ntp_recv(void* arg, struct udp_pcb* pcb, struct pbuf* p, const i
 		}
 		setRTC(seconds_since_1970);
 		state->status = 1; // 成功
-	} else {  // 失敗
-//		printf("invalid ntp response\n");
+	} else {               // 失敗
+						   //		printf("invalid ntp response\n");
 		// 失敗によるタイマーのキャンセル
 		if (state->ntp_resend_alarm > 0) {
 			cancel_alarm(state->ntp_resend_alarm);
@@ -229,7 +237,7 @@ extern "C" void ntp_recv(void* arg, struct udp_pcb* pcb, struct pbuf* p, const i
  */
 bool InetAction::setTime()
 {
-	pTft->printf("SNTP ... ");
+	dbgprintf("SNTP ... ");
 
 	// DNSでSNTPサーバーのIPアドレスを取得。最大3回リトライ
 	bool bRet;
@@ -242,24 +250,27 @@ bool InetAction::setTime()
 		}
 	}
 	if (!bRet) {
-		pTft->printf("DNS Failed.");
+		dbgprintf("DNS Failed.");
+		lastErr_Sntp = -100; // DNSエラーコード
 		return false;
 	}
 	// SNTPサーバーのIPアドレスを取得できたので、NTPのリクエストを送信
 	NTP_T* state = (NTP_T*)calloc(1, sizeof(NTP_T));
 	if (!state) {
-		pTft->printf("SNTP Failed.\nFailed to acllocate state.");
+		lastErr_Sntp = -101; // メモリ割り当てエラーコード
+		dbgprintf("SNTP Failed.\nFailed to acllocate state.");
 		return false;
 	}
 	state->ntp_pcb = udp_new_ip_type(IPADDR_TYPE_ANY);
 	if (!state->ntp_pcb) {
-		pTft->printf("SNTP Failed.\nFailed to create PCB.");
+		lastErr_Sntp = -102; // PCB作成エラーコード
+		dbgprintf("SNTP Failed.\nFailed to create PCB.");
 		free(state);
 		return false;
 	}
 	state->ntp_server_address = this->addrSNTP; // DNSで取得したIPアドレスを設定
 
-    // UDP受信コールバックを設定
+	// UDP受信コールバックを設定
 	udp_recv(state->ntp_pcb, ntp_recv, state);
 
 	// タイムアウト用アラームをセット
@@ -275,7 +286,7 @@ bool InetAction::setTime()
 	pbuf_free(p);
 	cyw43_arch_lwip_end();
 
-    // 応答待ちループ
+	// 応答待ちループ
 	while (true) {
 		if (state->status != 0) {
 			break;
@@ -287,24 +298,24 @@ bool InetAction::setTime()
 	if (state->status == 1) { // 成功
 		datetime_t dt;
 		bool bRet = rtc_get_datetime(&dt);
-		pTft->printf("Success!\n");
+		dbgprintf("Success!\n");
 		time_t now = time(NULL);
 		setlocale(LC_TIME, settings.getLocaleStr());
 		setenv("TZ", settings.getTzStr(), 1);
 		tzset();
 		struct tm* local = localtime(&now);
 
-		pTft->printf("Time: %d-%02d-%02d %02d:%02d:%02d\n",
-					 local->tm_year + 1900, local->tm_mon + 1, local->tm_mday,
-					 local->tm_hour, local->tm_min, local->tm_sec);
+		dbgprintf("Time: %d-%02d-%02d %02d:%02d:%02d\n",
+				  local->tm_year + 1900, local->tm_mon + 1, local->tm_mday,
+				  local->tm_hour, local->tm_min, local->tm_sec);
 		return true;
 	} else if (state->status == 2) { // 失敗
-		pTft->printf("SNTP Failed.\nFailed to get Info from SNTP");
+		dbgprintf("SNTP Failed.\nFailed to get Info from SNTP");
 		return false;
 	} else if (state->status == 3) { // タイムアウト
-		pTft->printf("SNTP Failed.\nSNTP Timeout");
+		dbgprintf("SNTP Failed.\nSNTP Timeout");
 		return false;
 	}
-	pTft->printf("Failed.\nUnknown Error");
+	dbgprintf("Failed.\nUnknown Error");
 	return false;
 }

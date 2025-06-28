@@ -91,10 +91,11 @@ void TouchCalibration::showMenu()
 	m_tft->setCursor(10, 4);
 	m_tft->printf("設定 - タッチスクリーン調整");
 
+	m_tft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
 	m_tft->setCursor(0, 40);
 	m_tft->printf("<<タッチの調整>>\nタッチスクリーンの調整を行います。指示に従って画面をタップしてください。一度開始すると、調整が完了するまで中断することはできません。");
 	m_tft->setCursor(0, 180);
-	m_tft->printf("<<タッチのテスト>>\nタッチスクリーンの確認を行います。画面を実際にタップし確認、必要なら再度調整してください。ロングタップで終了します。");
+	m_tft->printf("<<タッチのテスト>>\nタッチスクリーンの確認を行います。画面をタップすると赤い丸が表示されます。ロングタップで終了します。必要なら再度調整してください。");
 	m_tft->setCursor(0, 280);
 	m_tft->printf("<<終了>>\n終了してメニューに戻ります");
 }

@@ -69,7 +69,7 @@ bool GUIMsgBox::showOKCancel(int x, int y, const char* caption, const char* mess
 }
 
 void GUIMsgBox::showOK(int x, int y, const char* caption, const char* message, const char* okMsg) {
-    const int w = 180, h = 116; // 高さ+10
+    const int w = 180, h = 126; // 高さ+10
     m_tft->fillRoundRect(x, y, w, h, 8, 0x7BEF);
     m_tft->drawRoundRect(x, y, w, h, 8, 0xFFFF);
     m_tft->setTextColor(0x0000, 0x7BEF);
@@ -79,7 +79,7 @@ void GUIMsgBox::showOK(int x, int y, const char* caption, const char* message, c
     drawMultiline(m_tft, x + 10, y + 30 + 8, message, 0x0000, 0x7BEF);
 
     int btnW = 68, btnH = 28;
-    int okX = x + w / 2 - btnW / 2, okY = y + h - 28; // 8ドット上へ（+8を削除）
+    int okX = x + w / 2 - btnW / 2, okY = y + h - 32; // 8ドット上へ（+8を削除）
     m_tft->fillRect(okX, okY, btnW, btnH, 0x0010); // OK:暗い青 (0x0010)
     m_tft->setTextColor(0xFFFF, 0x0010);
     m_tft->setCursor(okX + 10, okY + 8);

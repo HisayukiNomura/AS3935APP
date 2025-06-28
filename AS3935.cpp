@@ -5,6 +5,9 @@
 #include "hardware/i2c.h"
 #include "settings.h"
 #include <ctime>
+
+#include "printfDebug.h"
+
 // https://www.ne.jp/asahi/shared/o-family/ElecRoom/AVRMCOM/AS3935/AS3935_test.html
 // https://esphome.io/components/sensor/as3935.html
 
@@ -136,7 +139,7 @@ void AS3935::StartCalibration(uint16_t a_timeCalibration)
 		writeWord(CALIB_RCO);                                                               // RCOキャリブレーションを開始するためのダイレクトコマンドを送信
 		m_FreqCalibration = Calibrate();                                                    // キャリブレーションを実行
 	}
-	m_pTft->printf("Cap:%3dpF Freq:%4.1fKHz\n", m_u8calibratedCap * 8, (float)m_FreqCalibration / 1000);
+	dbgprintf("Cap:%3dpF Freq:%4.1fKHz\n", m_u8calibratedCap * 8, (float)m_FreqCalibration / 1000);
 	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap)); // キャリブレーションされたキャパシタの値を設定、IRQピンへの出力をオフにする
 	// AFEのゲインブースト、ノイズフロアレベル、ウォッチドッグスレッショルドを設定
 	Reset(); // AS3935をリセットして、設定を適用する
@@ -182,9 +185,9 @@ uint32_t AS3935::Calibrate()
 			m_u8calibratedCap = b; // キャリブレーションされたキャパシタの値を更新
 		}
 		// m_pTft->printf("Cap:%3dpF Freq:%4.1fKHz\n", b * 8, (float)frecCnt[b] / 1000);
-		m_pTft->printf("o");
+		dbgprintf("o");
 	}
-	m_pTft->printf("\n");
+	dbgprintf("\n");
 	return frecCnt[m_u8calibratedCap];
 }
 

@@ -176,9 +176,25 @@ const char* Settings::getTzStr() const
  */
 const void Settings::drawMenuBottom()
 {
+	// 下部キーボード領域
 	ptft->fillRect(0, 320 - ScreenKeyboard::KB_HEIGHT, 320, ScreenKeyboard::KB_HEIGHT, STDCOLOR.BLACK);
 	ptft->printlocf(0, 264, "---------+---------+---------+");
-	ptft->printlocf(10, 296, "  [ OK ]            [CANCEL]");
+
+	// OKボタン
+	int okX = 10, okY = 290, btnW = 90, btnH = 28, r = 8;
+	ptft->pushTextColor();
+	ptft->fillRoundRect(okX, okY, btnW, btnH, r, STDCOLOR.DARK_BLUE);
+	ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.DARK_BLUE);
+	ptft->setCursor(okX + 24, okY + 6);
+	ptft->printf("設定");
+
+	// CANCELボタン
+	int cancelX = 130, cancelY = 290;
+	ptft->fillRoundRect(cancelX, cancelY, btnW, btnH, r, STDCOLOR.DARK_RED);
+	ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.DARK_RED);
+	ptft->setCursor(cancelX + 5, cancelY + 6);
+	ptft->printf("キャンセル");
+	ptft->popTextColor();
 }
 
 /**
@@ -351,7 +367,7 @@ const void Settings::drawMenu2_root()
  * @param a_ptft ディスプレイ制御用
  * @param a_pts タッチスクリーン制御用
  */
-const void Settings::run2(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
+const bool Settings::run2(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 {
 	SettingValue valuePush;
 	valuePush = value; // 現在の設定値を保存
@@ -412,11 +428,14 @@ const void Settings::run2(Adafruit_ILI9341* a_ptft, XPT2046_Touchscreen* a_pts)
 						} else {
 							drawMenu2_root();
 						}
+					} else {
+						return true;
 					}
+
 				} else if (p.x > 160) { // CANCELボタン
 					value = valuePush;  // 変更を破棄
 					ptft->fillScreen(ILI9341_BLACK);
-					return; // メニューを閉じる
+					return false;
 				}
 			} else {
 			}
@@ -458,7 +477,7 @@ const void Settings::run2_system()
 	while (true) {
 		time_t now = time(NULL);
 		struct tm* local = localtime(&now);
-		static char timeBuf[15];		// YYYYMMDDhhmmss
+		static char timeBuf[15]; // YYYYMMDDhhmmss
 
 		if (prevSec != local->tm_sec) {
 			snprintf(timeBuf, sizeof(timeBuf), "%04d%02d%02d%02d%02d%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
@@ -535,8 +554,9 @@ const void Settings::drawMenu2_wifi()
 	ptft->printf("設定 - Wi-Fi");
 
 	ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
-	ptft->printlocf(10, 40, "    SSID: %s", value.SSID);
-	ptft->printlocf(10, 72, "PASSWORD: %s", value.PASSWORD);
+	ptft->printlocf(10, 40, "    WIFI: %s", value.isEnableWifi ? "有効" : "無効");
+	ptft->printlocf(10, 72, "    SSID: %s", value.SSID);
+	ptft->printlocf(10, 104, "PASSWORD: %s", value.PASSWORD);
 	drawMenuBottom();
 }
 
@@ -557,20 +577,27 @@ const void Settings::run2_wifi()
 			TS_Point p = pts->getPointOnScreen();
 			while (pts->touched()) {} // タッチが終わるまで待つ
 			if YRANGE (32) {          // SSID
+				if (value.isEnableWifi) {
+					value.isEnableWifi = false; // Wi-Fiを無効化
+				} else {
+					value.isEnableWifi = true;  // Wi-Fiを有効化
+				}
+				isMustSave = true; // WIFI設定変更
+				ptft->printlocf(10, 40, "    WIFI: %s", value.isEnableWifi ? "有効" : "無効");
+			} else if YRANGE (64) { // SSID
 				GUIEditBox editbox(ptft, pts, &sk);
-				bool bRet = editbox.show(10 + 8 * 10, 40, value.SSID, 18, EditMode::MODE_TEXT);
+				bool bRet = editbox.show(10 + 8 * 10, 72, value.SSID, 18, EditMode::MODE_TEXT);
 				if (bRet) {
 					isMustSave = true; // SSIDが変更された
 				}
 				drawMenu2_wifi();
-			} else if YRANGE (64) { // PASSWORD
+			} else if YRANGE (96) { // PASSWORD
 				GUIEditBox editbox(ptft, pts, &sk);
-				bool bRet = editbox.show(10 + 8 * 10, 72, value.PASSWORD, 18, EditMode::MODE_TEXT);
+				bool bRet = editbox.show(10 + 8 * 10, 104, value.PASSWORD, 18, EditMode::MODE_TEXT);
 				if (bRet) {
 					isMustSave = true; // PASSWORDが変更された
 				}
 				drawMenu2_wifi();
-			} else if YRANGE (96) {
 			} else if YRANGE (128) {
 			} else if YRANGE (160) {
 			} else if YRANGE (192) {
@@ -584,9 +611,9 @@ const void Settings::run2_wifi()
 					}
 					ptft->fillScreen(ILI9341_BLACK);
 					isMustReboot = true; // Wi-Fi設定が変更されたので再起動が必要
-					return;             // メニューを閉じる
-				} else if (p.x > 160) { // CANCELボタン
-					value = valuePush;  // 変更を破棄
+					return;              // メニューを閉じる
+				} else if (p.x > 160) {  // CANCELボタン
+					value = valuePush;   // 変更を破棄
 					ptft->fillScreen(ILI9341_BLACK);
 					return; // メニューを閉じる
 				}
@@ -643,7 +670,7 @@ const void Settings::run2_as3935()
 				ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
 				isMustSave = true; // I2Cアドレスが変更された
 				ptft->printlocf(0, 40, "I2C ADDR: %d", value.i2cAddr);
-			} else if YRANGE (64) { // ゲインブースト
+			} else if YRANGE (64) {                       // ゲインブースト
 				sprintf(edtBuf, "%02d", value.gainBoost); // ゲインブースト値を文字列に変換
 				GUIEditBox editbox(ptft, pts, &sk);
 				bool bRet = editbox.show(8 * 10, 72, edtBuf, 2, EditMode::MODE_NUMPADOVERWRITE);
@@ -674,7 +701,7 @@ const void Settings::run2_as3935()
 				} else {
 					sprintf(edtBuf, "%02d", value.watchDogThreshold); // ウォッチドッグスレッショルド値を文字列に変換
 					GUIEditBox editbox(ptft, pts, &sk);
-					bool bRet = editbox.show(184 , 104, edtBuf, 2, EditMode::MODE_NUMPADOVERWRITE);
+					bool bRet = editbox.show(184, 104, edtBuf, 2, EditMode::MODE_NUMPADOVERWRITE);
 					if (bRet == true) {
 						uint8_t wd = atoi(edtBuf);
 						if (wd == 99) wd = WDTH_DEFAULT;  // 99はデフォルト値
@@ -685,7 +712,7 @@ const void Settings::run2_as3935()
 					ptft->printlocf(104, 104, "WATCHDOG: %02d", value.watchDogThreshold);
 					drawMenuBottom();
 				}
-			} else if YRANGE (128) { // 
+			} else if YRANGE (128) { //
 				if (p.x < 120) {
 					uint8_t minEvtTbl[] = {1, 5, 9, 16};
 					value.minimumEvent++;
@@ -695,17 +722,17 @@ const void Settings::run2_as3935()
 				} else {
 					sprintf(edtBuf, "%02d", value.spikeReject); // スパイクリジェクト値を文字列に変換
 					GUIEditBox editbox(ptft, pts, &sk);
-					bool bRet = editbox.show(184 , 136, edtBuf, 2, EditMode::MODE_NUMPADOVERWRITE);
+					bool bRet = editbox.show(184, 136, edtBuf, 2, EditMode::MODE_NUMPADOVERWRITE);
 					if (bRet == true) {
 						uint8_t sr = atoi(edtBuf);
 						if (sr == 99) sr = SREJ_DEFAULT; // 99はデフォルト値
 						if (sr > SREJ_MAX) sr = SREJ_MAX;
-						value.spikeReject = sr;          // スパイクリジェクトを設定
-						isMustSave = true;               // スパイクリジェクトが変更された
+						value.spikeReject = sr; // スパイクリジェクトを設定
+						isMustSave = true;      // スパイクリジェクトが変更された
 					}
 					ptft->printlocf(104, 136, "SPIKEREJ: %02d", value.spikeReject);
 				}
-			} else if YRANGE (160) { // 
+			} else if YRANGE (160) { //
 			} else if YRANGE (192) {
 			} else if YRANGE (224) {
 			} else if YRANGE (256) {
@@ -717,9 +744,9 @@ const void Settings::run2_as3935()
 					}
 					ptft->fillScreen(ILI9341_BLACK);
 					isMustReboot = true; // Wi-Fi設定が変更されたので再起動が必要
-					return;             // メニューを閉じる
-				} else if (p.x > 160) { // CANCELボタン
-					value = valuePush;  // 変更を破棄
+					return;              // メニューを閉じる
+				} else if (p.x > 160) {  // CANCELボタン
+					value = valuePush;   // 変更を破棄
 					ptft->fillScreen(ILI9341_BLACK);
 					return; // メニューを閉じる
 				}
@@ -728,5 +755,44 @@ const void Settings::run2_as3935()
 			}
 		}
 		delay(100); // 少し待つ
+	}
+}
+
+/**
+ * @brief pico_error_codesの値から簡易説明文字列を返す
+ * @param code pico_error_codesの値
+ * @return エラー内容の簡易説明文字列
+ */
+const char* Settings::getPicoErrorSummary(int code)
+{
+	switch (code) {
+		case 0: return "Success";
+		case -1: return "Generic error";
+		case -2: return "Timeout";
+		case -3: return "No data";
+		case -4: return "Not permitted";
+		case -5: return "Invalid argument";
+		case -6: return "I/O error";
+		case -7: return "Bad auth";
+		case -8: return "Connect failed";
+		case -9: return "Insufficient resources";
+		case -10: return "Invalid address";
+		case -11: return "Bad alignment";
+		case -12: return "Invalid state";
+		case -13: return "Buffer too small";
+		case -14: return "Precondition not met";
+		case -15: return "Modified data";
+		case -16: return "Invalid data";
+		case -17: return "Not found";
+		case -18: return "Unsupported modification";
+		case -19: return "Lock required";
+		case -20: return "Version mismatch";
+		case -21: return "Resource in use";
+		// ここから先は、ローカルで使用
+		case -100: return "DNS lookup failed";
+		case -101: return "Heap alloc failure";
+		case -102: return "Flash write failure";
+
+		default: return "Unknown error code";
 	}
 }

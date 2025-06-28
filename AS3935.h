@@ -111,6 +111,11 @@ class AS3935 : public I2CBase
 	time_t getLatestDateTime() const { return m_latestBufDateTime; }
 	const char* getLatestSummaryStr() { return GetAlarmSummaryString(m_latestBufAlarmSummary); }
 
+    // --- キャリブレーション値のpublic getter ---
+    uint8_t getCalibratedCap() const { return m_u8calibratedCap; }
+    uint16_t getTimeCalibration() const { return m_timeCalibration; }
+    uint32_t getFreqCalibration() const { return m_FreqCalibration; }
+
   public:
 	AS3935(Adafruit_ILI9341* a_pTft);
 	bool Init(uint8_t a_u8IU2cAddress, uint8_t a_u8I2cPort, uint8_t a_u8SdaPin, uint8_t a_u8SclPin, uint8_t a_u8IrqPin);
