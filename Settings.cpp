@@ -66,6 +66,7 @@ void Settings::setDefault()
 	value.i2cAddr = 0x03;                  // I2Cアドレス（デフォルトは0x00）
 	value.spikeReject = SREJ_DEFAULT;      // スパイクリジェクト（0-3）
 	value.minimumEvent = NUMLIGHT_DEFAULT; // 最小イベント数（0-3）
+	value.i2cReadMode = 0;                 // I2Cリードモード（0: Single Read, 1: Block Read）
 }
 
 /**
@@ -580,7 +581,7 @@ const void Settings::run2_wifi()
 				if (value.isEnableWifi) {
 					value.isEnableWifi = false; // Wi-Fiを無効化
 				} else {
-					value.isEnableWifi = true;  // Wi-Fiを有効化
+					value.isEnableWifi = true; // Wi-Fiを有効化
 				}
 				isMustSave = true; // WIFI設定変更
 				ptft->printlocf(10, 40, "    WIFI: %s", value.isEnableWifi ? "有効" : "無効");
@@ -639,7 +640,7 @@ const void Settings::drawMenu2_as3935()
 	ptft->printf("設定 - AS3935");
 
 	ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
-	ptft->printlocf(0, 40, "I2C ADDR: %d", value.i2cAddr);
+	ptft->printlocf(0, 40, "I2C addr: %1d  ReadMode:%s", value.i2cAddr, value.i2cReadMode == 0 ? "Single" : "Block ");
 	ptft->printlocf(0, 72, "GAINBOST: %02d ", value.gainBoost);
 	ptft->printlocf(0, 104, "NOISEFLR: %1d  WATCHDOG: %02d", value.noiseFloor, value.watchDogThreshold);
 	ptft->printlocf(0, 136, "MINLIGHT: %02d SPIKEREJ: %02d", minEvtTbl[value.minimumEvent], value.spikeReject);
@@ -665,11 +666,20 @@ const void Settings::run2_as3935()
 			TS_Point p = pts->getPointOnScreen();
 			while (pts->touched()) {} // タッチが終わるまで待つ
 			if YRANGE (32) {          // I2Cアドレス
-				value.i2cAddr++;
-				if (value.i2cAddr == 4) value.i2cAddr = 0;
-				ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
-				isMustSave = true; // I2Cアドレスが変更された
-				ptft->printlocf(0, 40, "I2C ADDR: %d", value.i2cAddr);
+				if (p.x < 120) {
+					value.i2cAddr++;
+					if (value.i2cAddr == 4) value.i2cAddr = 0;
+					ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
+					isMustSave = true; // I2Cアドレスが変更された
+				} else {
+					if (value.i2cReadMode == 0) {
+						value.i2cReadMode = 1; // Single ReadからBlock Readへ変更
+					} else {
+						value.i2cReadMode = 0; // Block ReadからSingle Readへ変更
+					}
+					isMustSave = true; // I2Cアドレスが変更された
+				}
+				ptft->printlocf(0, 40, "I2C addr: %1d  ReadMode:%s", value.i2cAddr, value.i2cReadMode == 0 ? "Single" : "Block ");
 			} else if YRANGE (64) {                       // ゲインブースト
 				sprintf(edtBuf, "%02d", value.gainBoost); // ゲインブースト値を文字列に変換
 				GUIEditBox editbox(ptft, pts, &sk);

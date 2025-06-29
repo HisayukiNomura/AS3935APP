@@ -44,6 +44,7 @@ class __attribute__((packed)) SettingValue
 	uint8_t spikeReject;       ///< スパイクリジェクト（0-3）
 	uint8_t minimumEvent;      ///< 最小イベント数（0-3）
 	uint8_t i2cAddr;           ///< I2Cアドレス
+	uint8_t i2cReadMode;	   ///< ブロックリード（Single: 無効, Block: 有効）
 	char end[4];               ///< チャンク終端（"ENDC"）
 
 	/**
@@ -164,6 +165,7 @@ class Settings
 		strncpy(value.PASSWORD, s, sizeof(value.PASSWORD) - 1);
 		value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';
 	}
+	int geti2cReadMode() const { return value.i2cReadMode; } ///< I2Cリードモード取得（0: Single, 1: Block）
 
 	uint8_t menuMode = 0; ///< メニュー状態
 	const void drawMenuBottom();

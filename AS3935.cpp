@@ -11,7 +11,6 @@
 // https://www.ne.jp/asahi/shared/o-family/ElecRoom/AVRMCOM/AS3935/AS3935_test.html
 // https://esphome.io/components/sensor/as3935.html
 
-
 using namespace ardPort;
 using namespace ardPort::spi;
 // ダイレクトコマンド
@@ -31,7 +30,6 @@ using namespace ardPort::spi;
 
 #define REG3A_TRCO_CALIBRSLT 0x3A // Calibration of TRCO done (1=successful) / Calibration of TRCO unsuccessful(1 = not successful)
 #define REG3B_SRCO_CALIBRSLT 0x3B // Calibration of SRCO done (1=successful) / Calibration of SRCO unsuccessful(1 = not successful)
-
 
 // Frequency Division Ratio
 #define FDIV_RATIO_1_16 (0x00 << 6)  // LCO Frequency Division Ratio = 1/16
@@ -55,12 +53,9 @@ using namespace ardPort::spi;
 #define TUN_CAP_MASK (0x0F) // Tuning Capacitors (from 0 to 120pF in steps of 8pF)
 
 
-#define I2C_BULK_READ
 
 // 設定情報
 extern Settings settings;
-
-
 
 AS3935::AS3935(Adafruit_ILI9341* a_pTft) :
 	m_pTft(a_pTft),
@@ -103,7 +98,7 @@ bool AS3935::Init(uint8_t a_u8I2CAddress, uint8_t a_u8I2cPort, uint8_t a_u8SdaPi
 	// AS3935の初期化処理
 	bRet = PresetDefault();
 
-	return bRet; 
+	return bRet;
 }
 /// @brief AS3935をデフォルトにリセットするためのダイレクトコマンド（データーシートのAS3935–23)を送信する
 /// @details この関数は、AS3935センサーをデフォルトの状態にリセットします。
@@ -136,8 +131,8 @@ void AS3935::StartCalibration(uint16_t a_timeCalibration)
 		writeRegAndData_1(REG00_AFEGB_PWD, (AFE_GB_INDOOR << 1));
 		writeRegAndData_1(REG01_NFLEV_WDTH, (NFLEV_DEF << 4) | WDTH_DEFAULT);               // ノイズレベルとウォッチドッグスレッショルドを設定
 		*/
-		writeWord(CALIB_RCO);                                                               // RCOキャリブレーションを開始するためのダイレクトコマンドを送信
-		m_FreqCalibration = Calibrate();                                                    // キャリブレーションを実行
+		writeWord(CALIB_RCO);            // RCOキャリブレーションを開始するためのダイレクトコマンドを送信
+		m_FreqCalibration = Calibrate(); // キャリブレーションを実行
 	}
 	dbgprintf("Cap:%3dpF Freq:%4.1fKHz\n", m_u8calibratedCap * 8, (float)m_FreqCalibration / 1000);
 	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap)); // キャリブレーションされたキャパシタの値を設定、IRQピンへの出力をオフにする
@@ -258,41 +253,49 @@ AS3935_SIGNAL AS3935::validateSignal()
 	callcnt++;
 	if (callcnt > 100) callcnt = 0; // カウントをリセット
 	return m_latestSignalValid;
-#endif	
+#endif
 
 	// 割り込み発生時にREG03_LCOFDIV_MDIST_INTのINTフラグを確認
 
 	// static bool isFirstCall = true; // 初回呼び出しフラグ。最初に１回、なぜか割り込みがかかってしまうので、最初の１回は無視する
+	uint8_t u8IntSrc = 0; 
+	uint8_t u8Dist = 0;
+	uint8_t u8LIGL;
+	uint8_t u8LIGM;
+	uint8_t u8LIGMM;
+	unsigned long lEnergy = 0; // 雷のエネルギーを格納する変数
 
-#ifdef I2C_BULK_READ
-	uint8_t regBuffer[8] = {0};
-	readBlockReg(regBuffer); // レジスタの値を読み込む
-#endif
+	if (settings.geti2cReadMode() == 1) {
+		uint8_t regBuffer[9] = {0};
+		readBlockReg(regBuffer); // レジスタの値を読み込む
+		dbgprintf("validateSignal: I2C Bulk Read : ");
+		for (int i = 0; i < 9; i++) {
+			dbgprintf("  %d-", regBuffer[i]);
+		}
+		dbgprintf("\n");
+		u8IntSrc = regBuffer[3] & 0x0F; // REG03_LCOFDIV_MDIST_INTの下位4ビットを取得
+		u8Dist = regBuffer[7] & 0x3F;           // 距離推定値を取得（0x00: 検出なし, 0x01-0x3F: 距離, 0x3F: 遠すぎる）
+		u8LIGL = regBuffer[4];                  // 雷のエネルギーを読み込む
+		u8LIGM = regBuffer[5];                  // 雷のエネルギーを読み込む
+		u8LIGMM = regBuffer[6];                 // 雷のエネルギーを読み込む
 
-	//uint8_t u8IntSrc = readReg(REG03_LCOFDIV_MDIST_INT) & 0x0F;
-	uint8_t u8IntSrc = regBuffer[3] & 0x0F; // REG03_LCOFDIV_MDIST_INTの下位4ビットを取得
+	} else {
+		dbgprintf("validateSignal: I2C Single Read\n");
+		u8IntSrc = readReg(REG03_LCOFDIV_MDIST_INT) & 0x0F;
+		dbgprintf("validateSignal: I2C Single Read : u8IntSrc:%02X\n", u8IntSrc);
+		u8Dist = readReg(REG07_DIST) /*& 0x3F*/; // 距離推定値を取得（0x00: 検出なし, 0x01-0x3F: 距離, 0x3F: 遠すぎる）
+		u8LIGL = readReg(REG04_S_LIGL);          // 雷のエネルギーを読み込む
+		u8LIGM = readReg(REG05_S_LIGM);          // 雷のエネルギーを読み込む
+		u8LIGMM = readReg(REG06_S_LIGMM);        // 雷のエネルギーを読み込む
+	}
+
+	dbgprintf("validateSignal: u8IntSrc:%02X u8Dist:%02X u8LIGL:%02X u8LIGM:%02X u8LIGMM:%02X\n", u8IntSrc, u8Dist, u8LIGL, u8LIGM, u8LIGMM);
 
 	// INTNOISE_LIGHTNINGINTR: 雷検出
 	// INTNOISE_DISTERBERDETECT: ディスターバ（誤検出）
 	// INTNOISE_TOHIGH: ノイズレベル過大
 	if (u8IntSrc & INTNOISE_LIGHTNINGINTR) {
-		uint8_t u8Dist = 0;
-		uint8_t u8LIGL;
-		uint8_t u8LIGM;
-		uint8_t u8LIGMM;
-		unsigned long lEnergy = 0; // 雷のエネルギーを格納する変数
 
-		#ifdef I2C_BULK_READ
-		u8Dist = regBuffer[7] & 0x3F;                     // 距離推定値を取得（0x00: 検出なし, 0x01-0x3F: 距離, 0x3F: 遠すぎる）
-		u8LIGL = regBuffer[4];                            // 雷のエネルギーを読み込む
-		u8LIGM = regBuffer[5];                            // 雷のエネルギーを読み込む
-		u8LIGMM = regBuffer[6];                           // 雷のエネルギーを読み込む
-		#else
-		// u8Dist = readReg(REG07_DIST) /*& 0x3F*/;            // 距離推定値を取得（0x00: 検出なし, 0x01-0x3F: 距離, 0x3F: 遠すぎる）
-		// u8LIGL = readReg(REG04_S_LIGL);                 // 雷のエネルギーを読み込む
-		// u8LIGM = readReg(REG05_S_LIGM);                 // 雷のエネルギーを読み込む
-		// u8LIGMM = readReg(REG06_S_LIGMM);               // 雷のエネルギーを読み込む
-		#endif
 		lEnergy = ((((unsigned long)u8LIGMM & 0x0F) * 65536) + ((unsigned long)u8LIGM * 256) + ((unsigned long)u8LIGL)) & 0x0FFFFF;
 
 		// 最初の１回は無視する
@@ -303,39 +306,50 @@ AS3935_SIGNAL AS3935::validateSignal()
 
 		// 距離が有効範囲内かつ、ノイズ/誤検出でなければtrue
 		if (u8Dist > 0 && u8Dist < 0x3F) {
+			dbgprintf("validateSignal: Thunder detected! Dist:%02X Energy:%ld\n", u8Dist, lEnergy);
 			m_bufAlarmSummary.push(SUMM_THUNDER);
 			m_bufAlarmDist.push(u8Dist);                // 距離をリングバッファに保存
-			m_bufSingleEnergy.push(lEnergy);             // ステータスをリングバッファに保存
+			m_bufSingleEnergy.push(lEnergy);            // ステータスをリングバッファに保存
 			m_bufDateTime.push(time(NULL));             // 現在時刻をリングバッファに保存
 			m_latestSignalValid = AS3935_SIGNAL::VALID; // 雷が検出された場合
 		} else {
 			if (u8Dist >= 0x3F) {
+				dbgprintf("validateSignal: Too far detected! Dist:%02X Energy:%ld\n", u8Dist, lEnergy);
 				m_bufAlarmSummary.push(SUMM_TOOFAR);
 			} else {
+				dbgprintf("validateSignal: Invalid signal detected! Dist:%02X Energy:%ld\n", u8Dist, lEnergy);
 				m_bufAlarmSummary.push(SUMM_NUMZERO);
 			}
 			m_bufAlarmDist.push(u8Dist);                  // 距離をリングバッファに保存
-			m_bufSingleEnergy.push(lEnergy);               // ステータスをリングバッファに保存
+			m_bufSingleEnergy.push(lEnergy);              // ステータスをリングバッファに保存
 			m_bufDateTime.push(time(NULL));               // 現在時刻をリングバッファに保存
 			m_latestSignalValid = AS3935_SIGNAL::INVALID; // 距離が無効、またはノイズ/誤検出の場合
 		}
 	} else if (u8IntSrc & INTNOISE_DISTERBERDETECT) {
+		dbgprintf("validateSignal: Disturber detected!\n");
 		m_bufAlarmSummary.push(SUMM_DISTERBER);       // ディスターバ（誤検出）をリングバッファに保存;
 		m_bufAlarmDist.push(0);                       // 距離をリングバッファに保存
-		m_bufSingleEnergy.push(0);                     // ステータスをリングバッファに保存
+		m_bufSingleEnergy.push(0);                    // ステータスをリングバッファに保存
 		m_bufDateTime.push(time(NULL));               // 現在時刻をリングバッファに保存
 		m_latestSignalValid = AS3935_SIGNAL::INVALID; // 距離が無効、またはノイズ/誤検出の場合
 
 	} else if (u8IntSrc & INTNOISE_TOHIGH) {
+		dbgprintf("validateSignal: Noise level too high detected!\n");
 		m_bufAlarmSummary.push(SUMM_NOISEHIGH);       // ノイズレベル過大をリングバッファに保存
 		m_bufAlarmDist.push(0);                       // 距離をリングバッファに保存
-		m_bufSingleEnergy.push(0);                     // ステータスをリングバッファに保存
+		m_bufSingleEnergy.push(0);                    // ステータスをリングバッファに保存
 		m_bufDateTime.push(time(NULL));               // 現在時刻をリングバッファに保存
 		m_latestSignalValid = AS3935_SIGNAL::INVALID; // 距離が無効、またはノイズ/誤検出の場合
-	} else if (u8IntSrc == INTNOISE_CLEARSTATSTICS) {	// 統計情報が削除されたことを示すので、雷の検出ではない
-		return m_latestSignalValid = AS3935_SIGNAL::STATCLEAR; // 信号が存在しない。記録する必要もないので、ここでは何もせず戻る
+	} else if (u8IntSrc == INTNOISE_CLEARSTATSTICS) { // 統計情報が削除されたことを示すので、雷の検出ではない
+		dbgprintf("validateSignal: Clear statistics detected!\n");
+		m_latestSignalValid = AS3935_SIGNAL::STATCLEAR; // 信号が存在しない。記録する必要もないので、ここでは何もせず戻る
+		return m_latestSignalValid;
+	} else {
+		dbgprintf("validateSignal: No valid signal detected! u8IntSrc:%02X\n", u8IntSrc);
+		m_latestSignalValid = AS3935_SIGNAL::NONE; // 信号が存在しない
+		return m_latestSignalValid; // 最新の信号が有効かどうかを返す
 	}
-
+	
 
 	// 最新の情報を取得しておく（信号が存在しない - リングバッファに格納されていない場合でも）
 	m_latestSignalValid = m_latestSignalValid; // 最新の信号が有効かどうかを保存
@@ -343,7 +357,7 @@ AS3935_SIGNAL AS3935::validateSignal()
 	m_latestBufAlarmDist = m_bufAlarmDist.getLastData();
 	m_latestBufSingleEnergy = m_bufSingleEnergy.getLastData();
 	m_latestBufDateTime = m_bufDateTime.getLastData(); // 最新の日時を保存
-	return m_latestSignalValid; // 最新の信号が有効かどうかを返す
+	return m_latestSignalValid;                        // 最新の信号が有効かどうかを返す
 }
 
 /**
@@ -369,19 +383,13 @@ void AS3935::readBlockReg(uint8_t* a_regVal)
 	uint8_t* regVal = a_regVal;
 	uint8_t reg = REG00_AFEGB_PWD;
 	i2c_write_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, &reg, 1, true);
-	int iReadCnt[8] = {0}; // 読み取り結果を格納する配列
-	iReadCnt[0] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, true); // REG00_AFEGB_PWD
-	iReadCnt[1] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, true); // REG01_NFLEV_WDTH
-	iReadCnt[2] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, true); // REG02_CLSTAT_MINNUMLIGH_SREJ
-	iReadCnt[3] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, true); // REG03_LCOFDIV_MDIST_INT
-	iReadCnt[4] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, true); // REG04_S_LIGL
-	iReadCnt[5] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, true); // REG05_S_LIGM
-	iReadCnt[6] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, true); // REG06_S_LIGMM
-	iReadCnt[7] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, true); // REG07_DIST
-	iReadCnt[8] = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal++, 1, false); // REG08_LCO_SRCO_TRCO_CAP
-	for (int i = 0; i < 8; i++) {
-		printf("AS3935 REG No: %02X ByteRead:%d  Value:%02X\n", i, iReadCnt[i], a_regVal[i]);
+	int iReadCnt;
+	iReadCnt = i2c_read_blocking((m_u8I2cPort == 0 ? i2c0 : i2c1), m_u8I2CAddress, regVal, 9, false); // REG00_AFEGB_PWD
+	dbgprintf("AS3935 readBlockReg: %d bytes read, ",iReadCnt);
+	for (int i = 0; i < 9; i++) {
+		dbgprintf("%02X-\n", a_regVal[i]);
 	}
+	dbgprintf("\n");
 }
 
 bool AS3935::GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, long& a_lEnergy, time_t& a_time)
@@ -437,11 +445,11 @@ void AS3935::Reset()
 {
 	// PresetDefault();
 	writeRegAndData_1(REG00_AFEGB_PWD, (settings.value.gainBoost << 1));
-	writeRegAndData_1(REG01_NFLEV_WDTH, (settings.value.noiseFloor << 4) | settings.value.watchDogThreshold); // ノイズレベルとウォッチドッグスレッショルドを設定
+	writeRegAndData_1(REG01_NFLEV_WDTH, (settings.value.noiseFloor << 4) | settings.value.watchDogThreshold);                      // ノイズレベルとウォッチドッグスレッショルドを設定
 	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b00000000 | (settings.value.minimumEvent << 4) | settings.value.spikeReject); // 最小イベント数とスパイクリジェクトを設定
-	writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE); // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
+	writeRegAndData_1(REG03_LCOFDIV_MDIST_INT, FDIV_RATIO_1_16 | MASK_DISTURBER_FALSE);                                            // LCO Frequency Division Ratio = 1/16, Mask Disturber = 0, Interrupt = 0
 	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b01000000 | (settings.value.minimumEvent << 4) | settings.value.spikeReject); // 内部データのクリア。ビット６をストローブする
-	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b00000000 | (settings.value.minimumEvent << 4) | settings.value.spikeReject); // 
-	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b01000000 | (settings.value.minimumEvent << 4) | settings.value.spikeReject); // 
-	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap));                                                  // キャリブレーションされたキャパシタの値を設定する
+	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b00000000 | (settings.value.minimumEvent << 4) | settings.value.spikeReject); //
+	writeRegAndData_1(REG02_CLSTAT_MINNUMLIGH_SREJ, 0b01000000 | (settings.value.minimumEvent << 4) | settings.value.spikeReject); //
+	writeRegAndData_1(REG08_LCO_SRCO_TRCO_CAP, (DISPLCO_OFF | m_u8calibratedCap));                                                 // キャリブレーションされたキャパシタの値を設定する
 }

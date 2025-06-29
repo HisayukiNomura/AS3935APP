@@ -374,11 +374,11 @@ void Initialize(Adafruit_ILI9341& tft, XPT2046_Touchscreen& ts, AS3935& as3935 ,
 	}
 }
 
-Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
 
 int main()
 {
-	XPT2046_Touchscreen ts(TOUCH_CS);
+	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
+	XPT2046_Touchscreen ts(TOUCH_CS); 
 	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
 
 	settings.load();                 // フラッシュメモリの内容を読み込む
