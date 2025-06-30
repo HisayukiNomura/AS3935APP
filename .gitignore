@@ -16,3 +16,6 @@ KNJGfx9341_ARD
 outlog.txt
 *.ino
 documents
+Doxygen/html
+Doxygen/latex
+Doxygen/rtf
