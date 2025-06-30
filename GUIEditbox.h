@@ -13,7 +13,20 @@
 #include "FlashMem.h"
 #include "lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h"
 #include "lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h"
+/**
+ * @namespace ardPort
+ * @brief Arduino互換ポートラッパーの名前空間
+ * @details
+ * Pico SDK上でArduinoライクなAPIを提供するためのラッパー。
+ * SPI/I2C/GPIO等の抽象化を含む。
+ */
 using namespace ardPort;
+/**
+ * @namespace ardPort::spi
+ * @brief SPI関連APIの名前空間
+ * @details
+ * SPI通信の初期化・データ転送・ピン制御等を提供。
+ */
 using namespace ardPort::spi;
 class ScreenKeyboard; // 前方宣言
 

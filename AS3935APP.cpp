@@ -31,25 +31,25 @@ using namespace ardPort;
 using namespace ardPort::spi;
 
 // 使用するポートの定義　　　　　　　　　　　　＜＜＜＜＜　追加　（３）
-#define TFT_SCK 18  // 液晶表示の SCK
-#define TFT_MOSI 19 // 液晶表示の MOSI
-#define TFT_DC 20   // 液晶画面の DC
-#define TFT_RST 21  // 液晶画面の RST
-#define TFT_CS 22   // 液晶画面の CS
+#define TFT_SCK 18  ///< 液晶表示のSCKピン番号（SPIクロック）
+#define TFT_MOSI 19 ///< 液晶表示のMOSIピン番号（SPIデータ出力）
+#define TFT_DC 20   ///< 液晶画面のDCピン番号（データ/コマンド切替）
+#define TFT_RST 21  ///< 液晶画面のリセットピン番号
+#define TFT_CS 22   ///< 液晶画面のチップセレクトピン番号
 
-#define TOUCH_MISO 16 // タッチパネルの MISO
-#define TOUCH_CS 17   // タッチパネルの CS
+#define TOUCH_MISO 16 ///< タッチパネルのMISOピン番号（SPIデータ入力）
+#define TOUCH_CS 17   ///< タッチパネルのチップセレクトピン番号
 
 // I2Cのポート番号とピン番号の定義
-#define I2C_PORT 1 // I2Cのポート番号として０
-#define I2C_SDA 14 // I2CのSDAピン番号としてGP14
-#define I2C_SCL 15 // I2CのSCLピン番号としてGP15
+#define I2C_PORT 1 ///< I2Cのポート番号（1: I2C1を使用）
+#define I2C_SDA 14 ///< I2CのSDAピン番号（データ）
+#define I2C_SCL 15 ///< I2CのSCLピン番号（クロック）
 // AS3935からのIRQ入力
-#define AS3935_IRQ 13 // AS3935のIRQピン GP13
+#define AS3935_IRQ 13 ///< AS3935のIRQピン番号（雷検出割り込み）
 // AS3935のアドレス。ボードにより0か３のどちらか
-#define AS3935_ADDRESS 0
+#define AS3935_ADDRESS 0 ///< AS3935のI2Cアドレス（0または3）
 
-Settings settings;
+Settings settings; ///< 設定管理インスタンス
 
 /// @brief 	Wi-Fi接続関数
 /// @param ipAddr 		IPアドレスを格納する配列（4バイト）
@@ -389,116 +389,118 @@ void Initialize(Adafruit_ILI9341& tft, XPT2046_Touchscreen& ts, AS3935& as3935 ,
 }
 
 
+/**
+ * @brief アプリケーションのエントリーポイント
+ * @details
+ * Raspberry Pi Pico上でAS3935雷センサ、ILI9341 TFTディスプレイ、タッチパネル、Wi-Fi、DMA等を初期化し、
+ * メインループで雷検出・時刻表示・設定画面遷移などの制御を行う。
+ * - 起動時にタッチパネル長押しで設定初期化ダイアログを表示し、必要に応じて設定をリセット。
+ * - シリアルデバッグ有効時はユーザー操作を待機。
+ * - 各種初期化（TFT, タッチ, AS3935, Wi-Fi, DMA, 時計）を行い、
+ *   割り込み・タイマー・メインループで雷検出や設定画面遷移を制御。
+ * - IRQ割り込みやタイマー、GUIメッセージボックス等の組み合わせで堅牢なUI/UXを実現。
+ *
+ * @retval int 正常終了時は0、初期化失敗時は-1
+ */
 int main()
 {
-	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST);
-	XPT2046_Touchscreen ts(TOUCH_CS); 
-	appMode = APP_MODE_STARTING; // アプリケーションモードを初期化
+	Adafruit_ILI9341 tft = Adafruit_ILI9341(&SPI, TFT_DC, TFT_CS, TFT_RST); ///< TFTディスプレイインスタンス
+	XPT2046_Touchscreen ts(TOUCH_CS); ///< タッチパネルインスタンス
+	appMode = APP_MODE_STARTING; ///< アプリケーションモード初期化
 
-	settings.load();                 // フラッシュメモリの内容を読み込む
-	InetAction iNet(settings, &tft); // InetActionのインスタンスを作成
-	stdio_init_all();
-	// ILI9341ディスプレイのインスタンスを作成　　＜＜＜＜＜　追加　（３）
-	SPI.setTX(TFT_MOSI); // SPI0のTX(MOSI)
-	SPI.setSCK(TFT_SCK); // SPI0のSCK
-	tft.begin();         // TFTを初期
+	settings.load(); ///< フラッシュメモリから設定値をロード
+	InetAction iNet(settings, &tft); ///< Wi-Fi/時刻同期用インスタンス
+	stdio_init_all(); ///< 標準入出力初期化
+	// ILI9341ディスプレイのSPI設定
+	SPI.setTX(TFT_MOSI); ///< SPI0のTX(MOSI)ピン設定
+	SPI.setSCK(TFT_SCK); ///< SPI0のSCKピン設定
+	tft.begin(); ///< TFT初期化
 
-	AS3935 as3935(&tft); // AS3935のインスタンスを作成
+	AS3935 as3935(&tft); ///< 雷センサインスタンス
 
-	// 漢字フォントの設定　　　　　　　　　　　　　＜＜＜＜＜　追加　（４）　
-	tft.setFont(JFDotShinonome16_16x16_ALL, JFDotShinonome16_16x16_ALL_bitmap);
+	// 漢字フォント設定
+	tft.setFont(JFDotShinonome16_16x16_ALL, JFDotShinonome16_16x16_ALL_bitmap); ///< 日本語フォント設定
+	// 文字表示高速化
+	tft.useWindowMode(true); ///< ウィンドウモード有効化
 
-	// 文字の表示を高速化させる　　　　　　　　　　＜＜＜＜＜　追加　（４）　
-	tft.useWindowMode(true);
-
-	ts.begin();                         // タッチパネル初期化
-	ts.setRotation(TFTROTATION.NORMAL); // タッチパネルの回転を設定（液晶画面と合わせる）
-	// 起動時にタッチさていれば、設定値のリセット
+	ts.begin(); ///< タッチパネル初期化
+	ts.setRotation(TFTROTATION.NORMAL); ///< タッチパネル回転設定
+	// 起動時にタッチされていれば設定値リセット
 	if (ts.touched()) {
-		int touchCnt = 0;
-		while (ts.touched()) { // タッチされている間は待つ。ただし、ロングタップされているときはキャリブレーションに
+		int touchCnt = 0; ///< タッチカウンタ
+		while (ts.touched()) { // タッチされている間は待つ
 			delay(100);
 			touchCnt++;
-			if (touchCnt > 20) {               // 2秒以上タッチされている場合は設定を初期化する
-				tft.fillScreen(ILI9341_BLACK); // 画面を黒で塗りつぶす
-				touchCnt = 0;                  // タッチカウントをリセット
+			if (touchCnt > 20) { ///< 2秒以上タッチで初期化ダイアログ
+				tft.fillScreen(ILI9341_BLACK); ///< 画面クリア
+				touchCnt = 0; ///< カウンタリセット
 				GUIMsgBox msgbox(&tft, &ts);
 				bool bRet = msgbox.showOKCancel(30, 100, "確認", "設定を初期化します", "  OK  ", " CANCEL");
 				if (bRet) {
-					settings.setDefault();
-					settings.save(); // 設定をフラッシュメモリに保存
+					settings.setDefault(); ///< 設定初期化
+					settings.save(); ///< フラッシュ保存
 				}
 			}
 		}
 	}
-	ts.setCalibration(settings.getMinX(), settings.getMinY(), settings.getMaxX(), settings.getMaxY());
+	ts.setCalibration(settings.getMinX(), settings.getMinY(), settings.getMaxX(), settings.getMaxY()); ///< タッチキャリブレーション
 
-// シリアルデバッグが有効な場合、ここでしばらく待ち、ポートの接続を行う
+	// シリアルデバッグ有効時はユーザー操作待機
 	if (settings.isSerialDebug()) {
 		GUIMsgBox msgbox(&tft, &ts);
-		tft.fillScreen(ILI9341_BLACK); // 画面を黒で塗りつぶす
+		tft.fillScreen(ILI9341_BLACK); ///< 画面クリア
 		msgbox.showOK(30, 100, "シリアルデバッグ", "COMポートを接続後、\nOKを押してください。", "  OK  ");
 	}
 
+	Initialize(tft, ts, as3935 , iNet); ///< 各種初期化
 
-	Initialize(tft, ts, as3935 , iNet); // 初期化関数を呼び出す
+	delay(1000); ///< 初期化後の待機
 
+	mainDisplay(tft, as3935, false, true, false, false); ///< 初期画面バナー表示
 
-	delay(1000);
-
-	mainDisplay(tft, as3935, false, true, false, false); // 初期画面のバナー表示
-
-	// --- 画面初期化・タイトル表示 ---
 	// --- 割り込み・タイマー・メインループ ---
-	// AS3935のIRQ割り込みを有効化
-	dbgprintf("AS3935_IRQ %s PIN:%d\n","Enable", AS3935_IRQ );
-	gpio_set_irq_enabled_with_callback(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true, &as3935IRQCallback);
-	// 1秒ごとのハートビートタイマーを設定
-	repeating_timer_t timer;
+	dbgprintf("AS3935_IRQ %s PIN:%d\n","Enable", AS3935_IRQ ); ///< IRQ有効化ログ
+	gpio_set_irq_enabled_with_callback(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true, &as3935IRQCallback); ///< AS3935 IRQ割り込み有効化
+	repeating_timer_t timer; ///< 1秒ごとのハートビートタイマー
 	add_repeating_timer_ms(500, hartbeatCallback, NULL, &timer);
-	appMode = APP_MODE_NORMAL;
+	appMode = APP_MODE_NORMAL; ///< 通常モードへ
 	while (true) {
 		if (appMode == APP_MODE_NORMAL) {
 
-			isIRQTriggered = false;
-			__wfe(); // 割り込みが発生するまでスリープ
-			// 割り込みが発生し、その処理を行っている間は新しい割り込みは起こさない
+			isIRQTriggered = false; ///< IRQトリガーフラグリセット
+			__wfe(); ///< 割り込み待機（低消費電力）
 
-			if (isIRQTriggered) {                                   // IRQがトリガーされた場合
+			if (isIRQTriggered) { ///< 雷センサIRQ発生時
 				dbgprintf("AS3935_IRQ %s PIN:%d\n", "Disable", AS3935_IRQ);
-				gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, false); // IRQ割り込みを一時的に無効化
-				mainDisplay(tft, as3935, true, false, false, true);          // 雷センサーの画面表示を更新
-				// IRQ割り込みを再度有効化
+				gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, false); ///< 一時的にIRQ無効化
+				mainDisplay(tft, as3935, true, false, false, true); ///< 雷検出画面更新
 				dbgprintf("AS3935_IRQ %s PIN:%d\n", "Enable", AS3935_IRQ);
-				gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true); // IRQ割り込みを再度有効化
+				gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true); ///< IRQ再有効化
 
 			} else {
 				if (ts.touched()) {
 					TS_Point tPoint;
 					tPoint = ts.getPointOnScreen();
 					if (tPoint.y < 20) {
-						appMode = APP_MODE_SETTING; // 設定モードに切り替え
+						appMode = APP_MODE_SETTING; ///< 設定モード遷移
 					}
 				}
-				// それ以外の処理があればここに追加
-				mainDisplay(tft, as3935, false, false, true, false); // 時計の更新
+				mainDisplay(tft, as3935, false, false, true, false); ///< 時計更新
 			}
 		} else if (appMode == APP_MODE_SETTING) {
-			// 設定中はIRQ割り込みを禁止する
+			// 設定中はIRQ割り込み禁止
 			dbgprintf("AS3935_IRQ %s PIN:%d\n", "Disable", AS3935_IRQ);
-			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, false); // IRQ割り込みを一時的に無効化
-			cancel_repeating_timer(&timer);                              // ハートビートタイマーを停止
+			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, false); ///< IRQ無効化
+			cancel_repeating_timer(&timer); ///< タイマー停止
 			tft.setCursor(0, 0);
 			tft.printf("設定モード");
-			//			settings.run(&tft, &ts); // 設定画面の実行
-			settings.run2(&tft, &ts); // 設定画面の実行
-			mustRedraw = true;
-			DispClock::setRedrawFlag(); // 時計の再描画フラグを立てる
-			appMode = APP_MODE_NORMAL;  // 通常モードに戻す
+			settings.run2(&tft, &ts); ///< 設定画面実行
+			mustRedraw = true; ///< 再描画フラグ
+			DispClock::setRedrawFlag(); ///< 時計再描画フラグ
+			appMode = APP_MODE_NORMAL; ///< 通常モード復帰
 			add_repeating_timer_ms(500, hartbeatCallback, NULL, &timer);
-			// as3935.Reset(); // AS3935のリセット
 			dbgprintf("AS3935_IRQ %s PIN:%d\n", "Enable", AS3935_IRQ);
-			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true); // 設定が終わったらIRQ割り込みを復旧
+			gpio_set_irq_enabled(AS3935_IRQ, GPIO_IRQ_EDGE_RISE, true); ///< IRQ復旧
 		}
 	}
 }

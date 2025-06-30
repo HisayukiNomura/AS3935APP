@@ -32,50 +32,41 @@ GUIEditBox::GUIEditBox(Adafruit_GFX* a_ptft, XPT2046_Touchscreen* a_pts, ScreenK
 }
 
 /**
- * @brief エディットボックスを表示し、文字列編集を行う
+ * @brief エディットボックスの編集ループ本体
  * @details
- * - 編集欄の座標・バッファ・サイズ・編集モードを指定して呼び出す。
- * - テキストモードならQWERTYキーボード、数字上書きモードならテンキーを画面下部に表示。
- * - カーソル位置・挿入/上書きモードを初期化。
- * - ループ内でタッチ入力を監視し、
- *   - 何も押されていなければカーソルを点滅表示。
- *   - キーが押されたら、
- *     - Enter(0x0d)で編集確定（trueを返す）
- *     - ESC(0x1b)でキャンセル（falseを返す）
- *     - カーソル移動（0x13:左, 0x14:右）、挿入/上書き切替（0x7e）
- *     - バックスペース(0x08)・デリート(0x7F)・通常文字の挿入/上書き
- *   - 文字列長やカーソル範囲はバッファサイズを超えないよう制御
- *   - 入力内容が変化したら都度再描画
- * - ループを抜けた時点で、trueなら編集内容確定、falseならキャンセル
+ * - 画面キーボードからの入力を監視し、各種キーイベント（Enter, ESC, カーソル移動, 挿入/上書き切替, バックスペース, デリート, 通常文字）を処理します。
+ * - カーソル点滅や再描画、バッファサイズ制御、挿入/上書きモードの切替も行います。
+ * - 編集確定時はtrue、キャンセル時はfalseを返します。
  *
  * @param a_x 編集欄X座標
  * @param a_y 編集欄Y座標
  * @param a_pText 編集対象文字列バッファ
  * @param a_size バッファサイズ
  * @param a_mode 編集モード
- * @return Enterでtrue、ESCでfalse
+ * @retval true Enterキーで確定
+ * @retval false ESCキーでキャンセル
  */
 bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,EditMode a_mode)
 {
 	mode = a_mode;
 	if(mode == MODE_NUMPADOVERWRITE) {
-		isInsert = false;
-		edtCursor = 0;                                    // カーソルを先頭に設定
+		isInsert = false; ///< 上書きモード
+		edtCursor = 0;    ///< カーソルを先頭に設定
 		psk->showNumPad(ptft->height() - psk->KB_HEIGHT); // キーボードを表示
 	} else {
-		edtCursor = strlen(a_pText);
+		edtCursor = strlen(a_pText); ///< 既存文字列の末尾にカーソル
 		psk->show(ptft->height() - psk->KB_HEIGHT); // キーボードを表示
-		isInsert = true;
+		isInsert = true; ///< 挿入モード
 	}
-	p = a_pText;
-	edtX = a_x;
-	edtY = a_y;
+	p = a_pText; ///< 編集対象バッファ
+	edtX = a_x;  ///< 編集欄X座標
+	edtY = a_y;  ///< 編集欄Y座標
 
-	int waitCnt = 0;
-	bool retReason = false;
+	int waitCnt = 0; ///< カーソル点滅用カウンタ
+	bool retReason = false; ///< 戻り値（true:確定, false:キャンセル）
 
 	while (true) {
-		uint8_t ret = psk->checkTouch();
+		uint8_t ret = psk->checkTouch(); ///< キーボード入力取得
 		if (ret == 0xff) { // タッチされていない場合はカーソルを点滅させたりする
 			waitCnt++;
 			waitCnt = waitCnt % 0xFF;
@@ -88,13 +79,13 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,E
 		}
 		// 特殊コードの処理
 		if (ret == 0x0d) {
-			retReason = true;
+			retReason = true; ///< Enter確定
 			break;                // Enterキーが押されたら終了
 		} else if (ret == 0x1b) { // ESCキーが押されたらキャンセル
-			retReason  = false;
+			retReason  = false; ///< ESCキャンセル
 			break;
 		} else if (ret == 0x13) { // ↚キー
-			edtCursor--;
+			edtCursor--; ///< カーソル左
 			if (edtCursor < 0) {
 				edtCursor = 0; // カーソルが先頭を超えないようにする
 			}
@@ -106,10 +97,10 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,E
 			if (p[edtCursor] == 0) {
 				continue;
 			}
-			edtCursor++;
+			edtCursor++; ///< カーソル右
 			ret = 0;
 		} else if (ret == 0x7e) {
-			isInsert = !isInsert;
+			isInsert = !isInsert; ///< 挿入/上書きモード切替
 			ret = 0;
 		}
 		if (ret == 0) {
@@ -125,7 +116,7 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,E
 				for (size_t i = edtCursor - 1; i < strlen(p); i++) {
 					p[i] = p[i + 1]; // 文字を左にシフト
 				}
-				edtCursor--;
+				edtCursor--; ///< カーソル左
 			} else {
 				continue; // カーソルが先頭にある場合は何もしない
 			}
@@ -142,7 +133,7 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,E
 			if (edtCursor >= a_size) {
 				continue; // 文字列が最大長に達している場合は何もしない
 			}
-			p[edtCursor++] = ret;
+			p[edtCursor++] = ret; ///< 末尾に追加
 			p[edtCursor] = '\0'; // 文字列の終端を設定
 		} else {
 			if (isInsert) { // 挿入モード
@@ -153,9 +144,9 @@ bool GUIEditBox::show(uint16_t a_x, uint16_t a_y, char* a_pText, size_t a_size,E
 						p[i] = p[i - 1]; // 文字を右にシフト
 					}
 				}
-				p[edtCursor++] = ret; // 新しい文字を挿入
+				p[edtCursor++] = ret; ///< 挿入
 			} else {                  // 上書きモード
-				p[edtCursor++] = ret; // 新しい文字で上書き
+				p[edtCursor++] = ret; ///< 上書き
 				if (edtCursor >= a_size - 1) {
 					edtCursor = a_size - 1; // カーソルが最大長を超えないようにする
 				}

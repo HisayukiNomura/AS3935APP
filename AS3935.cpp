@@ -14,43 +14,43 @@
 using namespace ardPort;
 using namespace ardPort::spi;
 // ダイレクトコマンド
-#define PRESET_DEFAULT 0x3C96 // デフォルト値にリセットするためのダイレクトコマンド。
-#define CALIB_RCO 0x3D96      // RCOキャリブレーションを開始するためのダイレクトコマンド。
+#define PRESET_DEFAULT 0x3C96 ///< デフォルト値にリセットするためのダイレクトコマンド
+#define CALIB_RCO 0x3D96      ///< RCOキャリブレーションを開始するためのダイレクトコマンド
 
 // レジスタ
-#define REG00_AFEGB_PWD 0x00              // AFE GAin Boost / Power Down
-#define REG01_NFLEV_WDTH 0x01             // Noise Floor Level/ Watch Dog Threshold
-#define REG02_CLSTAT_MINNUMLIGH_SREJ 0x02 // Clear Status / Minimum Number of Lightning / Spike Rejection
-#define REG03_LCOFDIV_MDIST_INT 0x03      // LCO Frequency Division Ratio / Mask Disturber / Interrupt
-#define REG04_S_LIGL 0x04                 // Energy of the Single Lightning LSBYTE
-#define REG05_S_LIGM 0x05                 // Energy of the Single Lightning MSBYTE
-#define REG06_S_LIGMM 0x06                // Energy of the Single Lightning MMSBYTE
-#define REG07_DIST 0x07                   // Distance estimation
-#define REG08_LCO_SRCO_TRCO_CAP 0x08      // Display LCO on IRQ pin/ Display SRCO on IRQ pin/Display TRCO on IRQ pin/Internal Tuning Capacitors (from 0 to 120pF in steps of 8pF)
+#define REG00_AFEGB_PWD 0x00              ///< AFE GAin Boost / Power Down レジスタアドレス
+#define REG01_NFLEV_WDTH 0x01             ///< Noise Floor Level/ Watch Dog Threshold レジスタアドレス
+#define REG02_CLSTAT_MINNUMLIGH_SREJ 0x02 ///< Clear Status / Minimum Number of Lightning / Spike Rejection レジスタアドレス
+#define REG03_LCOFDIV_MDIST_INT 0x03      ///< LCO Frequency Division Ratio / Mask Disturber / Interrupt レジスタアドレス
+#define REG04_S_LIGL 0x04                 ///< Energy of the Single Lightning LSBYTE レジスタアドレス
+#define REG05_S_LIGM 0x05                 ///< Energy of the Single Lightning MSBYTE レジスタアドレス
+#define REG06_S_LIGMM 0x06                ///< Energy of the Single Lightning MMSBYTE レジスタアドレス
+#define REG07_DIST 0x07                   ///< Distance estimation レジスタアドレス
+#define REG08_LCO_SRCO_TRCO_CAP 0x08      ///< LCO/SRCO/TRCO/キャパシタ設定レジスタアドレス
 
-#define REG3A_TRCO_CALIBRSLT 0x3A // Calibration of TRCO done (1=successful) / Calibration of TRCO unsuccessful(1 = not successful)
-#define REG3B_SRCO_CALIBRSLT 0x3B // Calibration of SRCO done (1=successful) / Calibration of SRCO unsuccessful(1 = not successful)
+#define REG3A_TRCO_CALIBRSLT 0x3A ///< TRCOキャリブレーション結果レジスタアドレス
+#define REG3B_SRCO_CALIBRSLT 0x3B ///< SRCOキャリブレーション結果レジスタアドレス
 
 // Frequency Division Ratio
-#define FDIV_RATIO_1_16 (0x00 << 6)  // LCO Frequency Division Ratio = 1/16
-#define FDIV_RATIO_1_32 (0x01 << 6)  // LCO Frequency Division Ratio = 1/32
-#define FDIV_RATIO_1_64 (0x02 << 6)  // LCO Frequency Division Ratio = 1/64
-#define FDIV_RATIO_1_128 (0x03 << 6) // LCO Frequency Division Ratio = 1/128
+#define FDIV_RATIO_1_16 (0x00 << 6)  ///< LCO分周比=1/16
+#define FDIV_RATIO_1_32 (0x01 << 6)  ///< LCO分周比=1/32
+#define FDIV_RATIO_1_64 (0x02 << 6)  ///< LCO分周比=1/64
+#define FDIV_RATIO_1_128 (0x03 << 6) ///< LCO分周比=1/128
 
 // Mask Disturber
-#define MASK_DISTURBER_FALSE (0x00) // Mask Disturber = 0 (disable)
-#define MASK_DISTURBER_TRUE (0x01)  // Mask Disturber = 1 (enable)
+#define MASK_DISTURBER_FALSE (0x00) ///< Mask Disturber=0（無効）
+#define MASK_DISTURBER_TRUE (0x01)  ///< Mask Disturber=1（有効）
 
 // Interrupt Noise LEVEL
-#define INTNOISE_TOHIGH 0b0001          // Noise level too high
-#define INTNOISE_DISTERBERDETECT 0b0010 // Disturber detected
-#define INTNOISE_LIGHTNINGINTR 0b1000   // Lightning interrupt
-#define INTNOISE_CLEARSTATSTICS 0b0000  // 距離の古いイベントがパージされたため、距離推定が変更された。距離推定が変更された。
+#define INTNOISE_TOHIGH 0b0001          ///< ノイズレベル過大割り込み
+#define INTNOISE_DISTERBERDETECT 0b0010 ///< ディスターバ検出割り込み
+#define INTNOISE_LIGHTNINGINTR 0b1000   ///< 雷検出割り込み
+#define INTNOISE_CLEARSTATSTICS 0b0000  ///< 統計情報クリア割り込み
 
-// Display LCO / ONにすると、TUN＿CAPで指定されたキャパシタの値に基づいてアンテナの共振周波数がデジタル信号として[IRQ] ピンに出力される。
-#define DISPLCO_ON (0x1 << 7)
-#define DISPLCO_OFF (0x0 << 7)
-#define TUN_CAP_MASK (0x0F) // Tuning Capacitors (from 0 to 120pF in steps of 8pF)
+// Display LCO
+#define DISPLCO_ON (0x1 << 7)  ///< LCO出力ON
+#define DISPLCO_OFF (0x0 << 7) ///< LCO出力OFF
+#define TUN_CAP_MASK (0x0F)    ///< チューニングキャパシタマスク（0～120pF/8pF刻み）
 
 
 
@@ -392,21 +392,48 @@ void AS3935::readBlockReg(uint8_t* a_regVal)
 	dbgprintf("\n");
 }
 
+/**
+ * @brief 指定インデックスの最新イベント情報を取得
+ * @details
+ * リングバッファからidx番目（新しい順）のイベント情報（サマリ・距離・エネルギー・時刻）を取得します。
+ * サマリ値が0の場合は無効とみなしてfalseを返します。
+ *
+ * @param idx 新しい順のインデックス（0が最新）
+ * @param[out] a_u8AlarmSummary イベントサマリ格納先
+ * @param[out] a_u8AlarmDist 距離格納先
+ * @param[out] a_lEnergy エネルギー格納先
+ * @param[out] a_time 時刻格納先
+ * @retval true 有効なイベントが取得できた
+ * @retval false 無効（サマリ値0）
+ */
 bool AS3935::GetLatestEvent(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, long& a_lEnergy, time_t& a_time)
 {
-	a_u8AlarmSummary = m_bufAlarmSummary.getFromLast(idx);
-	a_u8AlarmDist = m_bufAlarmDist.getFromLast(idx);
-	a_lEnergy = m_bufSingleEnergy.getFromLast(idx);
-	a_time = m_bufDateTime.getFromLast(idx);
+	a_u8AlarmSummary = m_bufAlarmSummary.getFromLast(idx); ///< サマリ値
+	a_u8AlarmDist = m_bufAlarmDist.getFromLast(idx); ///< 距離
+	a_lEnergy = m_bufSingleEnergy.getFromLast(idx); ///< エネルギー
+	a_time = m_bufDateTime.getFromLast(idx); ///< 時刻
 	if (a_u8AlarmSummary == 0) return false;
 	return true;
 }
+/**
+ * @brief 指定インデックスの最新「雷」イベント情報を取得
+ * @details
+ * リングバッファからidx番目（新しい順）の「雷」イベント（SUMM_THUNDERのみ）を検索し、情報を取得します。
+ *
+ * @param idx 新しい順のインデックス（0が最新）
+ * @param[out] a_u8AlarmSummary イベントサマリ格納先
+ * @param[out] a_u8AlarmDist 距離格納先
+ * @param[out] a_lEnergy エネルギー格納先
+ * @param[out] a_time 時刻格納先
+ * @retval true 有効な「雷」イベントが取得できた
+ * @retval false 見つからなかった
+ */
 bool AS3935::GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, long& a_lEnergy, time_t& a_time)
 {
-	int found = 0;
+	int found = 0; ///< 見つかった件数
 	int total = m_bufAlarmSummary.getCount(); // count()メソッドで要素数取得
 	for (int i = 0; i < total; ++i) {
-		int summary = m_bufAlarmSummary.getFromLast(i);
+		int summary = m_bufAlarmSummary.getFromLast(i); ///< サマリ値
 		if (summary == SUMM_THUNDER) {
 			if (found == idx) {
 				a_u8AlarmSummary = summary;
@@ -420,13 +447,25 @@ bool AS3935::GetLatestAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u
 	}
 	return false;
 }
-
+/**
+ * @brief 指定インデックスの最新「誤検出」イベント情報を取得
+ * @details
+ * リングバッファからidx番目（新しい順）の「誤検出」イベント（SUMM_THUNDER以外）を検索し、情報を取得します。
+ *
+ * @param idx 新しい順のインデックス（0が最新）
+ * @param[out] a_u8AlarmSummary イベントサマリ格納先
+ * @param[out] a_u8AlarmDist 距離格納先
+ * @param[out] a_lEnergy エネルギー格納先
+ * @param[out] a_time 時刻格納先
+ * @retval true 有効な「誤検出」イベントが取得できた
+ * @retval false 見つからなかった
+ */
 bool AS3935::GetLatestFalseAlarm(uint8_t idx, uint8_t& a_u8AlarmSummary, uint8_t& a_u8AlarmDist, long& a_lEnergy, time_t& a_time)
 {
-	int found = 0;
+	int found = 0; ///< 見つかった件数
 	int total = m_bufAlarmSummary.getCount(); // count()メソッドで要素数取得
 	for (int i = 0; i < total; ++i) {
-		int summary = m_bufAlarmSummary.getFromLast(i);
+		int summary = m_bufAlarmSummary.getFromLast(i); ///< サマリ値
 		if (summary != SUMM_THUNDER) {
 			if (found == idx) {
 				a_u8AlarmSummary = summary;

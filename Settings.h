@@ -155,23 +155,55 @@ class Settings
 	bool getIsClock24Hour() const { return value.isClock24Hour; } ///< 24時間表示取得
 	void setIsClock24Hour(bool v) { value.isClock24Hour = v; }    ///< 24時間表示設定
 	const char* getSSID() const { return value.SSID; }            ///< SSID取得
-
+	/**
+	 * @brief SSIDを設定
+	 * @details
+	 * 指定された文字列をSSIDにコピーします。バッファオーバーラン防止のため最大長-1までコピーし、終端に\0を付与します。
+	 * @param s 設定するSSID文字列
+	 * @retval なし
+	 */
 	void setSSID(const char* s)
 	{
-		strncpy(value.SSID, s, sizeof(value.SSID) - 1);
-		value.SSID[sizeof(value.SSID) - 1] = '\0';
+		strncpy(value.SSID, s, sizeof(value.SSID) - 1); ///< SSIDを安全にコピー
+		value.SSID[sizeof(value.SSID) - 1] = '\0';      ///< 終端NULL
 	}
 	const char* getPASSWORD() const { return value.PASSWORD; } ///< パスワード取得
+	/**
+	 * @brief パスワードを設定
+	 * @details
+	 * 指定された文字列をWi-Fiパスワードにコピーします。バッファオーバーラン防止のため最大長-1までコピーし、終端に\0を付与します。
+	 * @param s 設定するパスワード文字列
+	 * @retval なし
+	 */
 	void setPASSWORD(const char* s)
 	{
-		strncpy(value.PASSWORD, s, sizeof(value.PASSWORD) - 1);
-		value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';
+		strncpy(value.PASSWORD, s, sizeof(value.PASSWORD) - 1); ///< パスワードを安全にコピー
+		value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';      ///< 終端NULL
 	}
+	/**
+	 * @brief I2Cリードモード取得
+	 * @details
+	 * I2Cリードモード（0: Single, 1: Block）を返します。
+	 * @retval int 0: Single Read, 1: Block Read
+	 */
 	int geti2cReadMode() const { return value.i2cReadMode; } ///< I2Cリードモード取得（0: Single, 1: Block）
+	/**
+	 * @brief シリアルデバッグモードか判定
+	 * @details
+	 * デバッグモードビットフラグの下位1ビットが1ならシリアルデバッグ有効。
+	 * @retval true: シリアルデバッグ有効, false: 無効
+	 */
 	bool isSerialDebug() const
 	{
 		return (value.debugMode & 0x01) != 0; ///< シリアルデバッグモードか
 	}
+	/**
+	 * @brief シリアルデバッグモードを設定
+	 * @details
+	 * trueで有効化、falseで無効化。デバッグモードビットフラグを操作します。
+	 * @param v 有効化する場合true、無効化する場合false
+	 * @retval true: シリアルデバッグ有効, false: 無効
+	 */
 	bool setSerialDebug(bool v)
 	{
 		if (v) {

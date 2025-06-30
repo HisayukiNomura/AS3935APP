@@ -469,18 +469,18 @@ const void Settings::drawMenu2_system()
  */
 const void Settings::run2_system()
 {
-	SettingValue valuePush;
+	SettingValue valuePush; ///< 設定値の退避用（CANCEL時の復元用）
 	valuePush = value; // 現在の設定値を保存
 
-	ScreenKeyboard sk(ptft, pts);
-	isMustSave = false;
-	menuMode = 0;
+	ScreenKeyboard sk(ptft, pts); ///< 画面キーボードインスタンス
+	isMustSave = false; ///< 設定保存フラグ
+	menuMode = 0; ///< メニュー階層モード
 	drawMenu2_system();
-	uint8_t prevSec = 0xFF;
+	uint8_t prevSec = 0xFF; ///< 前回表示した秒数
 	while (true) {
-		time_t now = time(NULL);
-		struct tm* local = localtime(&now);
-		static char timeBuf[15]; // YYYYMMDDhhmmss
+		time_t now = time(NULL); ///< 現在時刻
+		struct tm* local = localtime(&now); ///< ローカル時刻構造体
+		static char timeBuf[15]; ///< 日時編集用バッファ（YYYYMMDDhhmmss）
 
 		if (prevSec != local->tm_sec) {
 			snprintf(timeBuf, sizeof(timeBuf), "%04d%02d%02d%02d%02d%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
@@ -488,39 +488,39 @@ const void Settings::run2_system()
 			prevSec = local->tm_sec;
 		}
 		if (pts->touched()) {
-			TS_Point p = pts->getPointOnScreen();
+			TS_Point p = pts->getPointOnScreen(); ///< タッチ位置
 			while (pts->touched()) {}                       // タッチが終わるまで待つ
 			if YRANGE (32) {                                // 時刻表記
-				value.isClock24Hour = !value.isClock24Hour; // 24時間表示の切り替え
-				isMustSave = true;                          // 24時間表示が変更された
+				value.isClock24Hour = !value.isClock24Hour; ///< 24時間表示切替
+				isMustSave = true;                          ///< 24時間表示が変更された
 				ptft->setCursor(10, 40);
 				ptft->printf("時刻表示: %s", (value.isClock24Hour ? "24H" : "12H"));
 			} else if YRANGE (64) { // 日時
-				GUIEditBox editbox(ptft, pts, &sk);
+				GUIEditBox editbox(ptft, pts, &sk); ///< 日時編集用エディットボックス
 				bool bRet = editbox.show(80, 72, timeBuf, 14, EditMode::MODE_NUMPADOVERWRITE);
 				if (bRet == true) {
 					// timeBufの内容を解析して、必要な設定を行う
-					int year, month, day, hour, minute, second;
+					int year, month, day, hour, minute, second; ///< 入力値格納用
 					if (sscanf(timeBuf, "%04d%02d%02d%02d%02d%02d", &year, &month, &day, &hour, &minute, &second) == 6) {
-						struct tm newTime = {0};
+						struct tm newTime = {0}; ///< 新しい時刻構造体
 						newTime.tm_year = year - 1900; // tm_yearは1900年からの年数
 						newTime.tm_mon = month - 1;    // tm_monは0から11まで
 						newTime.tm_mday = day;
 						newTime.tm_hour = hour;
 						newTime.tm_min = minute;
 						newTime.tm_sec = second;
-						time_t t = mktime(&newTime);
+						time_t t = mktime(&newTime); ///< UNIX時刻へ変換
 						struct timeval tv;
 						tv.tv_sec = t;
 						tv.tv_usec = 0;
-						settimeofday(&tv, NULL);
+						settimeofday(&tv, NULL); ///< システム時刻を設定
 					}
 				}
 				drawMenu2_system();
 
 			} else if YRANGE (96) {
-				setSerialDebug(!isSerialDebug()); // シリアルデバッグの有効/無効を切り替え
-				isMustSave = true; // デバッグモードが変更された
+				setSerialDebug(!isSerialDebug()); ///< シリアルデバッグ有効/無効切替
+				isMustSave = true; ///< デバッグモードが変更された
 				ptft->printlocf(10, 104, "デバッグ:%s", isSerialDebug() ? "TERM" : "----");
 			} else if YRANGE (128) {
 			} else if YRANGE (160) { // 日時設定
@@ -530,13 +530,13 @@ const void Settings::run2_system()
 			} else if YRANGE (288) {
 				if (p.x < 80) { // OKボタン
 					if (isMustSave) {
-						save();             // 設定を保存
-						isMustSave = false; // 保存後はフラグをリセット
+						save();             ///< 設定を保存
+					 isMustSave = false; ///< 保存後はフラグをリセット
 					}
 					ptft->fillScreen(ILI9341_BLACK);
 					return;             // メニューを閉じる
 				} else if (p.x > 160) { // CANCELボタン
-					value = valuePush;  // 変更を破棄
+					value = valuePush;  ///< 変更を破棄
 					ptft->fillScreen(ILI9341_BLACK);
 					return; // メニューを閉じる
 				}
@@ -568,19 +568,25 @@ const void Settings::drawMenu2_wifi()
 
 /**
  * @brief Wi-Fi設定メニューの実行ループ
+ * @details
+ * タッチ操作によりWi-Fi有効/無効、SSID、パスワードの編集を行い、
+ * OKボタンで保存・再起動要求、CANCELで変更破棄します。
+ * 設定変更時はisMustSave, isMustRebootフラグを適切に制御します。
+ *
+ * @retval なし
  */
 const void Settings::run2_wifi()
 {
-	SettingValue valuePush;
+	SettingValue valuePush; ///< 設定値の退避用（CANCEL時の復元用）
 	valuePush = value; // 現在の設定値を保存
 
-	ScreenKeyboard sk(ptft, pts);
-	isMustSave = false;
-	menuMode = 0;
+	ScreenKeyboard sk(ptft, pts); ///< 画面キーボードインスタンス
+	isMustSave = false; ///< 設定保存フラグ
+	menuMode = 0; ///< メニュー階層モード
 	drawMenu2_wifi();
 	while (true) {
 		if (pts->touched()) {
-			TS_Point p = pts->getPointOnScreen();
+			TS_Point p = pts->getPointOnScreen(); ///< タッチ位置
 			while (pts->touched()) {} // タッチが終わるまで待つ
 			if YRANGE (32) {          // SSID
 				if (value.isEnableWifi) {
@@ -588,20 +594,20 @@ const void Settings::run2_wifi()
 				} else {
 					value.isEnableWifi = true; // Wi-Fiを有効化
 				}
-				isMustSave = true; // WIFI設定変更
+				isMustSave = true; ///< WIFI設定変更
 				ptft->printlocf(10, 40, "    WIFI: %s", value.isEnableWifi ? "有効" : "無効");
 			} else if YRANGE (64) { // SSID
-				GUIEditBox editbox(ptft, pts, &sk);
+				GUIEditBox editbox(ptft, pts, &sk); ///< SSID編集用エディットボックス
 				bool bRet = editbox.show(10 + 8 * 10, 72, value.SSID, 18, EditMode::MODE_TEXT);
 				if (bRet) {
-					isMustSave = true; // SSIDが変更された
+					isMustSave = true; ///< SSIDが変更された
 				}
 				drawMenu2_wifi();
 			} else if YRANGE (96) { // PASSWORD
-				GUIEditBox editbox(ptft, pts, &sk);
+				GUIEditBox editbox(ptft, pts, &sk); ///< パスワード編集用エディットボックス
 				bool bRet = editbox.show(10 + 8 * 10, 104, value.PASSWORD, 18, EditMode::MODE_TEXT);
 				if (bRet) {
-					isMustSave = true; // PASSWORDが変更された
+					isMustSave = true; ///< PASSWORDが変更された
 				}
 				drawMenu2_wifi();
 			} else if YRANGE (128) {
@@ -612,14 +618,14 @@ const void Settings::run2_wifi()
 			} else if YRANGE (288) {
 				if (p.x < 80) { // OKボタン
 					if (isMustSave) {
-						save();             // 設定を保存
-						isMustSave = false; // 保存後はフラグをリセット
+						save();             ///< 設定を保存
+						isMustSave = false; ///< 保存後はフラグをリセット
 					}
 					ptft->fillScreen(ILI9341_BLACK);
-					isMustReboot = true; // Wi-Fi設定が変更されたので再起動が必要
+					isMustReboot = true; ///< Wi-Fi設定が変更されたので再起動が必要
 					return;              // メニューを閉じる
 				} else if (p.x > 160) {  // CANCELボタン
-					value = valuePush;   // 変更を破棄
+					value = valuePush;   ///< 変更を破棄
 					ptft->fillScreen(ILI9341_BLACK);
 					return; // メニューを閉じる
 				}
@@ -722,7 +728,7 @@ const void Settings::run2_as3935()
 						if (wd == 99) wd = WDTH_DEFAULT;  // 99はデフォルト値
 						if (wd > WDTH_MAX) wd = WDTH_MAX; // 最大値を超えないようにする
 						value.watchDogThreshold = wd;     // ウォッチドッグスレッショルドを設定
-						isMustSave = true;                // ウォッチドッグスレッショルドが変更された
+					 isMustSave = true;                // ウォッチドッグスレッショルドが変更された
 					}
 					ptft->printlocf(104, 104, "WATCHDOG: %02d", value.watchDogThreshold);
 					drawMenuBottom();
@@ -755,7 +761,7 @@ const void Settings::run2_as3935()
 				if (p.x < 80) { // OKボタン
 					if (isMustSave) {
 						save();             // 設定を保存
-						isMustSave = false; // 保存後はフラグをリセット
+					 isMustSave = false; // 保存後はフラグをリセット
 					}
 					ptft->fillScreen(ILI9341_BLACK);
 					isMustReboot = true; // Wi-Fi設定が変更されたので再起動が必要
@@ -775,39 +781,44 @@ const void Settings::run2_as3935()
 
 /**
  * @brief pico_error_codesの値から簡易説明文字列を返す
- * @param code pico_error_codesの値
- * @return エラー内容の簡易説明文字列
+ * @details
+ * Pico SDKのエラーコード（pico_error_codes）に対応する簡易的な英語説明文字列を返します。
+ * Wi-FiやI2C、システムAPI等のエラーコードを人間可読な形で表示する用途に利用します。
+ * 未知のコードの場合は"Unknown error code"を返します。
+ *
+ * @param code pico_error_codesの値（負の値がエラー、0が成功）
+ * @retval const char* エラー内容の簡易説明文字列
  */
 const char* Settings::getPicoErrorSummary(int code)
 {
 	switch (code) {
-		case 0: return "Success";
-		case -1: return "Generic error";
-		case -2: return "Timeout";
-		case -3: return "No data";
-		case -4: return "Not permitted";
-		case -5: return "Invalid argument";
-		case -6: return "I/O error";
-		case -7: return "Bad auth";
-		case -8: return "Connect failed";
-		case -9: return "Insufficient resources";
-		case -10: return "Invalid address";
-		case -11: return "Bad alignment";
-		case -12: return "Invalid state";
-		case -13: return "Buffer too small";
-		case -14: return "Precondition not met";
-		case -15: return "Modified data";
-		case -16: return "Invalid data";
-		case -17: return "Not found";
-		case -18: return "Unsupported modification";
-		case -19: return "Lock required";
-		case -20: return "Version mismatch";
-		case -21: return "Resource in use";
+		case 0: return "Success"; ///< 成功
+		case -1: return "Generic error"; ///< 一般的なエラー
+		case -2: return "Timeout"; ///< タイムアウト
+		case -3: return "No data"; ///< データなし
+		case -4: return "Not permitted"; ///< 許可されていない
+		case -5: return "Invalid argument"; ///< 引数不正
+		case -6: return "I/O error"; ///< I/Oエラー
+		case -7: return "Bad auth"; ///< 認証失敗
+		case -8: return "Connect failed"; ///< 接続失敗
+		case -9: return "Insufficient resources"; ///< リソース不足
+		case -10: return "Invalid address"; ///< アドレス不正
+		case -11: return "Bad alignment"; ///< アラインメント不正
+		case -12: return "Invalid state"; ///< 状態不正
+		case -13: return "Buffer too small"; ///< バッファ不足
+		case -14: return "Precondition not met"; ///< 前提条件未満
+		case -15: return "Modified data"; ///< データ変更済
+		case -16: return "Invalid data"; ///< データ不正
+		case -17: return "Not found"; ///< 見つからない
+		case -18: return "Unsupported modification"; ///< サポート外の変更
+		case -19: return "Lock required"; ///< ロック必要
+		case -20: return "Version mismatch"; ///< バージョン不一致
+		case -21: return "Resource in use"; ///< リソース使用中
 		// ここから先は、ローカルで使用
-		case -100: return "DNS lookup failed";
-		case -101: return "Heap alloc failure";
-		case -102: return "Flash write failure";
+		case -100: return "DNS lookup failed"; ///< DNS失敗
+		case -101: return "Heap alloc failure"; ///< ヒープ確保失敗
+		case -102: return "Flash write failure"; ///< フラッシュ書込失敗
 
-		default: return "Unknown error code";
+		default: return "Unknown error code"; ///< 未知のエラーコード
 	}
 }
