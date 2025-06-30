@@ -66,6 +66,7 @@ void Settings::setDefault()
 	value.i2cAddr = 0x03;                  // I2Cアドレス（デフォルトは0x00）
 	value.spikeReject = SREJ_DEFAULT;      // スパイクリジェクト（0-3）
 	value.minimumEvent = NUMLIGHT_DEFAULT; // 最小イベント数（0-3）
+	value.debugMode = 0;                   // デバッグモード（0: 無効, 1: シリアルデバッグ）
 	value.i2cReadMode = 0;                 // I2Cリードモード（0: Single Read, 1: Block Read）
 }
 
@@ -459,6 +460,7 @@ const void Settings::drawMenu2_system()
 	ptft->setTextColor(STDCOLOR.WHITE, STDCOLOR.BLACK);
 	ptft->printlocf(10, 40, "時刻表示: %s", (value.isClock24Hour ? "24H" : "12H"));
 	ptft->printlocf(10, 72, "    日時:");
+	ptft->printlocf(10,104, "デバッグ:%s",isSerialDebug() ? "TERM" : "----");
 	drawMenuBottom();
 }
 
@@ -517,6 +519,9 @@ const void Settings::run2_system()
 				drawMenu2_system();
 
 			} else if YRANGE (96) {
+				setSerialDebug(!isSerialDebug()); // シリアルデバッグの有効/無効を切り替え
+				isMustSave = true; // デバッグモードが変更された
+				ptft->printlocf(10, 104, "デバッグ:%s", isSerialDebug() ? "TERM" : "----");
 			} else if YRANGE (128) {
 			} else if YRANGE (160) { // 日時設定
 			} else if YRANGE (192) {

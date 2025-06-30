@@ -45,6 +45,7 @@ class __attribute__((packed)) SettingValue
 	uint8_t minimumEvent;      ///< 最小イベント数（0-3）
 	uint8_t i2cAddr;           ///< I2Cアドレス
 	uint8_t i2cReadMode;	   ///< ブロックリード（Single: 無効, Block: 有効）
+	uint8_t debugMode;	       ///< デバッグモード 0b00000001 シリアルデバッグ
 	char end[4];               ///< チャンク終端（"ENDC"）
 
 	/**
@@ -154,6 +155,7 @@ class Settings
 	bool getIsClock24Hour() const { return value.isClock24Hour; } ///< 24時間表示取得
 	void setIsClock24Hour(bool v) { value.isClock24Hour = v; }    ///< 24時間表示設定
 	const char* getSSID() const { return value.SSID; }            ///< SSID取得
+
 	void setSSID(const char* s)
 	{
 		strncpy(value.SSID, s, sizeof(value.SSID) - 1);
@@ -166,7 +168,21 @@ class Settings
 		value.PASSWORD[sizeof(value.PASSWORD) - 1] = '\0';
 	}
 	int geti2cReadMode() const { return value.i2cReadMode; } ///< I2Cリードモード取得（0: Single, 1: Block）
+	bool isSerialDebug() const
+	{
+		return (value.debugMode & 0x01) != 0; ///< シリアルデバッグモードか
+	}
+	bool setSerialDebug(bool v)
+	{
+		if (v) {
+			value.debugMode |= 0x01; ///< シリアルデバッグモードを有効化
+		} else {
+			value.debugMode &= ~0x01; ///< シリアルデバッグモードを無効化
+		}
+		return isSerialDebug();
+	}
 
+  private:
 	uint8_t menuMode = 0; ///< メニュー状態
 	const void drawMenuBottom();
 	const void drawMenu();
@@ -174,7 +190,8 @@ class Settings
 	const void drawMenu2_system();
 	const void drawMenu2_wifi();
 	const void drawMenu2_as3935();
-
+  
+	public:
 	const void run(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
 	const bool run2(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);
 	const void run2_system();
