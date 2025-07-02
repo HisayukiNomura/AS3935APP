@@ -1,4 +1,4 @@
-build
+build/*
 _build
 Scopy_SPISettings.ini
 *_
@@ -21,3 +21,4 @@ Doxygen/rtf
 *.zip
 !*Kicad.zip
 !Gerber.zip
+!build/*.uf2
