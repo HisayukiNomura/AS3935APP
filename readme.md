@@ -176,7 +176,7 @@ Raspberry PI に、[githubのbuildフォルダ](https://github.com/HisayukiNomur
 
 
 #### ネットワーク設定
-ここでは、WIFIに関する設定を行います。
+ここでは、WIFIに関する設定を行います。<br>
 <img width=40% src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/2096509/44394bf2-6a63-4f09-90a6-0f074be494f1.png">
 
 - WIFI …　有効/無効を切り替えます。デフォルトは有効です。無効にするとネットワーク機能が動作しなくなります。WIFIで接続エラーが出た場合、自動的にこの設定は「無効」に設定されます。
