@@ -20,3 +20,4 @@ Doxygen/latex
 Doxygen/rtf
 *.zip
 !*Kicad.zip
+!garber.zip
