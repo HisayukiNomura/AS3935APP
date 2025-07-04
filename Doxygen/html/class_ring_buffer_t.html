@@ -1,0 +1,583 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: RingBufferT&lt; T &gt; クラステンプレート</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">公開メンバ関数</a> &#124;
+<a href="#pri-attribs">非公開変数類</a> &#124;
+<a href="class_ring_buffer_t-members.html">全メンバ一覧</a>  </div>
+  <div class="headertitle"><div class="title">RingBufferT&lt; T &gt; クラステンプレート</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>汎用リングバッファ（循環バッファ）テンプレートクラス  
+ <a href="#details">[詳解]</a></p>
+
+<p><code>#include &lt;<a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+公開メンバ関数</h2></td></tr>
+<tr class="memitem:a50a52dc6f8e90429a6e629837b36230b" id="r_a50a52dc6f8e90429a6e629837b36230b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50a52dc6f8e90429a6e629837b36230b">RingBufferT</a> (int a_size)</td></tr>
+<tr class="memdesc:a50a52dc6f8e90429a6e629837b36230b"><td class="mdescLeft">&#160;</td><td class="mdescRight">コンストラクタ  <br /></td></tr>
+<tr class="separator:a50a52dc6f8e90429a6e629837b36230b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7e0a2aa0eedc80606bcf6ddeb910b5e" id="r_ae7e0a2aa0eedc80606bcf6ddeb910b5e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7e0a2aa0eedc80606bcf6ddeb910b5e">~RingBufferT</a> ()</td></tr>
+<tr class="memdesc:ae7e0a2aa0eedc80606bcf6ddeb910b5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">デストラクタ  <br /></td></tr>
+<tr class="separator:ae7e0a2aa0eedc80606bcf6ddeb910b5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fe31af385375f3f276fcbed26c786c6" id="r_a5fe31af385375f3f276fcbed26c786c6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5fe31af385375f3f276fcbed26c786c6">getCount</a> () const</td></tr>
+<tr class="memdesc:a5fe31af385375f3f276fcbed26c786c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">現在の要素数を取得  <br /></td></tr>
+<tr class="separator:a5fe31af385375f3f276fcbed26c786c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a573f1f60e832fe601dc5a8850e8f742b" id="r_a573f1f60e832fe601dc5a8850e8f742b"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a573f1f60e832fe601dc5a8850e8f742b">getFromLast</a> (int n) const</td></tr>
+<tr class="memdesc:a573f1f60e832fe601dc5a8850e8f742b"><td class="mdescLeft">&#160;</td><td class="mdescRight">末尾からn番目のデータを取得  <br /></td></tr>
+<tr class="separator:a573f1f60e832fe601dc5a8850e8f742b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea200a5ba44ac76049c5930005003ee8" id="r_aea200a5ba44ac76049c5930005003ee8"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aea200a5ba44ac76049c5930005003ee8">getLastData</a> () const</td></tr>
+<tr class="memdesc:aea200a5ba44ac76049c5930005003ee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">最後にpushされたデータを取得  <br /></td></tr>
+<tr class="separator:aea200a5ba44ac76049c5930005003ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add3206f036085ef8e2738a1cc8a9bc46" id="r_add3206f036085ef8e2738a1cc8a9bc46"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add3206f036085ef8e2738a1cc8a9bc46">pop</a> (T &amp;data)</td></tr>
+<tr class="memdesc:add3206f036085ef8e2738a1cc8a9bc46"><td class="mdescLeft">&#160;</td><td class="mdescRight">先頭データを取り出す（FIFO）  <br /></td></tr>
+<tr class="separator:add3206f036085ef8e2738a1cc8a9bc46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1802e763b371b543529e35cf597e69" id="r_aba1802e763b371b543529e35cf597e69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba1802e763b371b543529e35cf597e69">push</a> (T data)</td></tr>
+<tr class="memdesc:aba1802e763b371b543529e35cf597e69"><td class="mdescLeft">&#160;</td><td class="mdescRight">データをバッファに追加  <br /></td></tr>
+<tr class="separator:aba1802e763b371b543529e35cf597e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+非公開変数類</h2></td></tr>
+<tr class="memitem:a184a5c2b975735187ef568409595550b" id="r_a184a5c2b975735187ef568409595550b"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a184a5c2b975735187ef568409595550b">buffer</a></td></tr>
+<tr class="memdesc:a184a5c2b975735187ef568409595550b"><td class="mdescLeft">&#160;</td><td class="mdescRight">バッファ本体  <br /></td></tr>
+<tr class="separator:a184a5c2b975735187ef568409595550b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad61316133467f3288a7e31c8c5e0b849" id="r_ad61316133467f3288a7e31c8c5e0b849"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad61316133467f3288a7e31c8c5e0b849">count</a></td></tr>
+<tr class="memdesc:ad61316133467f3288a7e31c8c5e0b849"><td class="mdescLeft">&#160;</td><td class="mdescRight">現在の要素数  <br /></td></tr>
+<tr class="separator:ad61316133467f3288a7e31c8c5e0b849"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53e30cec61227a37baf5802c54c9fad4" id="r_a53e30cec61227a37baf5802c54c9fad4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53e30cec61227a37baf5802c54c9fad4">front</a></td></tr>
+<tr class="memdesc:a53e30cec61227a37baf5802c54c9fad4"><td class="mdescLeft">&#160;</td><td class="mdescRight">先頭インデックス  <br /></td></tr>
+<tr class="separator:a53e30cec61227a37baf5802c54c9fad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab96125b42968d8f600f6037337807c67" id="r_ab96125b42968d8f600f6037337807c67"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab96125b42968d8f600f6037337807c67">lastData</a></td></tr>
+<tr class="memdesc:ab96125b42968d8f600f6037337807c67"><td class="mdescLeft">&#160;</td><td class="mdescRight">最後にpushされたデータ  <br /></td></tr>
+<tr class="separator:ab96125b42968d8f600f6037337807c67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b1852147cdf42ce77b6d0822260da6f" id="r_a9b1852147cdf42ce77b6d0822260da6f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b1852147cdf42ce77b6d0822260da6f">rear</a></td></tr>
+<tr class="memdesc:a9b1852147cdf42ce77b6d0822260da6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">末尾インデックス  <br /></td></tr>
+<tr class="separator:a9b1852147cdf42ce77b6d0822260da6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf8a06ae2f5525cd981a4e519e4fa9e4" id="r_abf8a06ae2f5525cd981a4e519e4fa9e4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a></td></tr>
+<tr class="memdesc:abf8a06ae2f5525cd981a4e519e4fa9e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">バッファサイズ  <br /></td></tr>
+<tr class="separator:abf8a06ae2f5525cd981a4e519e4fa9e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">詳解</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
+class RingBufferT&lt; T &gt;</div><p>汎用リングバッファ（循環バッファ）テンプレートクラス </p>
+<p>pushでデータを追加し、popでFIFO取得。最新値や逆順アクセスも可能。 バッファサイズを超えると古いデータから上書きされる。 </p><dl class="tparams"><dt>テンプレート引数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>バッファに格納する型 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00019">19</a> 行目に定義があります。</p>
+</div><h2 class="groupheader">構築子と解体子</h2>
+<a id="a50a52dc6f8e90429a6e629837b36230b" name="a50a52dc6f8e90429a6e629837b36230b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50a52dc6f8e90429a6e629837b36230b">&#9670;&#160;</a></span>RingBufferT()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;<a class="el" href="class_ring_buffer_t.html">::RingBufferT</a> </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>a_size</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>コンストラクタ </p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a_size</td><td>バッファサイズ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00034">34</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ae7e0a2aa0eedc80606bcf6ddeb910b5e" name="ae7e0a2aa0eedc80606bcf6ddeb910b5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7e0a2aa0eedc80606bcf6ddeb910b5e">&#9670;&#160;</a></span>~RingBufferT()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::~<a class="el" href="class_ring_buffer_t.html">RingBufferT</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>デストラクタ </p>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00046">46</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">関数詳解</h2>
+<a id="a5fe31af385375f3f276fcbed26c786c6" name="a5fe31af385375f3f276fcbed26c786c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fe31af385375f3f276fcbed26c786c6">&#9670;&#160;</a></span>getCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::getCount </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>現在の要素数を取得 </p>
+<dl class="section return"><dt>戻り値</dt><dd>バッファ内の要素数 </dd></dl>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00105">105</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a573f1f60e832fe601dc5a8850e8f742b" name="a573f1f60e832fe601dc5a8850e8f742b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a573f1f60e832fe601dc5a8850e8f742b">&#9670;&#160;</a></span>getFromLast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::getFromLast </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>n</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>末尾からn番目のデータを取得 </p>
+<p>n=0で最新、n=1で1つ前、...。範囲外は0を返す。 </p><dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>末尾からのオフセット </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>指定位置のデータ </dd></dl>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00095">95</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="aea200a5ba44ac76049c5930005003ee8" name="aea200a5ba44ac76049c5930005003ee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea200a5ba44ac76049c5930005003ee8">&#9670;&#160;</a></span>getLastData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::getLastData </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>最後にpushされたデータを取得 </p>
+<dl class="section return"><dt>戻り値</dt><dd>最新データ </dd></dl>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00084">84</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="add3206f036085ef8e2738a1cc8a9bc46" name="add3206f036085ef8e2738a1cc8a9bc46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add3206f036085ef8e2738a1cc8a9bc46">&#9670;&#160;</a></span>pop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::pop </td>
+          <td>(</td>
+          <td class="paramtype">T &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>先頭データを取り出す（FIFO） </p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>取り出したデータ格納先 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>データが存在した場合true、空ならfalse </dd></dl>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00072">72</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="aba1802e763b371b543529e35cf597e69" name="aba1802e763b371b543529e35cf597e69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba1802e763b371b543529e35cf597e69">&#9670;&#160;</a></span>push()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::push </td>
+          <td>(</td>
+          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>data</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>データをバッファに追加 </p>
+<p>バッファが満杯の場合は最古データを上書き。 </p><dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>追加するデータ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00056">56</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">メンバ詳解</h2>
+<a id="a184a5c2b975735187ef568409595550b" name="a184a5c2b975735187ef568409595550b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a184a5c2b975735187ef568409595550b">&#9670;&#160;</a></span>buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T* <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::buffer</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>バッファ本体 </p>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00022">22</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ad61316133467f3288a7e31c8c5e0b849" name="ad61316133467f3288a7e31c8c5e0b849"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad61316133467f3288a7e31c8c5e0b849">&#9670;&#160;</a></span>count</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::count</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>現在の要素数 </p>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00026">26</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a53e30cec61227a37baf5802c54c9fad4" name="a53e30cec61227a37baf5802c54c9fad4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53e30cec61227a37baf5802c54c9fad4">&#9670;&#160;</a></span>front</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::front</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>先頭インデックス </p>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00024">24</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ab96125b42968d8f600f6037337807c67" name="ab96125b42968d8f600f6037337807c67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab96125b42968d8f600f6037337807c67">&#9670;&#160;</a></span>lastData</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::lastData</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>最後にpushされたデータ </p>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00027">27</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a9b1852147cdf42ce77b6d0822260da6f" name="a9b1852147cdf42ce77b6d0822260da6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b1852147cdf42ce77b6d0822260da6f">&#9670;&#160;</a></span>rear</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::rear</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>末尾インデックス </p>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00025">25</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="abf8a06ae2f5525cd981a4e519e4fa9e4" name="abf8a06ae2f5525cd981a4e519e4fa9e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf8a06ae2f5525cd981a4e519e4fa9e4">&#9670;&#160;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_ring_buffer_t.html">RingBufferT</a>&lt; T &gt;::size</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>バッファサイズ </p>
+
+<p class="definition"> <a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a> の <a class="el" href="_ring_buffer_8h_source.html#l00023">23</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<hr/>このクラス詳解は次のファイルから抽出されました:<ul>
+<li><a class="el" href="_ring_buffer_8h_source.html">RingBuffer.h</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

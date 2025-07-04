@@ -1,0 +1,632 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: TouchCalibration クラス</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">公開型</a> &#124;
+<a href="#pub-methods">公開メンバ関数</a> &#124;
+<a href="#pub-attribs">公開変数類</a> &#124;
+<a href="#pri-methods">非公開メンバ関数</a> &#124;
+<a href="#pri-attribs">非公開変数類</a> &#124;
+<a href="class_touch_calibration-members.html">全メンバ一覧</a>  </div>
+  <div class="headertitle"><div class="title">TouchCalibration クラス</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>タッチパネルのキャリブレーション・テストを行うクラス  
+ <a href="#details">[詳解]</a></p>
+
+<p><code>#include &lt;<a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+公開型</h2></td></tr>
+<tr class="memitem:aa71e88475c75c07bebf0030e4e8e5307" id="r_aa71e88475c75c07bebf0030e4e8e5307"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa71e88475c75c07bebf0030e4e8e5307">Mode</a> { <a class="el" href="#aa71e88475c75c07bebf0030e4e8e5307a22416048301012ab2fdcd705643092aa">MODE_NONE</a> = 0
+, <a class="el" href="#aa71e88475c75c07bebf0030e4e8e5307a5b96aa417c3491534081870caf2754bb">MODE_SELECT</a>
+, <a class="el" href="#aa71e88475c75c07bebf0030e4e8e5307a2c03883972bac840c1965031331e6b3c">MODE_CALIBRATE</a>
+, <a class="el" href="#aa71e88475c75c07bebf0030e4e8e5307a2be852e4332e73d52ea757aa064dfb21">MODE_TEST</a>
+ }</td></tr>
+<tr class="memdesc:aa71e88475c75c07bebf0030e4e8e5307"><td class="mdescLeft">&#160;</td><td class="mdescRight">動作モード種別  <a href="#aa71e88475c75c07bebf0030e4e8e5307">[詳解]</a><br /></td></tr>
+<tr class="separator:aa71e88475c75c07bebf0030e4e8e5307"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+公開メンバ関数</h2></td></tr>
+<tr class="memitem:a9bc68b3c995fccb0d26e455d53bddae3" id="r_a9bc68b3c995fccb0d26e455d53bddae3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9bc68b3c995fccb0d26e455d53bddae3">TouchCalibration</a> (Adafruit_ILI9341 *tft, XPT2046_Touchscreen *ts)</td></tr>
+<tr class="memdesc:a9bc68b3c995fccb0d26e455d53bddae3"><td class="mdescLeft">&#160;</td><td class="mdescRight">TouchCalibrationコンストラクタ  <br /></td></tr>
+<tr class="separator:a9bc68b3c995fccb0d26e455d53bddae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a386f857a27a2c25bd8786567997c25" id="r_a4a386f857a27a2c25bd8786567997c25"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a386f857a27a2c25bd8786567997c25">run</a> ()</td></tr>
+<tr class="memdesc:a4a386f857a27a2c25bd8786567997c25"><td class="mdescLeft">&#160;</td><td class="mdescRight">キャリブレーション・テスト・終了メニューを表示し、ユーザー操作を受け付ける  <br /></td></tr>
+<tr class="separator:a4a386f857a27a2c25bd8786567997c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+公開変数類</h2></td></tr>
+<tr class="memitem:a0eb8fe8457f4be9329af33dc03022533" id="r_a0eb8fe8457f4be9329af33dc03022533"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0eb8fe8457f4be9329af33dc03022533">maxX</a></td></tr>
+<tr class="memdesc:a0eb8fe8457f4be9329af33dc03022533"><td class="mdescLeft">&#160;</td><td class="mdescRight">キャリブレーション後のX最大値  <br /></td></tr>
+<tr class="separator:a0eb8fe8457f4be9329af33dc03022533"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ec1d2aa01f5afe9ca8b6511d9c11333" id="r_a5ec1d2aa01f5afe9ca8b6511d9c11333"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ec1d2aa01f5afe9ca8b6511d9c11333">maxY</a></td></tr>
+<tr class="memdesc:a5ec1d2aa01f5afe9ca8b6511d9c11333"><td class="mdescLeft">&#160;</td><td class="mdescRight">キャリブレーション後のY最大値  <br /></td></tr>
+<tr class="separator:a5ec1d2aa01f5afe9ca8b6511d9c11333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef1b9dbd1d237d70f2105079b27b9c78" id="r_aef1b9dbd1d237d70f2105079b27b9c78"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef1b9dbd1d237d70f2105079b27b9c78">minX</a></td></tr>
+<tr class="memdesc:aef1b9dbd1d237d70f2105079b27b9c78"><td class="mdescLeft">&#160;</td><td class="mdescRight">キャリブレーション後のX最小値  <br /></td></tr>
+<tr class="separator:aef1b9dbd1d237d70f2105079b27b9c78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56d531a245a96f496aa6d3a4572a345f" id="r_a56d531a245a96f496aa6d3a4572a345f"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56d531a245a96f496aa6d3a4572a345f">minY</a></td></tr>
+<tr class="memdesc:a56d531a245a96f496aa6d3a4572a345f"><td class="mdescLeft">&#160;</td><td class="mdescRight">キャリブレーション後のY最小値  <br /></td></tr>
+<tr class="separator:a56d531a245a96f496aa6d3a4572a345f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+非公開メンバ関数</h2></td></tr>
+<tr class="memitem:ac4abb343ef8242f4a33fc03276f8eabf" id="r_ac4abb343ef8242f4a33fc03276f8eabf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4abb343ef8242f4a33fc03276f8eabf">drawTouchPoint</a> (int x, int y, uint16_t color)</td></tr>
+<tr class="memdesc:ac4abb343ef8242f4a33fc03276f8eabf"><td class="mdescLeft">&#160;</td><td class="mdescRight">指定座標にタッチポイントを描画する  <br /></td></tr>
+<tr class="separator:ac4abb343ef8242f4a33fc03276f8eabf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cce2a2e87c0d6bb4bf29467100aa5a3" id="r_a3cce2a2e87c0d6bb4bf29467100aa5a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3cce2a2e87c0d6bb4bf29467100aa5a3">runCalibrateMode</a> ()</td></tr>
+<tr class="memdesc:a3cce2a2e87c0d6bb4bf29467100aa5a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">キャリブレーションモードを実行し、四隅のタッチ座標を取得・補正値を計算する  <br /></td></tr>
+<tr class="separator:a3cce2a2e87c0d6bb4bf29467100aa5a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dfa1c708d856c1fffd3ba851dfc35a8" id="r_a9dfa1c708d856c1fffd3ba851dfc35a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9dfa1c708d856c1fffd3ba851dfc35a8">runTestMode</a> ()</td></tr>
+<tr class="memdesc:a9dfa1c708d856c1fffd3ba851dfc35a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">タッチテストモードを実行し、座標を表示・描画する  <br /></td></tr>
+<tr class="separator:a9dfa1c708d856c1fffd3ba851dfc35a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06a460a522178f1d5b83b7e2b36c23f0" id="r_a06a460a522178f1d5b83b7e2b36c23f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06a460a522178f1d5b83b7e2b36c23f0">showMenu</a> ()</td></tr>
+<tr class="memdesc:a06a460a522178f1d5b83b7e2b36c23f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">メニュー画面を描画する  <br /></td></tr>
+<tr class="separator:a06a460a522178f1d5b83b7e2b36c23f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29405c4ddbabe567957afcc6e137ea8d" id="r_a29405c4ddbabe567957afcc6e137ea8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29405c4ddbabe567957afcc6e137ea8d">waitLongTap</a> ()</td></tr>
+<tr class="memdesc:a29405c4ddbabe567957afcc6e137ea8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">ロングタップ（1秒以上）を検出するまで待機する  <br /></td></tr>
+<tr class="separator:a29405c4ddbabe567957afcc6e137ea8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+非公開変数類</h2></td></tr>
+<tr class="memitem:ade427e0a7fd39024de03d6fcc1178c92" id="r_ade427e0a7fd39024de03d6fcc1178c92"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade427e0a7fd39024de03d6fcc1178c92">isCalibDone</a> = false</td></tr>
+<tr class="memdesc:ade427e0a7fd39024de03d6fcc1178c92"><td class="mdescLeft">&#160;</td><td class="mdescRight">キャリブレーション完了フラグ  <br /></td></tr>
+<tr class="separator:ade427e0a7fd39024de03d6fcc1178c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea1bb929b4ba0a47f762a6b6cba8ca52" id="r_aea1bb929b4ba0a47f762a6b6cba8ca52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#aa71e88475c75c07bebf0030e4e8e5307">Mode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aea1bb929b4ba0a47f762a6b6cba8ca52">m_mode</a></td></tr>
+<tr class="memdesc:aea1bb929b4ba0a47f762a6b6cba8ca52"><td class="mdescLeft">&#160;</td><td class="mdescRight">現在の動作モード  <br /></td></tr>
+<tr class="separator:aea1bb929b4ba0a47f762a6b6cba8ca52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9300116a14d6370b48ebd14fdcd24f13" id="r_a9300116a14d6370b48ebd14fdcd24f13"><td class="memItemLeft" align="right" valign="top">Adafruit_ILI9341 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9300116a14d6370b48ebd14fdcd24f13">m_tft</a></td></tr>
+<tr class="memdesc:a9300116a14d6370b48ebd14fdcd24f13"><td class="mdescLeft">&#160;</td><td class="mdescRight">ディスプレイ制御用  <br /></td></tr>
+<tr class="separator:a9300116a14d6370b48ebd14fdcd24f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a348c1be03c92411119d3b1cd777b8da8" id="r_a348c1be03c92411119d3b1cd777b8da8"><td class="memItemLeft" align="right" valign="top">XPT2046_Touchscreen *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a348c1be03c92411119d3b1cd777b8da8">m_ts</a></td></tr>
+<tr class="memdesc:a348c1be03c92411119d3b1cd777b8da8"><td class="mdescLeft">&#160;</td><td class="mdescRight">タッチスクリーン制御用  <br /></td></tr>
+<tr class="separator:a348c1be03c92411119d3b1cd777b8da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">詳解</h2>
+<div class="textblock"><p>タッチパネルのキャリブレーション・テストを行うクラス </p>
+<p><a class="el" href="#a4a386f857a27a2c25bd8786567997c25" title="キャリブレーション・テスト・終了メニューを表示し、ユーザー操作を受け付ける">run()</a>でキャリブレーション・テスト・終了メニューを表示し、 ユーザー操作に応じて座標補正やテスト描画を行う。 キャリブレーション値はminX, maxX, minY, maxYに格納される。 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00022">22</a> 行目に定義があります。</p>
+</div><h2 class="groupheader">列挙型メンバ詳解</h2>
+<a id="aa71e88475c75c07bebf0030e4e8e5307" name="aa71e88475c75c07bebf0030e4e8e5307"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa71e88475c75c07bebf0030e4e8e5307">&#9670;&#160;</a></span>Mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#aa71e88475c75c07bebf0030e4e8e5307">TouchCalibration::Mode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>動作モード種別 </p>
+<table class="fieldtable">
+<tr><th colspan="2">列挙値</th></tr><tr><td class="fieldname"><a id="aa71e88475c75c07bebf0030e4e8e5307a22416048301012ab2fdcd705643092aa" name="aa71e88475c75c07bebf0030e4e8e5307a22416048301012ab2fdcd705643092aa"></a>MODE_NONE&#160;</td><td class="fielddoc"><p>未選択 </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa71e88475c75c07bebf0030e4e8e5307a5b96aa417c3491534081870caf2754bb" name="aa71e88475c75c07bebf0030e4e8e5307a5b96aa417c3491534081870caf2754bb"></a>MODE_SELECT&#160;</td><td class="fielddoc"><p>メニュー選択 </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa71e88475c75c07bebf0030e4e8e5307a2c03883972bac840c1965031331e6b3c" name="aa71e88475c75c07bebf0030e4e8e5307a2c03883972bac840c1965031331e6b3c"></a>MODE_CALIBRATE&#160;</td><td class="fielddoc"><p>キャリブレーション </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa71e88475c75c07bebf0030e4e8e5307a2be852e4332e73d52ea757aa064dfb21" name="aa71e88475c75c07bebf0030e4e8e5307a2be852e4332e73d52ea757aa064dfb21"></a>MODE_TEST&#160;</td><td class="fielddoc"><p>テスト </p>
+</td></tr>
+</table>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00027">27</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">構築子と解体子</h2>
+<a id="a9bc68b3c995fccb0d26e455d53bddae3" name="a9bc68b3c995fccb0d26e455d53bddae3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bc68b3c995fccb0d26e455d53bddae3">&#9670;&#160;</a></span>TouchCalibration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TouchCalibration::TouchCalibration </td>
+          <td>(</td>
+          <td class="paramtype">Adafruit_ILI9341 *</td>          <td class="paramname"><span class="paramname"><em>tft</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XPT2046_Touchscreen *</td>          <td class="paramname"><span class="paramname"><em>ts</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TouchCalibrationコンストラクタ </p>
+<p>TouchCalibrationクラスのコンストラクタ</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tft</td><td>ディスプレイ制御用ポインタ </td></tr>
+    <tr><td class="paramname">ts</td><td>タッチスクリーン制御用ポインタ</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>ディスプレイ・タッチスクリーンのポインタを受け取り、初期モードを選択状態に設定します。 </p><dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tft</td><td>ディスプレイ制御用ポインタ </td></tr>
+    <tr><td class="paramname">ts</td><td>タッチスクリーン制御用ポインタ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8cpp_source.html">TouchCalibration.cpp</a> の <a class="el" href="_touch_calibration_8cpp_source.html#l00025">25</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">関数詳解</h2>
+<a id="ac4abb343ef8242f4a33fc03276f8eabf" name="ac4abb343ef8242f4a33fc03276f8eabf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4abb343ef8242f4a33fc03276f8eabf">&#9670;&#160;</a></span>drawTouchPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TouchCalibration::drawTouchPoint </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>color</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>指定座標にタッチポイントを描画する </p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>X座標 </td></tr>
+    <tr><td class="paramname">y</td><td>Y座標 </td></tr>
+    <tr><td class="paramname">color</td><td>円の色</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>指定座標に色付き円を描画し、外枠を白・黒で装飾します。 </p><dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>X座標 </td></tr>
+    <tr><td class="paramname">y</td><td>Y座標 </td></tr>
+    <tr><td class="paramname">color</td><td>円の色 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8cpp_source.html">TouchCalibration.cpp</a> の <a class="el" href="_touch_calibration_8cpp_source.html#l00208">208</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a4a386f857a27a2c25bd8786567997c25" name="a4a386f857a27a2c25bd8786567997c25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a386f857a27a2c25bd8786567997c25">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool TouchCalibration::run </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>キャリブレーション・テスト・終了メニューを表示し、ユーザー操作を受け付ける </p>
+<dl class="section return"><dt>戻り値</dt><dd>キャリブレーションが正常に完了した場合true、終了または未完了の場合false</dd></dl>
+<p>メニュー画面でタッチ位置に応じてキャリブレーション・テスト・終了を選択。 キャリブレーションが正常に完了した場合はtrueを返す。 </p><dl class="section return"><dt>戻り値</dt><dd>キャリブレーションが正常に完了した場合true、終了または未完了の場合false </dd></dl>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8cpp_source.html">TouchCalibration.cpp</a> の <a class="el" href="_touch_calibration_8cpp_source.html#l00037">37</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a3cce2a2e87c0d6bb4bf29467100aa5a3" name="a3cce2a2e87c0d6bb4bf29467100aa5a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cce2a2e87c0d6bb4bf29467100aa5a3">&#9670;&#160;</a></span>runCalibrateMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TouchCalibration::runCalibrateMode </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>キャリブレーションモードを実行し、四隅のタッチ座標を取得・補正値を計算する </p>
+<p>各コーナーを10回ずつタップし、最小・最大座標を記録。 計算結果をタッチスクリーンに設定し、完了メッセージを表示。 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8cpp_source.html">TouchCalibration.cpp</a> の <a class="el" href="_touch_calibration_8cpp_source.html#l00155">155</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a9dfa1c708d856c1fffd3ba851dfc35a8" name="a9dfa1c708d856c1fffd3ba851dfc35a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dfa1c708d856c1fffd3ba851dfc35a8">&#9670;&#160;</a></span>runTestMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TouchCalibration::runTestMode </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>タッチテストモードを実行し、座標を表示・描画する </p>
+<p>タッチ位置の座標を画面に表示し、赤丸で描画。ロングタップで終了。 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8cpp_source.html">TouchCalibration.cpp</a> の <a class="el" href="_touch_calibration_8cpp_source.html#l00123">123</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a06a460a522178f1d5b83b7e2b36c23f0" name="a06a460a522178f1d5b83b7e2b36c23f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06a460a522178f1d5b83b7e2b36c23f0">&#9670;&#160;</a></span>showMenu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TouchCalibration::showMenu </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>メニュー画面を描画する </p>
+<p>キャリブレーション・テスト・終了の各説明を画面に表示します。 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8cpp_source.html">TouchCalibration.cpp</a> の <a class="el" href="_touch_calibration_8cpp_source.html#l00085">85</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a29405c4ddbabe567957afcc6e137ea8d" name="a29405c4ddbabe567957afcc6e137ea8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29405c4ddbabe567957afcc6e137ea8d">&#9670;&#160;</a></span>waitLongTap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TouchCalibration::waitLongTap </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>ロングタップ（1秒以上）を検出するまで待機する </p>
+<p>タッチが1秒以上続いた場合にループを抜ける。 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8cpp_source.html">TouchCalibration.cpp</a> の <a class="el" href="_touch_calibration_8cpp_source.html#l00108">108</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">メンバ詳解</h2>
+<a id="ade427e0a7fd39024de03d6fcc1178c92" name="ade427e0a7fd39024de03d6fcc1178c92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade427e0a7fd39024de03d6fcc1178c92">&#9670;&#160;</a></span>isCalibDone</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool TouchCalibration::isCalibDone = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>キャリブレーション完了フラグ </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00056">56</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="aea1bb929b4ba0a47f762a6b6cba8ca52" name="aea1bb929b4ba0a47f762a6b6cba8ca52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea1bb929b4ba0a47f762a6b6cba8ca52">&#9670;&#160;</a></span>m_mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa71e88475c75c07bebf0030e4e8e5307">Mode</a> TouchCalibration::m_mode</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>現在の動作モード </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00055">55</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a9300116a14d6370b48ebd14fdcd24f13" name="a9300116a14d6370b48ebd14fdcd24f13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9300116a14d6370b48ebd14fdcd24f13">&#9670;&#160;</a></span>m_tft</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Adafruit_ILI9341* TouchCalibration::m_tft</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>ディスプレイ制御用 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00053">53</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a348c1be03c92411119d3b1cd777b8da8" name="a348c1be03c92411119d3b1cd777b8da8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a348c1be03c92411119d3b1cd777b8da8">&#9670;&#160;</a></span>m_ts</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">XPT2046_Touchscreen* TouchCalibration::m_ts</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>タッチスクリーン制御用 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00054">54</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a0eb8fe8457f4be9329af33dc03022533" name="a0eb8fe8457f4be9329af33dc03022533"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eb8fe8457f4be9329af33dc03022533">&#9670;&#160;</a></span>maxX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t TouchCalibration::maxX</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>キャリブレーション後のX最大値 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00035">35</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a5ec1d2aa01f5afe9ca8b6511d9c11333" name="a5ec1d2aa01f5afe9ca8b6511d9c11333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ec1d2aa01f5afe9ca8b6511d9c11333">&#9670;&#160;</a></span>maxY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t TouchCalibration::maxY</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>キャリブレーション後のY最大値 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00037">37</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="aef1b9dbd1d237d70f2105079b27b9c78" name="aef1b9dbd1d237d70f2105079b27b9c78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef1b9dbd1d237d70f2105079b27b9c78">&#9670;&#160;</a></span>minX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t TouchCalibration::minX</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>キャリブレーション後のX最小値 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00034">34</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a56d531a245a96f496aa6d3a4572a345f" name="a56d531a245a96f496aa6d3a4572a345f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56d531a245a96f496aa6d3a4572a345f">&#9670;&#160;</a></span>minY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t TouchCalibration::minY</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>キャリブレーション後のY最小値 </p>
+
+<p class="definition"> <a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a> の <a class="el" href="_touch_calibration_8h_source.html#l00036">36</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<hr/>このクラス詳解は次のファイルから抽出されました:<ul>
+<li><a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a></li>
+<li><a class="el" href="_touch_calibration_8cpp_source.html">TouchCalibration.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

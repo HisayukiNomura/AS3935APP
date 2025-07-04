@@ -1,0 +1,855 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: AS3935APP.cpp ファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#define-members">マクロ定義</a> &#124;
+<a href="#enum-members">列挙型</a> &#124;
+<a href="#func-members">関数</a> &#124;
+<a href="#var-members">変数</a>  </div>
+  <div class="headertitle"><div class="title">AS3935APP.cpp ファイル</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
+<code>#include &quot;KanjiHelper.h&quot;</code><br />
+<code>#include &quot;hardware/dma.h&quot;</code><br />
+<code>#include &quot;hardware/i2c.h&quot;</code><br />
+<code>#include &quot;hardware/spi.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="_a_s3935_8h_source.html">AS3935.h</a>&quot;</code><br />
+<code>#include &quot;lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h&quot;</code><br />
+<code>#include &quot;lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h&quot;</code><br />
+<code>#include &quot;Kanji/Fonts/JF-Dot-Shinonome16_16x16_ALL.inc&quot;</code><br />
+<code>#include &quot;<a class="el" href="pict_data_8h_source.html">pictData.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_flash_mem_8h_source.html">FlashMem.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_settings_8h_source.html">Settings.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_inet_action_8h_source.html">InetAction.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_disp_clock_8h_source.html">DispClock.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_touch_calibration_8h_source.html">TouchCalibration.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_g_u_i_msg_box_8h_source.html">GUIMsgBox.h</a>&quot;</code><br />
+<code>#include &quot;pico/cyw43_arch.h&quot;</code><br />
+<code>#include &quot;pico/stdlib.h&quot;</code><br />
+<code>#include &quot;hardware/sync.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="printf_debug_8h_source.html">printfDebug.h</a>&quot;</code><br />
+</div>
+<p><a href="_a_s3935_a_p_p_8cpp_source.html">[ソースコード]</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+マクロ定義</h2></td></tr>
+<tr class="memitem:a84ccf849c999d645190c7377ab074905" id="r_a84ccf849c999d645190c7377ab074905"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84ccf849c999d645190c7377ab074905">AS3935_ADDRESS</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a84ccf849c999d645190c7377ab074905"><td class="mdescLeft">&#160;</td><td class="mdescRight">AS3935のI2Cアドレス（0または3）  <br /></td></tr>
+<tr class="separator:a84ccf849c999d645190c7377ab074905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3496bcbad7f40c399f252aa34db5251d" id="r_a3496bcbad7f40c399f252aa34db5251d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3496bcbad7f40c399f252aa34db5251d">AS3935_IRQ</a>&#160;&#160;&#160;13</td></tr>
+<tr class="memdesc:a3496bcbad7f40c399f252aa34db5251d"><td class="mdescLeft">&#160;</td><td class="mdescRight">AS3935のIRQピン番号（雷検出割り込み）  <br /></td></tr>
+<tr class="separator:a3496bcbad7f40c399f252aa34db5251d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9ecf80e1eac083d16ec47f9d3aeb39f" id="r_ad9ecf80e1eac083d16ec47f9d3aeb39f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9ecf80e1eac083d16ec47f9d3aeb39f">I2C_PORT</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memdesc:ad9ecf80e1eac083d16ec47f9d3aeb39f"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2Cのポート番号（1: I2C1を使用）  <br /></td></tr>
+<tr class="separator:ad9ecf80e1eac083d16ec47f9d3aeb39f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a212ca328a6409c98f8c3dfbbe1ba561d" id="r_a212ca328a6409c98f8c3dfbbe1ba561d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a212ca328a6409c98f8c3dfbbe1ba561d">I2C_SCL</a>&#160;&#160;&#160;15</td></tr>
+<tr class="memdesc:a212ca328a6409c98f8c3dfbbe1ba561d"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2CのSCLピン番号（クロック）  <br /></td></tr>
+<tr class="separator:a212ca328a6409c98f8c3dfbbe1ba561d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18aefd12ad84d4c33dc97923cb821e47" id="r_a18aefd12ad84d4c33dc97923cb821e47"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18aefd12ad84d4c33dc97923cb821e47">I2C_SDA</a>&#160;&#160;&#160;14</td></tr>
+<tr class="memdesc:a18aefd12ad84d4c33dc97923cb821e47"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2CのSDAピン番号（データ）  <br /></td></tr>
+<tr class="separator:a18aefd12ad84d4c33dc97923cb821e47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f4d46ae101b77df78010c506601c87c" id="r_a5f4d46ae101b77df78010c506601c87c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f4d46ae101b77df78010c506601c87c">TFT_CS</a>&#160;&#160;&#160;22</td></tr>
+<tr class="memdesc:a5f4d46ae101b77df78010c506601c87c"><td class="mdescLeft">&#160;</td><td class="mdescRight">液晶画面のチップセレクトピン番号  <br /></td></tr>
+<tr class="separator:a5f4d46ae101b77df78010c506601c87c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51529307207622c113ff0d584536be13" id="r_a51529307207622c113ff0d584536be13"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a51529307207622c113ff0d584536be13">TFT_DC</a>&#160;&#160;&#160;20</td></tr>
+<tr class="memdesc:a51529307207622c113ff0d584536be13"><td class="mdescLeft">&#160;</td><td class="mdescRight">液晶画面のDCピン番号（データ/コマンド切替）  <br /></td></tr>
+<tr class="separator:a51529307207622c113ff0d584536be13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4db639d2d88a53132a529677e6dd795c" id="r_a4db639d2d88a53132a529677e6dd795c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4db639d2d88a53132a529677e6dd795c">TFT_MOSI</a>&#160;&#160;&#160;19</td></tr>
+<tr class="memdesc:a4db639d2d88a53132a529677e6dd795c"><td class="mdescLeft">&#160;</td><td class="mdescRight">液晶表示のMOSIピン番号（SPIデータ出力）  <br /></td></tr>
+<tr class="separator:a4db639d2d88a53132a529677e6dd795c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab40e9918d9141415a47e2a979292309c" id="r_ab40e9918d9141415a47e2a979292309c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab40e9918d9141415a47e2a979292309c">TFT_RST</a>&#160;&#160;&#160;21</td></tr>
+<tr class="memdesc:ab40e9918d9141415a47e2a979292309c"><td class="mdescLeft">&#160;</td><td class="mdescRight">液晶画面のリセットピン番号  <br /></td></tr>
+<tr class="separator:ab40e9918d9141415a47e2a979292309c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad71e70999bd20c255b8f3f2ce89722d9" id="r_ad71e70999bd20c255b8f3f2ce89722d9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad71e70999bd20c255b8f3f2ce89722d9">TFT_SCK</a>&#160;&#160;&#160;18</td></tr>
+<tr class="memdesc:ad71e70999bd20c255b8f3f2ce89722d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">液晶表示のSCKピン番号（SPIクロック）  <br /></td></tr>
+<tr class="separator:ad71e70999bd20c255b8f3f2ce89722d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92804fe5b93ac51becd8aad14e32333e" id="r_a92804fe5b93ac51becd8aad14e32333e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a92804fe5b93ac51becd8aad14e32333e">TOUCH_CS</a>&#160;&#160;&#160;17</td></tr>
+<tr class="memdesc:a92804fe5b93ac51becd8aad14e32333e"><td class="mdescLeft">&#160;</td><td class="mdescRight">タッチパネルのチップセレクトピン番号  <br /></td></tr>
+<tr class="separator:a92804fe5b93ac51becd8aad14e32333e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af32032bfc619ea289eaacc80830b568f" id="r_af32032bfc619ea289eaacc80830b568f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af32032bfc619ea289eaacc80830b568f">TOUCH_MISO</a>&#160;&#160;&#160;16</td></tr>
+<tr class="memdesc:af32032bfc619ea289eaacc80830b568f"><td class="mdescLeft">&#160;</td><td class="mdescRight">タッチパネルのMISOピン番号（SPIデータ入力）  <br /></td></tr>
+<tr class="separator:af32032bfc619ea289eaacc80830b568f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+列挙型</h2></td></tr>
+<tr class="memitem:af04b295833f05933d28288becddf93d8" id="r_af04b295833f05933d28288becddf93d8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af04b295833f05933d28288becddf93d8">APPMode</a> { <a class="el" href="#af04b295833f05933d28288becddf93d8a3d42ee40b47e53d7e8acb5aa83c7ecc7">APP_MODE_STARTING</a>
+, <a class="el" href="#af04b295833f05933d28288becddf93d8a60dd75a33b557cc71f9acbdedeadf7ed">APP_MODE_NORMAL</a>
+, <a class="el" href="#af04b295833f05933d28288becddf93d8a3fc19b64f0ee1b08c46bcbf240e96c2d">APP_MODE_SETTING</a>
+ }</td></tr>
+<tr class="memdesc:af04b295833f05933d28288becddf93d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">メイン関数（エントリーポイント）  <a href="#af04b295833f05933d28288becddf93d8">[詳解]</a><br /></td></tr>
+<tr class="separator:af04b295833f05933d28288becddf93d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+関数</h2></td></tr>
+<tr class="memitem:a5c93fec88167d24e19b2ea91be28027f" id="r_a5c93fec88167d24e19b2ea91be28027f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c93fec88167d24e19b2ea91be28027f">as3935IRQCallback</a> (uint gpio, uint32_t events)</td></tr>
+<tr class="memdesc:a5c93fec88167d24e19b2ea91be28027f"><td class="mdescLeft">&#160;</td><td class="mdescRight">IRQピンの割り込みに対するコールバック関数  <br /></td></tr>
+<tr class="separator:a5c93fec88167d24e19b2ea91be28027f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34d7233e3eabbf7590beeff443c1120e" id="r_a34d7233e3eabbf7590beeff443c1120e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a34d7233e3eabbf7590beeff443c1120e">ConnectToWifi</a> (uint8_t *ipAddr, const char *ssid, const char *password)</td></tr>
+<tr class="memdesc:a34d7233e3eabbf7590beeff443c1120e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wi-Fi接続関数  <br /></td></tr>
+<tr class="separator:a34d7233e3eabbf7590beeff443c1120e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18ab3a62737bedc230c7bc77a3c4a889" id="r_a18ab3a62737bedc230c7bc77a3c4a889"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18ab3a62737bedc230c7bc77a3c4a889">hartbeatCallback</a> (repeating_timer_t *rt)</td></tr>
+<tr class="memdesc:a18ab3a62737bedc230c7bc77a3c4a889"><td class="mdescLeft">&#160;</td><td class="mdescRight">タイマー割り込みのコールバック関数  <br /></td></tr>
+<tr class="separator:a18ab3a62737bedc230c7bc77a3c4a889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fdf93c817b92b99df4164523b535e63" id="r_a9fdf93c817b92b99df4164523b535e63"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fdf93c817b92b99df4164523b535e63">InitDMA</a> ()</td></tr>
+<tr class="memdesc:a9fdf93c817b92b99df4164523b535e63"><td class="mdescLeft">&#160;</td><td class="mdescRight">DMAの初期化関数  <br /></td></tr>
+<tr class="separator:a9fdf93c817b92b99df4164523b535e63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5038fc59616686578a70f94bffcda097" id="r_a5038fc59616686578a70f94bffcda097"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5038fc59616686578a70f94bffcda097">Initialize</a> (Adafruit_ILI9341 &amp;tft, XPT2046_Touchscreen &amp;ts, <a class="el" href="class_a_s3935.html">AS3935</a> &amp;as3935, <a class="el" href="class_inet_action.html">InetAction</a> &amp;iNet)</td></tr>
+<tr class="memdesc:a5038fc59616686578a70f94bffcda097"><td class="mdescLeft">&#160;</td><td class="mdescRight">アプリケーションの初期化処理  <br /></td></tr>
+<tr class="separator:a5038fc59616686578a70f94bffcda097"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae66f6b31b5ad750f1fe042a706a4e3d4" id="r_ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a> ()</td></tr>
+<tr class="memdesc:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">アプリケーションのエントリーポイント  <br /></td></tr>
+<tr class="separator:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefcc452578e61a69b1fbbced9abf4438" id="r_aefcc452578e61a69b1fbbced9abf4438"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aefcc452578e61a69b1fbbced9abf4438">mainDisplay</a> (Adafruit_ILI9341 &amp;tft, <a class="el" href="class_a_s3935.html">AS3935</a> &amp;as3935, bool isSignal, bool isBanner, bool isClock, bool isBody)</td></tr>
+<tr class="separator:aefcc452578e61a69b1fbbced9abf4438"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+変数</h2></td></tr>
+<tr class="memitem:a8302c29890aa5679c780a7bacb30671e" id="r_a8302c29890aa5679c780a7bacb30671e"><td class="memItemLeft" align="right" valign="top">enum <a class="el" href="#af04b295833f05933d28288becddf93d8">APPMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8302c29890aa5679c780a7bacb30671e">appMode</a></td></tr>
+<tr class="separator:a8302c29890aa5679c780a7bacb30671e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4e1695100b832556e021753c6886f5f" id="r_ab4e1695100b832556e021753c6886f5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4e1695100b832556e021753c6886f5f">isIRQTriggered</a> = false</td></tr>
+<tr class="separator:ab4e1695100b832556e021753c6886f5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30e11d7075dc696e5f1daa165b0bb1f5" id="r_a30e11d7075dc696e5f1daa165b0bb1f5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30e11d7075dc696e5f1daa165b0bb1f5">mustRedraw</a> = false</td></tr>
+<tr class="separator:a30e11d7075dc696e5f1daa165b0bb1f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19276c778f3034b94881cf1f8614dbb2" id="r_a19276c778f3034b94881cf1f8614dbb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_settings.html">Settings</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19276c778f3034b94881cf1f8614dbb2">settings</a></td></tr>
+<tr class="memdesc:a19276c778f3034b94881cf1f8614dbb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">設定管理インスタンス  <br /></td></tr>
+<tr class="separator:a19276c778f3034b94881cf1f8614dbb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">マクロ定義詳解</h2>
+<a id="a84ccf849c999d645190c7377ab074905" name="a84ccf849c999d645190c7377ab074905"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84ccf849c999d645190c7377ab074905">&#9670;&#160;</a></span>AS3935_ADDRESS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define AS3935_ADDRESS&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AS3935のI2Cアドレス（0または3） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00050">50</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a3496bcbad7f40c399f252aa34db5251d" name="a3496bcbad7f40c399f252aa34db5251d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3496bcbad7f40c399f252aa34db5251d">&#9670;&#160;</a></span>AS3935_IRQ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define AS3935_IRQ&#160;&#160;&#160;13</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AS3935のIRQピン番号（雷検出割り込み） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00048">48</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ad9ecf80e1eac083d16ec47f9d3aeb39f" name="ad9ecf80e1eac083d16ec47f9d3aeb39f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9ecf80e1eac083d16ec47f9d3aeb39f">&#9670;&#160;</a></span>I2C_PORT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define I2C_PORT&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>I2Cのポート番号（1: I2C1を使用） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00044">44</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a212ca328a6409c98f8c3dfbbe1ba561d" name="a212ca328a6409c98f8c3dfbbe1ba561d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a212ca328a6409c98f8c3dfbbe1ba561d">&#9670;&#160;</a></span>I2C_SCL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define I2C_SCL&#160;&#160;&#160;15</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>I2CのSCLピン番号（クロック） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00046">46</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a18aefd12ad84d4c33dc97923cb821e47" name="a18aefd12ad84d4c33dc97923cb821e47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18aefd12ad84d4c33dc97923cb821e47">&#9670;&#160;</a></span>I2C_SDA</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define I2C_SDA&#160;&#160;&#160;14</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>I2CのSDAピン番号（データ） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00045">45</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a5f4d46ae101b77df78010c506601c87c" name="a5f4d46ae101b77df78010c506601c87c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f4d46ae101b77df78010c506601c87c">&#9670;&#160;</a></span>TFT_CS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TFT_CS&#160;&#160;&#160;22</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>液晶画面のチップセレクトピン番号 </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00038">38</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a51529307207622c113ff0d584536be13" name="a51529307207622c113ff0d584536be13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51529307207622c113ff0d584536be13">&#9670;&#160;</a></span>TFT_DC</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TFT_DC&#160;&#160;&#160;20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>液晶画面のDCピン番号（データ/コマンド切替） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00036">36</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a4db639d2d88a53132a529677e6dd795c" name="a4db639d2d88a53132a529677e6dd795c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4db639d2d88a53132a529677e6dd795c">&#9670;&#160;</a></span>TFT_MOSI</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TFT_MOSI&#160;&#160;&#160;19</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>液晶表示のMOSIピン番号（SPIデータ出力） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00035">35</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ab40e9918d9141415a47e2a979292309c" name="ab40e9918d9141415a47e2a979292309c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab40e9918d9141415a47e2a979292309c">&#9670;&#160;</a></span>TFT_RST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TFT_RST&#160;&#160;&#160;21</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>液晶画面のリセットピン番号 </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00037">37</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ad71e70999bd20c255b8f3f2ce89722d9" name="ad71e70999bd20c255b8f3f2ce89722d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad71e70999bd20c255b8f3f2ce89722d9">&#9670;&#160;</a></span>TFT_SCK</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TFT_SCK&#160;&#160;&#160;18</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>液晶表示のSCKピン番号（SPIクロック） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00034">34</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a92804fe5b93ac51becd8aad14e32333e" name="a92804fe5b93ac51becd8aad14e32333e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92804fe5b93ac51becd8aad14e32333e">&#9670;&#160;</a></span>TOUCH_CS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TOUCH_CS&#160;&#160;&#160;17</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>タッチパネルのチップセレクトピン番号 </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00041">41</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="af32032bfc619ea289eaacc80830b568f" name="af32032bfc619ea289eaacc80830b568f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af32032bfc619ea289eaacc80830b568f">&#9670;&#160;</a></span>TOUCH_MISO</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TOUCH_MISO&#160;&#160;&#160;16</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>タッチパネルのMISOピン番号（SPIデータ入力） </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00040">40</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">列挙型詳解</h2>
+<a id="af04b295833f05933d28288becddf93d8" name="af04b295833f05933d28288becddf93d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af04b295833f05933d28288becddf93d8">&#9670;&#160;</a></span>APPMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#af04b295833f05933d28288becddf93d8">APPMode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>メイン関数（エントリーポイント） </p>
+<p>Raspberry Pi Pico上でAS3935雷センサとILI9341 TFTディスプレイを制御するアプリケーションのメイン関数です。</p><ul>
+<li>TFTディスプレイ、I2C、DMA、Wi-Fiの初期化を行います。</li>
+<li>AS3935の初期化とキャリブレーションを実行します。</li>
+<li>Wi-Fi接続やIPアドレスの取得、ステーションモードの有効化を行います（有効時）。</li>
+<li>メインループでは、ディスプレイに日本語メッセージと経過時間を表示し続けます。</li>
+<li>各種初期化やエラー時にはTFTに進捗やエラー内容を表示します。</li>
+</ul>
+<dl class="section return"><dt>戻り値</dt><dd>終了コード（正常終了時は0、初期化失敗時は-1） </dd></dl>
+<table class="fieldtable">
+<tr><th colspan="2">列挙値</th></tr><tr><td class="fieldname"><a id="af04b295833f05933d28288becddf93d8a3d42ee40b47e53d7e8acb5aa83c7ecc7" name="af04b295833f05933d28288becddf93d8a3d42ee40b47e53d7e8acb5aa83c7ecc7"></a>APP_MODE_STARTING&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af04b295833f05933d28288becddf93d8a60dd75a33b557cc71f9acbdedeadf7ed" name="af04b295833f05933d28288becddf93d8a60dd75a33b557cc71f9acbdedeadf7ed"></a>APP_MODE_NORMAL&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af04b295833f05933d28288becddf93d8a3fc19b64f0ee1b08c46bcbf240e96c2d" name="af04b295833f05933d28288becddf93d8a3fc19b64f0ee1b08c46bcbf240e96c2d"></a>APP_MODE_SETTING&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00146">146</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">関数詳解</h2>
+<a id="a5c93fec88167d24e19b2ea91be28027f" name="a5c93fec88167d24e19b2ea91be28027f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c93fec88167d24e19b2ea91be28027f">&#9670;&#160;</a></span>as3935IRQCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void as3935IRQCallback </td>
+          <td>(</td>
+          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>gpio</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>events</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>IRQピンの割り込みに対するコールバック関数 </p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gpio</td><td></td></tr>
+    <tr><td class="paramname">events</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00120">120</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a34d7233e3eabbf7590beeff443c1120e" name="a34d7233e3eabbf7590beeff443c1120e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34d7233e3eabbf7590beeff443c1120e">&#9670;&#160;</a></span>ConnectToWifi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ConnectToWifi </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *</td>          <td class="paramname"><span class="paramname"><em>ipAddr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>ssid</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>password</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wi-Fi接続関数 </p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ipAddr</td><td>IPアドレスを格納する配列（4バイト） </td></tr>
+    <tr><td class="paramname">ssid</td><td>接続するWi-FiのSSID </td></tr>
+    <tr><td class="paramname">password</td><td>接続するWi-Fiのパスワード </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>接続が成功した場合は0、失敗した場合はエラーコードを返す </dd></dl>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00059">59</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a18ab3a62737bedc230c7bc77a3c4a889" name="a18ab3a62737bedc230c7bc77a3c4a889"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18ab3a62737bedc230c7bc77a3c4a889">&#9670;&#160;</a></span>hartbeatCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool hartbeatCallback </td>
+          <td>(</td>
+          <td class="paramtype">repeating_timer_t *</td>          <td class="paramname"><span class="paramname"><em>rt</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>タイマー割り込みのコールバック関数 </p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rt　</td><td>タイマーのリピート割り込み構造体 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>戻り値</dt><dd>　割り込みを継続するかどうか </dd></dl>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00127">127</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a9fdf93c817b92b99df4164523b535e63" name="a9fdf93c817b92b99df4164523b535e63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fdf93c817b92b99df4164523b535e63">&#9670;&#160;</a></span>InitDMA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool InitDMA </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>DMAの初期化関数 </p>
+<dl class="section return"><dt>戻り値</dt><dd>初期化が成功した場合はtrue、失敗した場合はfalseを返す </dd></dl>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00076">76</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a5038fc59616686578a70f94bffcda097" name="a5038fc59616686578a70f94bffcda097"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5038fc59616686578a70f94bffcda097">&#9670;&#160;</a></span>Initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Initialize </td>
+          <td>(</td>
+          <td class="paramtype">Adafruit_ILI9341 &amp;</td>          <td class="paramname"><span class="paramname"><em>tft</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">XPT2046_Touchscreen &amp;</td>          <td class="paramname"><span class="paramname"><em>ts</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_a_s3935.html">AS3935</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>as3935</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_inet_action.html">InetAction</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>iNet</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>アプリケーションの初期化処理 </p>
+<ul>
+<li>TFTディスプレイ、I2C、Wi-Fi、DMA、AS3935キャリブレーション等の初期化を行う。</li>
+<li>各初期化ステップの進捗やエラーをTFTに表示。</li>
+<li>Wi-Fi有効時はSNTPによる時刻同期も実施。</li>
+<li>タッチパネルのタッチまたはタイムアウトまで待機し、初期化完了後にメイン画面へ遷移。</li>
+</ul>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tft</td><td>ILI9341 TFTディスプレイインスタンス </td></tr>
+    <tr><td class="paramname">ts</td><td>XPT2046タッチパネルインスタンス </td></tr>
+    <tr><td class="paramname">as3935</td><td>AS3935雷センサインスタンス </td></tr>
+    <tr><td class="paramname">iNet</td><td>InetActionインスタンス（Wi-Fi/時刻同期用） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">なし</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<p>&lt; I2Cの初期化フラグ</p>
+<p>&lt; AS3935の初期化</p>
+<p>&lt; I2C初期化成功</p>
+<p>&lt; 失敗時は10秒停止</p>
+<p>&lt; I2C初期化失敗</p>
+<p>&lt; <a class="el" href="class_a_s3935.html">AS3935</a> IRQピン初期化</p>
+<p>&lt; IRQピンを入力に設定</p>
+<p>&lt; エラー時もWi-Fi設定は維持</p>
+<p>&lt; Wi-Fi接続</p>
+<p>&lt; エラー表示</p>
+<p>&lt; IPアドレス表示</p>
+<p>&lt; SNTP時刻同期</p>
+<p>&lt; 現在時刻表示</p>
+<p>&lt; SNTPエラー表示</p>
+<p>&lt; 時計初期化</p>
+<p>&lt; DMA初期化</p>
+<p>&lt; キャリブレーション実行</p>
+<p>&lt; キャリブ値表示</p>
+<p>&lt; 初期化完了表示</p>
+<p>&lt; タイムアウトカウンタ</p>
+<p>&lt; シリアルデバッグ時は30秒</p>
+<p>&lt; 通常時は1秒</p>
+<p>&lt; タッチで抜ける</p>
+<p>&lt; タイムアウトで抜ける</p>
+<p>&lt; 100ms待機</p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00276">276</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ae66f6b31b5ad750f1fe042a706a4e3d4" name="ae66f6b31b5ad750f1fe042a706a4e3d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae66f6b31b5ad750f1fe042a706a4e3d4">&#9670;&#160;</a></span>main()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int main </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>アプリケーションのエントリーポイント </p>
+<p>Raspberry Pi Pico上でAS3935雷センサ、ILI9341 TFTディスプレイ、タッチパネル、Wi-Fi、DMA等を初期化し、 メインループで雷検出・時刻表示・設定画面遷移などの制御を行う。</p><ul>
+<li>起動時にタッチパネル長押しで設定初期化ダイアログを表示し、必要に応じて設定をリセット。</li>
+<li>シリアルデバッグ有効時はユーザー操作を待機。</li>
+<li>各種初期化（TFT, タッチ, <a class="el" href="class_a_s3935.html">AS3935</a>, Wi-Fi, DMA, 時計）を行い、 割り込み・タイマー・メインループで雷検出や設定画面遷移を制御。</li>
+<li>IRQ割り込みやタイマー、GUIメッセージボックス等の組み合わせで堅牢なUI/UXを実現。</li>
+</ul>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>正常終了時は0、初期化失敗時は-1 </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>&lt; TFTディスプレイインスタンス</p>
+<p>&lt; タッチパネルインスタンス</p>
+<p>&lt; アプリケーションモード初期化</p>
+<p>&lt; フラッシュメモリから設定値をロード</p>
+<p>&lt; Wi-Fi/時刻同期用インスタンス</p>
+<p>&lt; 標準入出力初期化</p>
+<p>&lt; SPI0のTX(MOSI)ピン設定</p>
+<p>&lt; SPI0のSCKピン設定</p>
+<p>&lt; TFT初期化</p>
+<p>&lt; 雷センサインスタンス</p>
+<p>&lt; 日本語フォント設定</p>
+<p>&lt; ウィンドウモード有効化</p>
+<p>&lt; タッチパネル初期化</p>
+<p>&lt; タッチパネル回転設定</p>
+<p>&lt; タッチカウンタ</p>
+<p>&lt; 2秒以上タッチで初期化ダイアログ</p>
+<p>&lt; 画面クリア</p>
+<p>&lt; カウンタリセット</p>
+<p>&lt; 設定初期化</p>
+<p>&lt; フラッシュ保存</p>
+<p>&lt; タッチキャリブレーション</p>
+<p>&lt; 画面クリア</p>
+<p>&lt; 各種初期化</p>
+<p>&lt; 初期化後の待機</p>
+<p>&lt; 初期画面バナー表示</p>
+<p>&lt; IRQ有効化ログ</p>
+<p>&lt; <a class="el" href="class_a_s3935.html">AS3935</a> IRQ割り込み有効化</p>
+<p>&lt; 1秒ごとのハートビートタイマー</p>
+<p>&lt; 通常モードへ</p>
+<p>&lt; IRQトリガーフラグリセット</p>
+<p>&lt; 割り込み待機（低消費電力）</p>
+<p>&lt; 雷センサIRQ発生時</p>
+<p>&lt; 一時的にIRQ無効化</p>
+<p>&lt; 雷検出画面更新</p>
+<p>&lt; IRQ再有効化</p>
+<p>&lt; 設定モード遷移</p>
+<p>&lt; 時計更新</p>
+<p>&lt; IRQ無効化</p>
+<p>&lt; タイマー停止</p>
+<p>&lt; 設定画面実行</p>
+<p>&lt; 再描画フラグ</p>
+<p>&lt; 時計再描画フラグ</p>
+<p>&lt; 通常モード復帰</p>
+<p>&lt; IRQ復旧</p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00405">405</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="aefcc452578e61a69b1fbbced9abf4438" name="aefcc452578e61a69b1fbbced9abf4438"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefcc452578e61a69b1fbbced9abf4438">&#9670;&#160;</a></span>mainDisplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mainDisplay </td>
+          <td>(</td>
+          <td class="paramtype">Adafruit_ILI9341 &amp;</td>          <td class="paramname"><span class="paramname"><em>tft</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_a_s3935.html">AS3935</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>as3935</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>isSignal</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>isBanner</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>isClock</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>isBody</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00153">153</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">変数詳解</h2>
+<a id="a8302c29890aa5679c780a7bacb30671e" name="a8302c29890aa5679c780a7bacb30671e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8302c29890aa5679c780a7bacb30671e">&#9670;&#160;</a></span>appMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#af04b295833f05933d28288becddf93d8">APPMode</a> appMode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab4e1695100b832556e021753c6886f5f" name="ab4e1695100b832556e021753c6886f5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4e1695100b832556e021753c6886f5f">&#9670;&#160;</a></span>isIRQTriggered</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool isIRQTriggered = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00116">116</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a30e11d7075dc696e5f1daa165b0bb1f5" name="a30e11d7075dc696e5f1daa165b0bb1f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30e11d7075dc696e5f1daa165b0bb1f5">&#9670;&#160;</a></span>mustRedraw</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mustRedraw = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00151">151</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a19276c778f3034b94881cf1f8614dbb2" name="a19276c778f3034b94881cf1f8614dbb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19276c778f3034b94881cf1f8614dbb2">&#9670;&#160;</a></span>settings</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_settings.html">Settings</a> settings</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>設定管理インスタンス </p>
+<p>グローバル設定インスタンス </p>
+
+<p class="definition"> <a class="el" href="_a_s3935_a_p_p_8cpp_source.html">AS3935APP.cpp</a> の <a class="el" href="_a_s3935_a_p_p_8cpp_source.html#l00052">52</a> 行目に定義があります。</p>
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: InetAction.cpp ファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">クラス</a> &#124;
+<a href="#define-members">マクロ定義</a> &#124;
+<a href="#typedef-members">型定義</a> &#124;
+<a href="#func-members">関数</a>  </div>
+  <div class="headertitle"><div class="title">InetAction.cpp ファイル</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;pico/cyw43_arch.h&quot;</code><br />
+<code>#include &quot;pico/stdlib.h&quot;</code><br />
+<code>#include &quot;hardware/rtc.h&quot;</code><br />
+<code>#include &quot;lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h&quot;</code><br />
+<code>#include &quot;lwip/apps/sntp.h&quot;</code><br />
+<code>#include &quot;lwip/dns.h&quot;</code><br />
+<code>#include &quot;lwip/ip_addr.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="_inet_action_8h_source.html">InetAction.h</a>&quot;</code><br />
+<code>#include &lt;ctime&gt;</code><br />
+<code>#include &quot;<a class="el" href="printf_debug_8h_source.html">printfDebug.h</a>&quot;</code><br />
+</div>
+<p><a href="_inet_action_8cpp_source.html">[ソースコード]</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+クラス</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_n_t_p___t__.html">NTP_T_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">NTP の状態を保持する構造体。コールバック関数とクラス本体の間でやり取りするために使われる  <a href="struct_n_t_p___t__.html#details">[詳解]</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+マクロ定義</h2></td></tr>
+<tr class="memitem:a709e311a0d0733766ac81edecb7a010a" id="r_a709e311a0d0733766ac81edecb7a010a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a709e311a0d0733766ac81edecb7a010a">NTP_DELTA</a>&#160;&#160;&#160;2208988800</td></tr>
+<tr class="separator:a709e311a0d0733766ac81edecb7a010a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdaac1f362a8a69958d31a121791a78f" id="r_afdaac1f362a8a69958d31a121791a78f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afdaac1f362a8a69958d31a121791a78f">NTP_MSG_LEN</a>&#160;&#160;&#160;48</td></tr>
+<tr class="separator:afdaac1f362a8a69958d31a121791a78f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b01aa9ccfd4ae46ff6998d3c5c6135d" id="r_a3b01aa9ccfd4ae46ff6998d3c5c6135d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b01aa9ccfd4ae46ff6998d3c5c6135d">NTP_PORT</a>&#160;&#160;&#160;123</td></tr>
+<tr class="separator:a3b01aa9ccfd4ae46ff6998d3c5c6135d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab04e69c9135851c2debf043c311fe597" id="r_ab04e69c9135851c2debf043c311fe597"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab04e69c9135851c2debf043c311fe597">NTP_RESEND_TIME</a>&#160;&#160;&#160;(10 * 1000)</td></tr>
+<tr class="separator:ab04e69c9135851c2debf043c311fe597"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a404e5b1617a79aed7665de55361d2d9b" id="r_a404e5b1617a79aed7665de55361d2d9b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a404e5b1617a79aed7665de55361d2d9b">NTP_TEST_TIME</a>&#160;&#160;&#160;(30 * 1000)</td></tr>
+<tr class="separator:a404e5b1617a79aed7665de55361d2d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+型定義</h2></td></tr>
+<tr class="memitem:a917a0023b029430b8a8700353bcd18f5" id="r_a917a0023b029430b8a8700353bcd18f5"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="struct_n_t_p___t__.html">NTP_T_</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a917a0023b029430b8a8700353bcd18f5">NTP_T</a></td></tr>
+<tr class="memdesc:a917a0023b029430b8a8700353bcd18f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">NTP の状態を保持する構造体。コールバック関数とクラス本体の間でやり取りするために使われる  <br /></td></tr>
+<tr class="separator:a917a0023b029430b8a8700353bcd18f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+関数</h2></td></tr>
+<tr class="memitem:afacf5ca590b9591b29e0412a2f0367f9" id="r_afacf5ca590b9591b29e0412a2f0367f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afacf5ca590b9591b29e0412a2f0367f9">dns_callback</a> (const char *name, const ip_addr_t *ipaddr, void *callback_arg)</td></tr>
+<tr class="memdesc:afacf5ca590b9591b29e0412a2f0367f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">DNS名前解決のコールバック関数  <br /></td></tr>
+<tr class="separator:afacf5ca590b9591b29e0412a2f0367f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46ab4b92a0280d2038d30be8f54a2916" id="r_a46ab4b92a0280d2038d30be8f54a2916"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a46ab4b92a0280d2038d30be8f54a2916">ntp_failed_handler</a> (alarm_id_t id, void *user_data)</td></tr>
+<tr class="separator:a46ab4b92a0280d2038d30be8f54a2916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0a2ceddddf105e1bc0843b8900b38ac" id="r_ae0a2ceddddf105e1bc0843b8900b38ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0a2ceddddf105e1bc0843b8900b38ac">ntp_recv</a> (void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)</td></tr>
+<tr class="separator:ae0a2ceddddf105e1bc0843b8900b38ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65f920f6b5edc040b12620bfdc472d98" id="r_a65f920f6b5edc040b12620bfdc472d98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65f920f6b5edc040b12620bfdc472d98">setRTC</a> (u32_t sec)</td></tr>
+<tr class="separator:a65f920f6b5edc040b12620bfdc472d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">マクロ定義詳解</h2>
+<a id="a709e311a0d0733766ac81edecb7a010a" name="a709e311a0d0733766ac81edecb7a010a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a709e311a0d0733766ac81edecb7a010a">&#9670;&#160;</a></span>NTP_DELTA</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NTP_DELTA&#160;&#160;&#160;2208988800</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00135">135</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="afdaac1f362a8a69958d31a121791a78f" name="afdaac1f362a8a69958d31a121791a78f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdaac1f362a8a69958d31a121791a78f">&#9670;&#160;</a></span>NTP_MSG_LEN</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NTP_MSG_LEN&#160;&#160;&#160;48</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00133">133</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a3b01aa9ccfd4ae46ff6998d3c5c6135d" name="a3b01aa9ccfd4ae46ff6998d3c5c6135d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b01aa9ccfd4ae46ff6998d3c5c6135d">&#9670;&#160;</a></span>NTP_PORT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NTP_PORT&#160;&#160;&#160;123</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00134">134</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ab04e69c9135851c2debf043c311fe597" name="ab04e69c9135851c2debf043c311fe597"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab04e69c9135851c2debf043c311fe597">&#9670;&#160;</a></span>NTP_RESEND_TIME</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NTP_RESEND_TIME&#160;&#160;&#160;(10 * 1000)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00137">137</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a404e5b1617a79aed7665de55361d2d9b" name="a404e5b1617a79aed7665de55361d2d9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a404e5b1617a79aed7665de55361d2d9b">&#9670;&#160;</a></span>NTP_TEST_TIME</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NTP_TEST_TIME&#160;&#160;&#160;(30 * 1000)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00136">136</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">型定義詳解</h2>
+<a id="a917a0023b029430b8a8700353bcd18f5" name="a917a0023b029430b8a8700353bcd18f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a917a0023b029430b8a8700353bcd18f5">&#9670;&#160;</a></span>NTP_T</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="struct_n_t_p___t__.html">NTP_T_</a> <a class="el" href="#a917a0023b029430b8a8700353bcd18f5">NTP_T</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>NTP の状態を保持する構造体。コールバック関数とクラス本体の間でやり取りするために使われる </p>
+
+</div>
+</div>
+<h2 class="groupheader">関数詳解</h2>
+<a id="afacf5ca590b9591b29e0412a2f0367f9" name="afacf5ca590b9591b29e0412a2f0367f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afacf5ca590b9591b29e0412a2f0367f9">&#9670;&#160;</a></span>dns_callback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dns_callback </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ip_addr_t *</td>          <td class="paramname"><span class="paramname"><em>ipaddr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>callback_arg</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>DNS名前解決のコールバック関数 </p>
+<p>dns_gethostbyname()の非同期結果を受け取り、成功時はIPアドレスを保存します。 </p>
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00084">84</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a46ab4b92a0280d2038d30be8f54a2916" name="a46ab4b92a0280d2038d30be8f54a2916"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46ab4b92a0280d2038d30be8f54a2916">&#9670;&#160;</a></span>ntp_failed_handler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t ntp_failed_handler </td>
+          <td>(</td>
+          <td class="paramtype">alarm_id_t</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>user_data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00184">184</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ae0a2ceddddf105e1bc0843b8900b38ac" name="ae0a2ceddddf105e1bc0843b8900b38ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0a2ceddddf105e1bc0843b8900b38ac">&#9670;&#160;</a></span>ntp_recv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ntp_recv </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>arg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct udp_pcb *</td>          <td class="paramname"><span class="paramname"><em>pcb</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct pbuf *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ip_addr_t *</td>          <td class="paramname"><span class="paramname"><em>addr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u16_t</td>          <td class="paramname"><span class="paramname"><em>port</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00195">195</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a65f920f6b5edc040b12620bfdc472d98" name="a65f920f6b5edc040b12620bfdc472d98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65f920f6b5edc040b12620bfdc472d98">&#9670;&#160;</a></span>setRTC()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setRTC </td>
+          <td>(</td>
+          <td class="paramtype">u32_t</td>          <td class="paramname"><span class="paramname"><em>sec</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition"> <a class="el" href="_inet_action_8cpp_source.html">InetAction.cpp</a> の <a class="el" href="_inet_action_8cpp_source.html#l00149">149</a> 行目に定義があります。</p>
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

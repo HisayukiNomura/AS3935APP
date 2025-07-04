@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: GUIMsgBox.h ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="doc-content">
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">GUIMsgBox.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_g_u_i_msg_box_8h.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceard_port.html">ardPort</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceard_port_1_1spi.html">ardPort::spi</a>;</div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="class_g_u_i_msg_box.html">   20</a></span><span class="keyword">class </span><a class="code hl_class" href="class_g_u_i_msg_box.html">GUIMsgBox</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_function" href="class_g_u_i_msg_box.html#a606dd21b2c2669d27797be1bead5dc8a">GUIMsgBox</a>(Adafruit_ILI9341* tft, XPT2046_Touchscreen* ts); </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_g_u_i_msg_box.html#af7d915c782537ad6d2770075473e55c7">showOKCancel</a>(<span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y, <span class="keyword">const</span> <span class="keywordtype">char</span>* caption, <span class="keyword">const</span> <span class="keywordtype">char</span>* message, <span class="keyword">const</span> <span class="keywordtype">char</span>* okMsg, <span class="keyword">const</span> <span class="keywordtype">char</span>* cancelMsg);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_g_u_i_msg_box.html#a4a1b3414b68baea14bcf3082b4018728">showOK</a>(<span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y, <span class="keyword">const</span> <span class="keywordtype">char</span>* caption, <span class="keyword">const</span> <span class="keywordtype">char</span>* message, <span class="keyword">const</span> <span class="keywordtype">char</span>* okMsg);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="class_g_u_i_msg_box.html#a31528019b9f4a9b0f32cfa495f7002f4">   62</a></span>    Adafruit_ILI9341* <a class="code hl_variable" href="class_g_u_i_msg_box.html#a31528019b9f4a9b0f32cfa495f7002f4">m_tft</a>; </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="class_g_u_i_msg_box.html#a3d0349c45b581a808e570b39db8b6a63">   63</a></span>    XPT2046_Touchscreen* <a class="code hl_variable" href="class_g_u_i_msg_box.html#a3d0349c45b581a808e570b39db8b6a63">m_ts</a>; </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>};</div>
+</div>
+<div class="ttc" id="aclass_g_u_i_msg_box_html"><div class="ttname"><a href="class_g_u_i_msg_box.html">GUIMsgBox</a></div><div class="ttdoc">TFT画面にダイアログボックスを表示するGUIクラス</div><div class="ttdef"><b>Definition</b> <a href="#l00020">GUIMsgBox.h:20</a></div></div>
+<div class="ttc" id="aclass_g_u_i_msg_box_html_a31528019b9f4a9b0f32cfa495f7002f4"><div class="ttname"><a href="class_g_u_i_msg_box.html#a31528019b9f4a9b0f32cfa495f7002f4">GUIMsgBox::m_tft</a></div><div class="ttdeci">Adafruit_ILI9341 * m_tft</div><div class="ttdoc">TFTディスプレイへのポインタ</div><div class="ttdef"><b>Definition</b> <a href="#l00062">GUIMsgBox.h:62</a></div></div>
+<div class="ttc" id="aclass_g_u_i_msg_box_html_a3d0349c45b581a808e570b39db8b6a63"><div class="ttname"><a href="class_g_u_i_msg_box.html#a3d0349c45b581a808e570b39db8b6a63">GUIMsgBox::m_ts</a></div><div class="ttdeci">XPT2046_Touchscreen * m_ts</div><div class="ttdoc">タッチパネルへのポインタ</div><div class="ttdef"><b>Definition</b> <a href="#l00063">GUIMsgBox.h:63</a></div></div>
+<div class="ttc" id="aclass_g_u_i_msg_box_html_a4a1b3414b68baea14bcf3082b4018728"><div class="ttname"><a href="class_g_u_i_msg_box.html#a4a1b3414b68baea14bcf3082b4018728">GUIMsgBox::showOK</a></div><div class="ttdeci">void showOK(int x, int y, const char *caption, const char *message, const char *okMsg)</div><div class="ttdoc">OKのみのダイアログを表示し、タッチで閉じる</div><div class="ttdef"><b>Definition</b> <a href="_g_u_i_msg_box_8cpp_source.html#l00102">GUIMsgBox.cpp:102</a></div></div>
+<div class="ttc" id="aclass_g_u_i_msg_box_html_a606dd21b2c2669d27797be1bead5dc8a"><div class="ttname"><a href="class_g_u_i_msg_box.html#a606dd21b2c2669d27797be1bead5dc8a">GUIMsgBox::GUIMsgBox</a></div><div class="ttdeci">GUIMsgBox(Adafruit_ILI9341 *tft, XPT2046_Touchscreen *ts)</div><div class="ttdoc">コンストラクタ</div><div class="ttdef"><b>Definition</b> <a href="_g_u_i_msg_box_8cpp_source.html#l00005">GUIMsgBox.cpp:5</a></div></div>
+<div class="ttc" id="aclass_g_u_i_msg_box_html_af7d915c782537ad6d2770075473e55c7"><div class="ttname"><a href="class_g_u_i_msg_box.html#af7d915c782537ad6d2770075473e55c7">GUIMsgBox::showOKCancel</a></div><div class="ttdeci">bool showOKCancel(int x, int y, const char *caption, const char *message, const char *okMsg, const char *cancelMsg)</div><div class="ttdoc">OK/Cancelダイアログを表示し、ユーザーの選択を返す</div><div class="ttdef"><b>Definition</b> <a href="_g_u_i_msg_box_8cpp_source.html#l00043">GUIMsgBox.cpp:43</a></div></div>
+<div class="ttc" id="anamespaceard_port_1_1spi_html"><div class="ttname"><a href="namespaceard_port_1_1spi.html">ardPort::spi</a></div><div class="ttdoc">SPI関連APIの名前空間</div></div>
+<div class="ttc" id="anamespaceard_port_html"><div class="ttname"><a href="namespaceard_port.html">ardPort</a></div><div class="ttdoc">Arduino互換ポートラッパーの名前空間</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

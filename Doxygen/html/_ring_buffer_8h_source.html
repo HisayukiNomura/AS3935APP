@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: RingBuffer.h ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="doc-content">
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">RingBuffer.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_ring_buffer_8h.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// RingBufferT.h</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="class_ring_buffer_t.html">RingBufferT</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#a184a5c2b975735187ef568409595550b">   22</a></span>    T* <a class="code hl_variable" href="class_ring_buffer_t.html#a184a5c2b975735187ef568409595550b">buffer</a>;      </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">   23</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a>;       </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">   24</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">front</a>;      </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#a9b1852147cdf42ce77b6d0822260da6f">   25</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_ring_buffer_t.html#a9b1852147cdf42ce77b6d0822260da6f">rear</a>;       </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">   26</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">count</a>;      </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#ab96125b42968d8f600f6037337807c67">   27</a></span>    T <a class="code hl_variable" href="class_ring_buffer_t.html#ab96125b42968d8f600f6037337807c67">lastData</a>;     </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#a50a52dc6f8e90429a6e629837b36230b">   34</a></span>    <a class="code hl_function" href="class_ring_buffer_t.html#a50a52dc6f8e90429a6e629837b36230b">RingBufferT</a>(<span class="keywordtype">int</span> a_size)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a> = a_size;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#a184a5c2b975735187ef568409595550b">buffer</a> = <span class="keyword">new</span> T[<a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a>];</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">front</a> = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#a9b1852147cdf42ce77b6d0822260da6f">rear</a> = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">count</a> = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#ab96125b42968d8f600f6037337807c67">lastData</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#ae7e0a2aa0eedc80606bcf6ddeb910b5e">   46</a></span>    <a class="code hl_function" href="class_ring_buffer_t.html#ae7e0a2aa0eedc80606bcf6ddeb910b5e">~RingBufferT</a>()</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">delete</span>[] <a class="code hl_variable" href="class_ring_buffer_t.html#a184a5c2b975735187ef568409595550b">buffer</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="}">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#aba1802e763b371b543529e35cf597e69">   56</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_ring_buffer_t.html#aba1802e763b371b543529e35cf597e69">push</a>(T data)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">count</a> == <a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a>) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <a class="code hl_variable" href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">front</a> = (<a class="code hl_variable" href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">front</a> + 1) % <a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <a class="code hl_variable" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">count</a>++;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#ab96125b42968d8f600f6037337807c67">lastData</a> = data;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#a184a5c2b975735187ef568409595550b">buffer</a>[<a class="code hl_variable" href="class_ring_buffer_t.html#a9b1852147cdf42ce77b6d0822260da6f">rear</a>] = data;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#a9b1852147cdf42ce77b6d0822260da6f">rear</a> = (<a class="code hl_variable" href="class_ring_buffer_t.html#a9b1852147cdf42ce77b6d0822260da6f">rear</a> + 1) % <a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#add3206f036085ef8e2738a1cc8a9bc46">   72</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_ring_buffer_t.html#add3206f036085ef8e2738a1cc8a9bc46">pop</a>(T&amp; data)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">count</a> == 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        data = <a class="code hl_variable" href="class_ring_buffer_t.html#a184a5c2b975735187ef568409595550b">buffer</a>[<a class="code hl_variable" href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">front</a>];</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">front</a> = (<a class="code hl_variable" href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">front</a> + 1) % <a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_variable" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">count</a>--;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#aea200a5ba44ac76049c5930005003ee8">   84</a></span>    T <a class="code hl_function" href="class_ring_buffer_t.html#aea200a5ba44ac76049c5930005003ee8">getLastData</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="class_ring_buffer_t.html#ab96125b42968d8f600f6037337807c67">lastData</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#a573f1f60e832fe601dc5a8850e8f742b">   95</a></span>    T <a class="code hl_function" href="class_ring_buffer_t.html#a573f1f60e832fe601dc5a8850e8f742b">getFromLast</a>(<span class="keywordtype">int</span> n)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">if</span> (n &lt; 0 || n &gt;= <a class="code hl_variable" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">count</a>) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordtype">int</span> idx = (<a class="code hl_variable" href="class_ring_buffer_t.html#a9b1852147cdf42ce77b6d0822260da6f">rear</a> - 1 - n + <a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a>) % <a class="code hl_variable" href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">size</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="class_ring_buffer_t.html#a184a5c2b975735187ef568409595550b">buffer</a>[idx];</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="class_ring_buffer_t.html#a5fe31af385375f3f276fcbed26c786c6">  105</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_ring_buffer_t.html#a5fe31af385375f3f276fcbed26c786c6">getCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">count</a>; }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>};</div>
+</div>
+<div class="ttc" id="aclass_ring_buffer_t_html"><div class="ttname"><a href="class_ring_buffer_t.html">RingBufferT</a></div><div class="ttdoc">汎用リングバッファ（循環バッファ）テンプレートクラス</div><div class="ttdef"><b>Definition</b> <a href="#l00019">RingBuffer.h:20</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_a184a5c2b975735187ef568409595550b"><div class="ttname"><a href="class_ring_buffer_t.html#a184a5c2b975735187ef568409595550b">RingBufferT::buffer</a></div><div class="ttdeci">T * buffer</div><div class="ttdoc">バッファ本体</div><div class="ttdef"><b>Definition</b> <a href="#l00022">RingBuffer.h:22</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_a50a52dc6f8e90429a6e629837b36230b"><div class="ttname"><a href="class_ring_buffer_t.html#a50a52dc6f8e90429a6e629837b36230b">RingBufferT::RingBufferT</a></div><div class="ttdeci">RingBufferT(int a_size)</div><div class="ttdoc">コンストラクタ</div><div class="ttdef"><b>Definition</b> <a href="#l00034">RingBuffer.h:34</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_a53e30cec61227a37baf5802c54c9fad4"><div class="ttname"><a href="class_ring_buffer_t.html#a53e30cec61227a37baf5802c54c9fad4">RingBufferT::front</a></div><div class="ttdeci">int front</div><div class="ttdoc">先頭インデックス</div><div class="ttdef"><b>Definition</b> <a href="#l00024">RingBuffer.h:24</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_a573f1f60e832fe601dc5a8850e8f742b"><div class="ttname"><a href="class_ring_buffer_t.html#a573f1f60e832fe601dc5a8850e8f742b">RingBufferT::getFromLast</a></div><div class="ttdeci">T getFromLast(int n) const</div><div class="ttdoc">末尾からn番目のデータを取得</div><div class="ttdef"><b>Definition</b> <a href="#l00095">RingBuffer.h:95</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_a5fe31af385375f3f276fcbed26c786c6"><div class="ttname"><a href="class_ring_buffer_t.html#a5fe31af385375f3f276fcbed26c786c6">RingBufferT::getCount</a></div><div class="ttdeci">int getCount() const</div><div class="ttdoc">現在の要素数を取得</div><div class="ttdef"><b>Definition</b> <a href="#l00105">RingBuffer.h:105</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_a9b1852147cdf42ce77b6d0822260da6f"><div class="ttname"><a href="class_ring_buffer_t.html#a9b1852147cdf42ce77b6d0822260da6f">RingBufferT::rear</a></div><div class="ttdeci">int rear</div><div class="ttdoc">末尾インデックス</div><div class="ttdef"><b>Definition</b> <a href="#l00025">RingBuffer.h:25</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_ab96125b42968d8f600f6037337807c67"><div class="ttname"><a href="class_ring_buffer_t.html#ab96125b42968d8f600f6037337807c67">RingBufferT::lastData</a></div><div class="ttdeci">T lastData</div><div class="ttdoc">最後にpushされたデータ</div><div class="ttdef"><b>Definition</b> <a href="#l00027">RingBuffer.h:27</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_aba1802e763b371b543529e35cf597e69"><div class="ttname"><a href="class_ring_buffer_t.html#aba1802e763b371b543529e35cf597e69">RingBufferT::push</a></div><div class="ttdeci">void push(T data)</div><div class="ttdoc">データをバッファに追加</div><div class="ttdef"><b>Definition</b> <a href="#l00056">RingBuffer.h:56</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_abf8a06ae2f5525cd981a4e519e4fa9e4"><div class="ttname"><a href="class_ring_buffer_t.html#abf8a06ae2f5525cd981a4e519e4fa9e4">RingBufferT::size</a></div><div class="ttdeci">int size</div><div class="ttdoc">バッファサイズ</div><div class="ttdef"><b>Definition</b> <a href="#l00023">RingBuffer.h:23</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_ad61316133467f3288a7e31c8c5e0b849"><div class="ttname"><a href="class_ring_buffer_t.html#ad61316133467f3288a7e31c8c5e0b849">RingBufferT::count</a></div><div class="ttdeci">int count</div><div class="ttdoc">現在の要素数</div><div class="ttdef"><b>Definition</b> <a href="#l00026">RingBuffer.h:26</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_add3206f036085ef8e2738a1cc8a9bc46"><div class="ttname"><a href="class_ring_buffer_t.html#add3206f036085ef8e2738a1cc8a9bc46">RingBufferT::pop</a></div><div class="ttdeci">bool pop(T &amp;data)</div><div class="ttdoc">先頭データを取り出す（FIFO）</div><div class="ttdef"><b>Definition</b> <a href="#l00072">RingBuffer.h:72</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_ae7e0a2aa0eedc80606bcf6ddeb910b5e"><div class="ttname"><a href="class_ring_buffer_t.html#ae7e0a2aa0eedc80606bcf6ddeb910b5e">RingBufferT::~RingBufferT</a></div><div class="ttdeci">~RingBufferT()</div><div class="ttdoc">デストラクタ</div><div class="ttdef"><b>Definition</b> <a href="#l00046">RingBuffer.h:46</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html_aea200a5ba44ac76049c5930005003ee8"><div class="ttname"><a href="class_ring_buffer_t.html#aea200a5ba44ac76049c5930005003ee8">RingBufferT::getLastData</a></div><div class="ttdeci">T getLastData() const</div><div class="ttdoc">最後にpushされたデータを取得</div><div class="ttdef"><b>Definition</b> <a href="#l00084">RingBuffer.h:84</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

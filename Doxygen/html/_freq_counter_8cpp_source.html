@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: FreqCounter.cpp ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="doc-content">
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">FreqCounter.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_freq_counter_8cpp.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="_freq_counter_8h.html">FreqCounter.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;hardware/gpio.h&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;hardware/timer.h&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;pico/stdlib.h&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="_freq_counter_8cpp.html#a852ac4e10075f72d9ca131fd41c9ed91">   14</a></span><span class="keyword">volatile</span> uint32_t <a class="code hl_variable" href="_freq_counter_8cpp.html#a852ac4e10075f72d9ca131fd41c9ed91">g_u32PulseCount</a> = 0; </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="_freq_counter_8cpp.html#a589a2d4d06dbc564b784ef0e7e1672cc">   26</a></span><span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="_freq_counter_8cpp.html#a589a2d4d06dbc564b784ef0e7e1672cc">freqcounter_gpio_callback</a>(uint gpio, uint32_t events) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="_freq_counter_8cpp.html#a852ac4e10075f72d9ca131fd41c9ed91">g_u32PulseCount</a>++; </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="}">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="class_freq_counter.html#ac909d3aa4852da70ab1e1227dfecc001">   41</a></span>uint32_t <a class="code hl_function" href="class_freq_counter.html#ac909d3aa4852da70ab1e1227dfecc001">FreqCounter::start</a>(uint8_t a_u8PinNo, uint16_t a_time) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_variable" href="_freq_counter_8cpp.html#a852ac4e10075f72d9ca131fd41c9ed91">g_u32PulseCount</a> = 0; </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    gpio_init(a_u8PinNo); </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    gpio_set_dir(a_u8PinNo, GPIO_IN); </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    gpio_pull_down(a_u8PinNo); </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    gpio_set_irq_enabled_with_callback(a_u8PinNo, GPIO_IRQ_EDGE_RISE, <span class="keyword">true</span>, &amp;<a class="code hl_function" href="_freq_counter_8cpp.html#a589a2d4d06dbc564b784ef0e7e1672cc">freqcounter_gpio_callback</a>); </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    sleep_ms(a_time); </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    gpio_set_irq_enabled(a_u8PinNo, GPIO_IRQ_EDGE_RISE, <span class="keyword">false</span>); </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="_freq_counter_8cpp.html#a852ac4e10075f72d9ca131fd41c9ed91">g_u32PulseCount</a>; </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+</div>
+<div class="ttc" id="a_freq_counter_8cpp_html_a589a2d4d06dbc564b784ef0e7e1672cc"><div class="ttname"><a href="_freq_counter_8cpp.html#a589a2d4d06dbc564b784ef0e7e1672cc">freqcounter_gpio_callback</a></div><div class="ttdeci">static void freqcounter_gpio_callback(uint gpio, uint32_t events)</div><div class="ttdoc">GPIO割り込みコールバック関数</div><div class="ttdef"><b>Definition</b> <a href="#l00026">FreqCounter.cpp:26</a></div></div>
+<div class="ttc" id="a_freq_counter_8cpp_html_a852ac4e10075f72d9ca131fd41c9ed91"><div class="ttname"><a href="_freq_counter_8cpp.html#a852ac4e10075f72d9ca131fd41c9ed91">g_u32PulseCount</a></div><div class="ttdeci">volatile uint32_t g_u32PulseCount</div><div class="ttdoc">割り込みでカウントされるパルス数</div><div class="ttdef"><b>Definition</b> <a href="#l00014">FreqCounter.cpp:14</a></div></div>
+<div class="ttc" id="a_freq_counter_8h_html"><div class="ttname"><a href="_freq_counter_8h.html">FreqCounter.h</a></div></div>
+<div class="ttc" id="aclass_freq_counter_html_ac909d3aa4852da70ab1e1227dfecc001"><div class="ttname"><a href="class_freq_counter.html#ac909d3aa4852da70ab1e1227dfecc001">FreqCounter::start</a></div><div class="ttdeci">static uint32_t start(uint8_t a_u8PinNo, uint16_t a_time)</div><div class="ttdoc">指定ピンのパルス周波数を指定時間測定する</div><div class="ttdef"><b>Definition</b> <a href="#l00041">FreqCounter.cpp:41</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

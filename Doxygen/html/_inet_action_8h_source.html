@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: InetAction.h ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="doc-content">
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">InetAction.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_inet_action_8h.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="_settings_8h.html">settings.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;lwip/ip_addr.h&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;pico/stdlib.h&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;hardware/rtc.h&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;pico/cyw43_arch.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceard_port.html">ardPort</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceard_port_1_1spi.html">ardPort::spi</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="class_inet_action.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="class_inet_action.html">InetAction</a></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="class_inet_action.html#a65cc73f09cb32674701b0d2e37cb2139">   29</a></span>    Adafruit_ILI9341* <a class="code hl_variable" href="class_inet_action.html#a65cc73f09cb32674701b0d2e37cb2139">pTft</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_inet_action.html#a3161b89333f8969ed191c916646cf977">   34</a></span>    <a class="code hl_class" href="class_settings.html">Settings</a>&amp; <a class="code hl_variable" href="class_inet_action.html#a3161b89333f8969ed191c916646cf977">settings</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="class_inet_action.html#a01a5aabcd9eb42512740a8723e61afcc">   41</a></span>    uint8_t <a class="code hl_variable" href="class_inet_action.html#a01a5aabcd9eb42512740a8723e61afcc">isDNSFinished</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="class_inet_action.html#ad8368aa2560f7db830fa881e291f6fc2">   46</a></span>    ip4_addr_t <a class="code hl_variable" href="class_inet_action.html#ad8368aa2560f7db830fa881e291f6fc2">addrSNTP</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="class_inet_action.html#a7657740c04435be2fd4355e77b38c71d">   48</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_inet_action.html#a7657740c04435be2fd4355e77b38c71d">lastErr_Connect</a>; </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="class_inet_action.html#a0bd347c97e9cca961e95c64769017319">   49</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_inet_action.html#a0bd347c97e9cca961e95c64769017319">lastErr_Sntp</a>;    </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_function" href="class_inet_action.html#a11e5a28ab759fd2ae2ba4db02975cea8">InetAction</a>(<a class="code hl_class" href="class_settings.html">Settings</a>&amp; <a class="code hl_variable" href="class_inet_action.html#a3161b89333f8969ed191c916646cf977">settings</a>, Adafruit_ILI9341* a_pTft);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_inet_action.html#ae76713568ee22cc9e73001ee8a080a03">init</a>();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_inet_action.html#ae0507e927a650f3eac23d558991e629d">connect</a>();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_inet_action.html#ae33a264bb5e0c101ca5d971824347d54">setTime</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_inet_action.html#abd8c561147f2c349cd32de38259fea3f">getHostByName</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* hostname, <span class="keywordtype">int</span> timeout_ms);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="comment">// const char* sntp_server_address = &quot;0.pool.ntp.org&quot;;</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="class_inet_action.html#a1a2c0a2b1f62eaf854e4f4a90570b8c5">   92</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="class_inet_action.html#a1a2c0a2b1f62eaf854e4f4a90570b8c5">sntp_server_address</a> = <span class="stringliteral">&quot;pool.ntp.org&quot;</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="class_inet_action.html#ac00b38dd34d1bc8a8c6b5c418cec05ac">   99</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_inet_action.html#ac00b38dd34d1bc8a8c6b5c418cec05ac">setSntpServer</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* addr) { <a class="code hl_variable" href="class_inet_action.html#a1a2c0a2b1f62eaf854e4f4a90570b8c5">sntp_server_address</a> = addr; }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="class_inet_action.html#ad3a0ec59221f5883ddcdfbff4b9527c7">  104</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_inet_action.html#ad3a0ec59221f5883ddcdfbff4b9527c7">getSntpServer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_inet_action.html#a1a2c0a2b1f62eaf854e4f4a90570b8c5">sntp_server_address</a>; }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="class_inet_action.html#a299ff93c4ac71915e519c57bab49568b">  106</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_inet_action.html#a299ff93c4ac71915e519c57bab49568b">getConLasterror</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="class_inet_action.html#a7657740c04435be2fd4355e77b38c71d">lastErr_Connect</a> == 0) <span class="keywordflow">return</span> <span class="stringliteral">&quot;Success&quot;</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="class_settings.html#a9388dd4a1b89871bbf90e6d63e55405b">Settings::getPicoErrorSummary</a>(<a class="code hl_variable" href="class_inet_action.html#a7657740c04435be2fd4355e77b38c71d">lastErr_Connect</a>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="class_inet_action.html#a4f2191bcafa5c2b932583b724550dec9">  111</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_inet_action.html#a4f2191bcafa5c2b932583b724550dec9">getSntpLasterror</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="class_inet_action.html#a7657740c04435be2fd4355e77b38c71d">lastErr_Connect</a> == 0) <span class="keywordflow">return</span> <span class="stringliteral">&quot;Success&quot;</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="class_settings.html#a9388dd4a1b89871bbf90e6d63e55405b">Settings::getPicoErrorSummary</a>(<a class="code hl_variable" href="class_inet_action.html#a0bd347c97e9cca961e95c64769017319">lastErr_Sntp</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    }</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>};</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="_inet_action_8h.html#aead11fada5d24f03b9e4b6676fc0b3ad">  125</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="_inet_action_8h.html#aead11fada5d24f03b9e4b6676fc0b3ad">set_system_time</a>(u32_t sec);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_inet_action_8h_html_aead11fada5d24f03b9e4b6676fc0b3ad"><div class="ttname"><a href="_inet_action_8h.html#aead11fada5d24f03b9e4b6676fc0b3ad">set_system_time</a></div><div class="ttdeci">void set_system_time(u32_t sec)</div><div class="ttdoc">RTC時刻を設定するC関数</div></div>
+<div class="ttc" id="a_settings_8h_html"><div class="ttname"><a href="_settings_8h.html">Settings.h</a></div><div class="ttdoc">システム設定値の保存・管理クラスの宣言</div></div>
+<div class="ttc" id="aclass_inet_action_html"><div class="ttname"><a href="class_inet_action.html">InetAction</a></div><div class="ttdoc">ネットワーク関連のアクションをまとめたクラス</div><div class="ttdef"><b>Definition</b> <a href="#l00022">InetAction.h:23</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a01a5aabcd9eb42512740a8723e61afcc"><div class="ttname"><a href="class_inet_action.html#a01a5aabcd9eb42512740a8723e61afcc">InetAction::isDNSFinished</a></div><div class="ttdeci">uint8_t isDNSFinished</div><div class="ttdoc">DNS名前解決の完了フラグ</div><div class="ttdef"><b>Definition</b> <a href="#l00041">InetAction.h:41</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a0bd347c97e9cca961e95c64769017319"><div class="ttname"><a href="class_inet_action.html#a0bd347c97e9cca961e95c64769017319">InetAction::lastErr_Sntp</a></div><div class="ttdeci">int lastErr_Sntp</div><div class="ttdoc">最後のSNTPエラーコード</div><div class="ttdef"><b>Definition</b> <a href="#l00049">InetAction.h:49</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a11e5a28ab759fd2ae2ba4db02975cea8"><div class="ttname"><a href="class_inet_action.html#a11e5a28ab759fd2ae2ba4db02975cea8">InetAction::InetAction</a></div><div class="ttdeci">InetAction(Settings &amp;settings, Adafruit_ILI9341 *a_pTft)</div><div class="ttdoc">コンストラクタ</div><div class="ttdef"><b>Definition</b> <a href="_inet_action_8cpp_source.html#l00023">InetAction.cpp:23</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a1a2c0a2b1f62eaf854e4f4a90570b8c5"><div class="ttname"><a href="class_inet_action.html#a1a2c0a2b1f62eaf854e4f4a90570b8c5">InetAction::sntp_server_address</a></div><div class="ttdeci">const char * sntp_server_address</div><div class="ttdoc">SNTPサーバーのホスト名</div><div class="ttdef"><b>Definition</b> <a href="#l00092">InetAction.h:92</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a299ff93c4ac71915e519c57bab49568b"><div class="ttname"><a href="class_inet_action.html#a299ff93c4ac71915e519c57bab49568b">InetAction::getConLasterror</a></div><div class="ttdeci">const char * getConLasterror() const</div><div class="ttdef"><b>Definition</b> <a href="#l00106">InetAction.h:106</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a3161b89333f8969ed191c916646cf977"><div class="ttname"><a href="class_inet_action.html#a3161b89333f8969ed191c916646cf977">InetAction::settings</a></div><div class="ttdeci">Settings &amp; settings</div><div class="ttdoc">設定情報への参照</div><div class="ttdef"><b>Definition</b> <a href="#l00034">InetAction.h:34</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a4f2191bcafa5c2b932583b724550dec9"><div class="ttname"><a href="class_inet_action.html#a4f2191bcafa5c2b932583b724550dec9">InetAction::getSntpLasterror</a></div><div class="ttdeci">const char * getSntpLasterror() const</div><div class="ttdef"><b>Definition</b> <a href="#l00111">InetAction.h:111</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a65cc73f09cb32674701b0d2e37cb2139"><div class="ttname"><a href="class_inet_action.html#a65cc73f09cb32674701b0d2e37cb2139">InetAction::pTft</a></div><div class="ttdeci">Adafruit_ILI9341 * pTft</div><div class="ttdoc">TFTディスプレイへのポインタ</div><div class="ttdef"><b>Definition</b> <a href="#l00029">InetAction.h:29</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_a7657740c04435be2fd4355e77b38c71d"><div class="ttname"><a href="class_inet_action.html#a7657740c04435be2fd4355e77b38c71d">InetAction::lastErr_Connect</a></div><div class="ttdeci">int lastErr_Connect</div><div class="ttdoc">最後の接続エラーコード</div><div class="ttdef"><b>Definition</b> <a href="#l00048">InetAction.h:48</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_abd8c561147f2c349cd32de38259fea3f"><div class="ttname"><a href="class_inet_action.html#abd8c561147f2c349cd32de38259fea3f">InetAction::getHostByName</a></div><div class="ttdeci">bool getHostByName(const char *hostname, int timeout_ms)</div><div class="ttdoc">ホスト名からIPアドレスを取得</div><div class="ttdef"><b>Definition</b> <a href="_inet_action_8cpp_source.html#l00103">InetAction.cpp:103</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_ac00b38dd34d1bc8a8c6b5c418cec05ac"><div class="ttname"><a href="class_inet_action.html#ac00b38dd34d1bc8a8c6b5c418cec05ac">InetAction::setSntpServer</a></div><div class="ttdeci">void setSntpServer(const char *addr)</div><div class="ttdoc">SNTPサーバーアドレスを設定</div><div class="ttdef"><b>Definition</b> <a href="#l00099">InetAction.h:99</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_ad3a0ec59221f5883ddcdfbff4b9527c7"><div class="ttname"><a href="class_inet_action.html#ad3a0ec59221f5883ddcdfbff4b9527c7">InetAction::getSntpServer</a></div><div class="ttdeci">const char * getSntpServer() const</div><div class="ttdoc">SNTPサーバーアドレスを取得</div><div class="ttdef"><b>Definition</b> <a href="#l00104">InetAction.h:104</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_ad8368aa2560f7db830fa881e291f6fc2"><div class="ttname"><a href="class_inet_action.html#ad8368aa2560f7db830fa881e291f6fc2">InetAction::addrSNTP</a></div><div class="ttdeci">ip4_addr_t addrSNTP</div><div class="ttdoc">SNTPサーバーのIPv4アドレス</div><div class="ttdef"><b>Definition</b> <a href="#l00046">InetAction.h:46</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_ae0507e927a650f3eac23d558991e629d"><div class="ttname"><a href="class_inet_action.html#ae0507e927a650f3eac23d558991e629d">InetAction::connect</a></div><div class="ttdeci">int connect()</div><div class="ttdoc">Wi-Fiアクセスポイントへ接続</div><div class="ttdef"><b>Definition</b> <a href="_inet_action_8cpp_source.html#l00053">InetAction.cpp:53</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_ae33a264bb5e0c101ca5d971824347d54"><div class="ttname"><a href="class_inet_action.html#ae33a264bb5e0c101ca5d971824347d54">InetAction::setTime</a></div><div class="ttdeci">bool setTime()</div><div class="ttdoc">SNTPサーバーから時刻を取得しRTCに設定</div><div class="ttdef"><b>Definition</b> <a href="_inet_action_8cpp_source.html#l00238">InetAction.cpp:238</a></div></div>
+<div class="ttc" id="aclass_inet_action_html_ae76713568ee22cc9e73001ee8a080a03"><div class="ttname"><a href="class_inet_action.html#ae76713568ee22cc9e73001ee8a080a03">InetAction::init</a></div><div class="ttdeci">bool init()</div><div class="ttdoc">Wi-Fiチップの初期化</div><div class="ttdef"><b>Definition</b> <a href="_inet_action_8cpp_source.html#l00035">InetAction.cpp:35</a></div></div>
+<div class="ttc" id="aclass_settings_html"><div class="ttname"><a href="class_settings.html">Settings</a></div><div class="ttdoc">システム設定値の保存・管理クラス</div><div class="ttdef"><b>Definition</b> <a href="_settings_8h_source.html#l00071">Settings.h:72</a></div></div>
+<div class="ttc" id="aclass_settings_html_a9388dd4a1b89871bbf90e6d63e55405b"><div class="ttname"><a href="class_settings.html#a9388dd4a1b89871bbf90e6d63e55405b">Settings::getPicoErrorSummary</a></div><div class="ttdeci">static const char * getPicoErrorSummary(int code)</div><div class="ttdoc">pico_error_codesの値から簡易説明文字列を返す</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00792">Settings.cpp:792</a></div></div>
+<div class="ttc" id="anamespaceard_port_1_1spi_html"><div class="ttname"><a href="namespaceard_port_1_1spi.html">ardPort::spi</a></div><div class="ttdoc">SPI関連APIの名前空間</div></div>
+<div class="ttc" id="anamespaceard_port_html"><div class="ttname"><a href="namespaceard_port.html">ardPort</a></div><div class="ttdoc">Arduino互換ポートラッパーの名前空間</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

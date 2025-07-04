@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: FreqCounter クラス</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静的公開メンバ関数</a> &#124;
+<a href="class_freq_counter-members.html">全メンバ一覧</a>  </div>
+  <div class="headertitle"><div class="title">FreqCounter クラス</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>パルス周波数カウンタ用の静的クラス  
+ <a href="#details">[詳解]</a></p>
+
+<p><code>#include &lt;<a class="el" href="_freq_counter_8h_source.html">FreqCounter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静的公開メンバ関数</h2></td></tr>
+<tr class="memitem:ac909d3aa4852da70ab1e1227dfecc001" id="r_ac909d3aa4852da70ab1e1227dfecc001"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac909d3aa4852da70ab1e1227dfecc001">start</a> (uint8_t a_u8PinNo, uint16_t a_time)</td></tr>
+<tr class="memdesc:ac909d3aa4852da70ab1e1227dfecc001"><td class="mdescLeft">&#160;</td><td class="mdescRight">指定ピンのパルス周波数を指定時間測定する  <br /></td></tr>
+<tr class="separator:ac909d3aa4852da70ab1e1227dfecc001"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">詳解</h2>
+<div class="textblock"><p>パルス周波数カウンタ用の静的クラス </p>
+<p>指定したピン番号に入力されるパルス信号の周波数（1秒間のパルス数）を測定するためのクラスです。 静的メソッドのみを持ち、インスタンス化せずに利用できます。startメソッドを呼び出すことで、 指定ピンに入力されたパルス数を1秒間カウントし、その値（周波数）を返します。 主に外部センサや信号線の周波数測定などに利用できます。 </p>
+
+<p class="definition"> <a class="el" href="_freq_counter_8h_source.html">FreqCounter.h</a> の <a class="el" href="_freq_counter_8h_source.html#l00011">11</a> 行目に定義があります。</p>
+</div><h2 class="groupheader">関数詳解</h2>
+<a id="ac909d3aa4852da70ab1e1227dfecc001" name="ac909d3aa4852da70ab1e1227dfecc001"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac909d3aa4852da70ab1e1227dfecc001">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t FreqCounter::start </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>a_u8PinNo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>a_time</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>指定ピンのパルス周波数を指定時間測定する </p>
+<p>指定したGPIOピン（a_u8PinNo）に入力されるパルス信号の立ち上がりエッジを 指定時間（a_time[ms]）カウントし、その合計値（周波数）を返します。 内部で割り込みを利用してパルスをカウントし、測定後は割り込みを無効化します。 測定中はsleep_msでブロックされるため、他の処理は実行されません。</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a_u8PinNo</td><td>周波数を測定するGPIOピン番号 </td></tr>
+    <tr><td class="paramname">a_time</td><td>測定時間[ms]（デフォルト1000ms） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">uint32_t</td><td>測定したパルス数（周波数） </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>&lt; パルスカウンタ初期化</p>
+<p>&lt; GPIO初期化</p>
+<p>&lt; 入力設定</p>
+<p>&lt; プルダウン有効</p>
+<p>&lt; 割り込み有効化</p>
+<p>&lt; 指定時間カウント</p>
+<p>&lt; 割り込み無効化</p>
+<p>&lt; 測定したパルス数を返す</p>
+
+<p class="definition"> <a class="el" href="_freq_counter_8cpp_source.html">FreqCounter.cpp</a> の <a class="el" href="_freq_counter_8cpp_source.html#l00041">41</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<hr/>このクラス詳解は次のファイルから抽出されました:<ul>
+<li><a class="el" href="_freq_counter_8h_source.html">FreqCounter.h</a></li>
+<li><a class="el" href="_freq_counter_8cpp_source.html">FreqCounter.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

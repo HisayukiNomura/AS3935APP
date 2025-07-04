@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: Settings.h ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="doc-content">
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Settings.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_settings_8h.html">[詳解]</a><div class="fragment"><div class="foldopen" id="foldopen00001" data-start="{" data-end="}">
+<div class="line"><a id="l00001" name="l00001"></a><span class="lineno"><a class="line" href="_settings_8h.html#a189a2a16c0eacbb8ca8e2131d3d0c997">    1</a></span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="_flash_mem_8h.html">FlashMem.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;lib-9341/XPT2046_Touchscreen/XPT2046_Touchscreen.h&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceard_port.html">ardPort</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceard_port_1_1spi.html">ardPort::spi</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span><a class="code hl_class" href="class_screen_keyboard.html">ScreenKeyboard</a>; <span class="comment">// 前方宣言</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">class </span><a class="code hl_function" href="_settings_8h.html#a189a2a16c0eacbb8ca8e2131d3d0c997">__attribute__</a>((packed)) SettingValue</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">char</span> chunk[4];             </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">bool</span> isEnableWifi;         </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">char</span> SSID[32];             </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">char</span> PASSWORD[32];         </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    uint8_t ipAddr[4];         </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span> isClock24Hour;        </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">char</span> localeStr[32];        </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">char</span> tzStr[16];            </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    uint16_t minX;             </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    uint16_t minY;             </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    uint16_t maxX;             </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    uint16_t maxY;             </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    uint8_t gainBoost;         </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    uint8_t noiseFloor;        </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    uint8_t watchDogThreshold; </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    uint8_t spikeReject;       </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    uint8_t minimumEvent;      </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    uint8_t i2cAddr;           </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    uint8_t i2cReadMode;       </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    uint8_t debugMode;         </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">char</span> end[4];               </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    SettingValue&amp; operator=(<span class="keyword">const</span> SettingValue&amp; rhs)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;rhs) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            memcpy(<span class="keyword">this</span>, &amp;rhs, <span class="keyword">sizeof</span>(SettingValue));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="class_settings.html">   71</a></span><span class="keyword">class </span><a class="code hl_class" href="class_settings.html">Settings</a></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>{</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="class_settings.html#a2163bf51644d8be7c66c17c07f36fbfd">   74</a></span>    <a class="code hl_class" href="class_flash_mem.html">FlashMem</a> <a class="code hl_variable" href="class_settings.html#a2163bf51644d8be7c66c17c07f36fbfd">flash</a>;           </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="class_settings.html#a7daf420f40adb65fd6a8eda0ef428237">   75</a></span>    Adafruit_ILI9341* <a class="code hl_variable" href="class_settings.html#a7daf420f40adb65fd6a8eda0ef428237">ptft</a>;   </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="class_settings.html#acf52406d7a37c8524aa079a9ec746f49">   76</a></span>    XPT2046_Touchscreen* <a class="code hl_variable" href="class_settings.html#acf52406d7a37c8524aa079a9ec746f49">pts</a>; </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">   78</a></span>    SettingValue <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>; </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="class_settings.html#a0e3dea4911b1d145db7a62a35c9ec4db">   80</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="class_settings.html#a0e3dea4911b1d145db7a62a35c9ec4db">isMustReboot</a> = <span class="keyword">false</span>; </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="class_settings.html#a9f94816b465ffa41f4adbaae97a7e15b">   81</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="class_settings.html#a9f94816b465ffa41f4adbaae97a7e15b">isMustSave</a> = <span class="keyword">false</span>;   </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_function" href="class_settings.html#ab7169a6eefce79566dd07db3b1e5e967">Settings</a>();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a23105630e4764a33d8085df6562613e4">setDefault</a>();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a75ab693f2b4228de016603638771eb94">save</a>();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_settings.html#a06d1d58938c8fdc7a577e52f9ffda29d">load</a>();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_settings.html#a18c4ef269e7ea57e0f3fccc32e59aac8">isActive</a>();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_settings.html#a8bd897eb32fa906823f9aab33bb385ad">getIpString</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#aa9fffa66c6d4bc83b7899db6b83fccea">resetIP</a>();</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a566c85fd3a22269e366546c038b9b5ae">setIP</a>(uint8_t a_u8Ip0, uint8_t a_u8Ip1, uint8_t a_u8Ip2, uint8_t a_u8Ip3);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a32c43db20f2b2319d2cfff9482f59dc0">setCalibration</a>(uint16_t a_minX, uint16_t a_minY, uint16_t a_maxX, uint16_t a_maxY);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_settings.html#a3ed5965921e8118b49798e92cb5d65e8">getLocaleStr</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_settings.html#ac0496ce4089267648dcf4a62109ce257">getTzStr</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="comment">// --- アクセッサ ---</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="class_settings.html#ade55cd28808d77957c13d3197326ed93">  144</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_settings.html#ade55cd28808d77957c13d3197326ed93">getIsEnableWifi</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.isEnableWifi; }   </div>
+<div class="foldopen" id="foldopen00145" data-start="{" data-end="}">
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="class_settings.html#a486a6807f9bd896303141046d8892753">  145</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a486a6807f9bd896303141046d8892753">setIsEnableWifi</a>(<span class="keywordtype">bool</span> v) { <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.isEnableWifi = v; }      </div>
+<div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="class_settings.html#aa3091a47762b4593f6e5b7e82edaea73">  146</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_settings.html#aa3091a47762b4593f6e5b7e82edaea73">getLocale</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.localeStr; }     </div>
+<div class="foldopen" id="foldopen00147" data-start="{" data-end="}">
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="class_settings.html#a16ff9afaef7450c732dfb325b0490fe6">  147</a></span>    uint16_t <a class="code hl_function" href="class_settings.html#a16ff9afaef7450c732dfb325b0490fe6">getMinX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.minX; }               </div>
+<div class="foldopen" id="foldopen00148" data-start="{" data-end="}">
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="class_settings.html#a83e53074384b203728af6336e4824221">  148</a></span>    uint16_t <a class="code hl_function" href="class_settings.html#a83e53074384b203728af6336e4824221">getMinY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.minY; }               </div>
+<div class="foldopen" id="foldopen00149" data-start="{" data-end="}">
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="class_settings.html#a979ae50c012b01c1e85cdca6c99490e4">  149</a></span>    uint16_t <a class="code hl_function" href="class_settings.html#a979ae50c012b01c1e85cdca6c99490e4">getMaxX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.maxX; }               </div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="}">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="class_settings.html#af961cfd130507694af122e5b0914d89c">  150</a></span>    uint16_t <a class="code hl_function" href="class_settings.html#af961cfd130507694af122e5b0914d89c">getMaxY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.maxY; }               </div>
+<div class="foldopen" id="foldopen00151" data-start="{" data-end="}">
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="class_settings.html#af664c094270e684bae0ddd9e8a3d5c5f">  151</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#af664c094270e684bae0ddd9e8a3d5c5f">setMinX</a>(uint16_t v) { <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.minX = v; }                  </div>
+<div class="foldopen" id="foldopen00152" data-start="{" data-end="}">
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="class_settings.html#a6e205f15d5b4fcf4817908c1869da9ed">  152</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a6e205f15d5b4fcf4817908c1869da9ed">setMinY</a>(uint16_t v) { <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.minY = v; }                  </div>
+<div class="foldopen" id="foldopen00153" data-start="{" data-end="}">
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="class_settings.html#afcbbac22e06cc9fcce9bd1f567885495">  153</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#afcbbac22e06cc9fcce9bd1f567885495">setMaxX</a>(uint16_t v) { <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.maxX = v; }                  </div>
+<div class="foldopen" id="foldopen00154" data-start="{" data-end="}">
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="class_settings.html#ac5ae86d8641cc2f92169d1579d0405bc">  154</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#ac5ae86d8641cc2f92169d1579d0405bc">setMaxY</a>(uint16_t v) { <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.maxY = v; }                  </div>
+<div class="foldopen" id="foldopen00155" data-start="{" data-end="}">
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="class_settings.html#a82540464caa4997d8cf3d9f9fc61d2ef">  155</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_settings.html#a82540464caa4997d8cf3d9f9fc61d2ef">getIsClock24Hour</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.isClock24Hour; } </div>
+<div class="foldopen" id="foldopen00156" data-start="{" data-end="}">
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="class_settings.html#a494794b00ed0a8cf450b9fb58b8266f3">  156</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a494794b00ed0a8cf450b9fb58b8266f3">setIsClock24Hour</a>(<span class="keywordtype">bool</span> v) { <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.isClock24Hour = v; }    </div>
+<div class="foldopen" id="foldopen00157" data-start="{" data-end="}">
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="class_settings.html#a27e481604e2557386faecb5c55e747e9">  157</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_settings.html#a27e481604e2557386faecb5c55e747e9">getSSID</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.SSID; }            </div>
+<div class="foldopen" id="foldopen00165" data-start="{" data-end="}">
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="class_settings.html#a1d529da0a0992e8301792939316a7b0b">  165</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a1d529da0a0992e8301792939316a7b0b">setSSID</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* s)</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    {</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        strncpy(<a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.SSID, s, <span class="keyword">sizeof</span>(<a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.SSID) - 1); </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.SSID[<span class="keyword">sizeof</span>(<a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.SSID) - 1] = <span class="charliteral">&#39;\0&#39;</span>;      </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    }</div>
+</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="class_settings.html#aea3e68bada4029efe950717e3275f51c">  170</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_settings.html#aea3e68bada4029efe950717e3275f51c">getPASSWORD</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.PASSWORD; } </div>
+<div class="foldopen" id="foldopen00178" data-start="{" data-end="}">
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="class_settings.html#a8875f3ed2bcedda3720a120e9345d03e">  178</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a8875f3ed2bcedda3720a120e9345d03e">setPASSWORD</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* s)</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        strncpy(<a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.PASSWORD, s, <span class="keyword">sizeof</span>(<a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.PASSWORD) - 1); </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.PASSWORD[<span class="keyword">sizeof</span>(<a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.PASSWORD) - 1] = <span class="charliteral">&#39;\0&#39;</span>;      </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    }</div>
+</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="class_settings.html#af46852aa9049a1f657735d9c483c3185">  189</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_settings.html#af46852aa9049a1f657735d9c483c3185">geti2cReadMode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.i2cReadMode; } </div>
+<div class="foldopen" id="foldopen00196" data-start="{" data-end="}">
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno"><a class="line" href="class_settings.html#a545cfa7849a0827e904103c6c4dd3423">  196</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_settings.html#a545cfa7849a0827e904103c6c4dd3423">isSerialDebug</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">return</span> (<a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.debugMode &amp; 0x01) != 0; </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00207" data-start="{" data-end="}">
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno"><a class="line" href="class_settings.html#a2eeec252146d37d198ea7ee99185493a">  207</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_settings.html#a2eeec252146d37d198ea7ee99185493a">setSerialDebug</a>(<span class="keywordtype">bool</span> v)</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    {</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keywordflow">if</span> (v) {</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.debugMode |= 0x01; </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            <a class="code hl_variable" href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">value</a>.debugMode &amp;= ~0x01; </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        }</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="class_settings.html#a545cfa7849a0827e904103c6c4dd3423">isSerialDebug</a>();</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    }</div>
+</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="class_settings.html#a14ee9787c562dd056b89db290958d7c5">  218</a></span>    uint8_t <a class="code hl_variable" href="class_settings.html#a14ee9787c562dd056b89db290958d7c5">menuMode</a> = 0; </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a9e3d32e1cf4ceea1b91ae0308888f8a5">drawMenuBottom</a>();</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a63c26bbf0b674f8dc4d3bd3b051750d7">drawMenu</a>();</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#ac98b486437c1e00a0b0626b1be003a7f">drawMenu2_root</a>();</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a1ad63c66422cba7e1505ed127f712136">drawMenu2_system</a>();</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a712e12d21d37f51625aa5ed726e52aee">drawMenu2_wifi</a>();</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a35c9709765eadaf4a8ef054f21b3eb96">drawMenu2_as3935</a>();</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>  </div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a5c8713f9d91d2b7357645bece2e47601">run</a>(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_settings.html#a249cf85f60d6b88f2bcccdac592e596e">run2</a>(Adafruit_ILI9341* a_pTft, XPT2046_Touchscreen* a_pTs);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#ab7a5830d3679386c4daf1233508954c4">run2_system</a>();</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a71f7d4c4abab8a2d01dde827146de7a7">run2_wifi</a>();</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#a999e66518497484377abb3e9d0d468dd">run2_as3935</a>();</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="comment">// エディットボックスの表示</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="class_settings.html#a12649a59594635f74e99516625e3fd56">  234</a></span>    <span class="keywordtype">char</span>* <a class="code hl_variable" href="class_settings.html#a12649a59594635f74e99516625e3fd56">p</a> = <span class="keyword">nullptr</span>;     </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno"><a class="line" href="class_settings.html#a7379ea53b7bf25ef0d346f2bdc550d17">  235</a></span>    uint8_t <a class="code hl_variable" href="class_settings.html#a7379ea53b7bf25ef0d346f2bdc550d17">edtCursor</a> = 0; </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno"><a class="line" href="class_settings.html#a8212ce3d335329480b63635cf377ca29">  236</a></span>    uint16_t <a class="code hl_variable" href="class_settings.html#a8212ce3d335329480b63635cf377ca29">edtX</a> = 0;     </div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno"><a class="line" href="class_settings.html#af506adb3aaef7c8e71cdd01430d0af47">  237</a></span>    uint16_t <a class="code hl_variable" href="class_settings.html#af506adb3aaef7c8e71cdd01430d0af47">edtY</a> = 0;     </div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno"><a class="line" href="class_settings.html#a2264305b89db65059bbfc578e25da689">  238</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="class_settings.html#a2264305b89db65059bbfc578e25da689">isInsert</a> = <span class="keyword">false</span>; </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="class_settings.html#ae4675710a46276393119eaf2e6b3b453">  240</a></span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#ae4675710a46276393119eaf2e6b3b453">EdtDispCursor</a>(<span class="keywordtype">int</span> tick, <span class="keywordtype">bool</span> isDeleteCursor = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno"><a class="line" href="class_settings.html#aac05a8bde144a4950e12aa644a44899b">  241</a></span>    <span class="keyword">const</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_settings.html#aac05a8bde144a4950e12aa644a44899b">EditBox</a>(<a class="code hl_class" href="class_screen_keyboard.html">ScreenKeyboard</a> sk, uint16_t a_x, uint16_t a_y, <span class="keywordtype">char</span>* a_pText, <span class="keywordtype">size_t</span> a_size);</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_settings.html#a9388dd4a1b89871bbf90e6d63e55405b">getPicoErrorSummary</a>(<span class="keywordtype">int</span> code);</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>};</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="ttc" id="a_flash_mem_8h_html"><div class="ttname"><a href="_flash_mem_8h.html">FlashMem.h</a></div></div>
+<div class="ttc" id="a_settings_8h_html_a189a2a16c0eacbb8ca8e2131d3d0c997"><div class="ttname"><a href="_settings_8h.html#a189a2a16c0eacbb8ca8e2131d3d0c997">__attribute__</a></div><div class="ttdeci">class __attribute__((packed)) SettingValue</div><div class="ttdoc">設定値を格納する構造体</div><div class="ttdef"><b>Definition</b> <a href="#l00001">Settings.h:26</a></div></div>
+<div class="ttc" id="aclass_flash_mem_html"><div class="ttname"><a href="class_flash_mem.html">FlashMem</a></div><div class="ttdef"><b>Definition</b> <a href="_flash_mem_8h_source.html#l00004">FlashMem.h:4</a></div></div>
+<div class="ttc" id="aclass_screen_keyboard_html"><div class="ttname"><a href="class_screen_keyboard.html">ScreenKeyboard</a></div><div class="ttdoc">画面にスクリーンキーボードを表示・管理するクラス</div><div class="ttdef"><b>Definition</b> <a href="_screen_keyboard_8h_source.html#l00024">ScreenKeyboard.h:24</a></div></div>
+<div class="ttc" id="aclass_settings_html"><div class="ttname"><a href="class_settings.html">Settings</a></div><div class="ttdoc">システム設定値の保存・管理クラス</div><div class="ttdef"><b>Definition</b> <a href="#l00071">Settings.h:72</a></div></div>
+<div class="ttc" id="aclass_settings_html_a06d1d58938c8fdc7a577e52f9ffda29d"><div class="ttname"><a href="class_settings.html#a06d1d58938c8fdc7a577e52f9ffda29d">Settings::load</a></div><div class="ttdeci">bool load()</div><div class="ttdoc">フラッシュから設定値を読込</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00085">Settings.cpp:85</a></div></div>
+<div class="ttc" id="aclass_settings_html_a0e3dea4911b1d145db7a62a35c9ec4db"><div class="ttname"><a href="class_settings.html#a0e3dea4911b1d145db7a62a35c9ec4db">Settings::isMustReboot</a></div><div class="ttdeci">bool isMustReboot</div><div class="ttdoc">設定変更後、再起動が必要かどうか</div><div class="ttdef"><b>Definition</b> <a href="#l00080">Settings.h:80</a></div></div>
+<div class="ttc" id="aclass_settings_html_a12649a59594635f74e99516625e3fd56"><div class="ttname"><a href="class_settings.html#a12649a59594635f74e99516625e3fd56">Settings::p</a></div><div class="ttdeci">char * p</div><div class="ttdoc">編集対象の文字列ポインタ</div><div class="ttdef"><b>Definition</b> <a href="#l00234">Settings.h:234</a></div></div>
+<div class="ttc" id="aclass_settings_html_a14ee9787c562dd056b89db290958d7c5"><div class="ttname"><a href="class_settings.html#a14ee9787c562dd056b89db290958d7c5">Settings::menuMode</a></div><div class="ttdeci">uint8_t menuMode</div><div class="ttdoc">メニュー状態</div><div class="ttdef"><b>Definition</b> <a href="#l00218">Settings.h:218</a></div></div>
+<div class="ttc" id="aclass_settings_html_a16ff9afaef7450c732dfb325b0490fe6"><div class="ttname"><a href="class_settings.html#a16ff9afaef7450c732dfb325b0490fe6">Settings::getMinX</a></div><div class="ttdeci">uint16_t getMinX() const</div><div class="ttdoc">X最小取得</div><div class="ttdef"><b>Definition</b> <a href="#l00147">Settings.h:147</a></div></div>
+<div class="ttc" id="aclass_settings_html_a18c4ef269e7ea57e0f3fccc32e59aac8"><div class="ttname"><a href="class_settings.html#a18c4ef269e7ea57e0f3fccc32e59aac8">Settings::isActive</a></div><div class="ttdeci">bool isActive()</div><div class="ttdoc">設定値が有効か（チャンク識別子・終端チェック）</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00102">Settings.cpp:102</a></div></div>
+<div class="ttc" id="aclass_settings_html_a1ad63c66422cba7e1505ed127f712136"><div class="ttname"><a href="class_settings.html#a1ad63c66422cba7e1505ed127f712136">Settings::drawMenu2_system</a></div><div class="ttdeci">const void drawMenu2_system()</div><div class="ttdoc">システム設定メニュー画面を描画</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00452">Settings.cpp:452</a></div></div>
+<div class="ttc" id="aclass_settings_html_a1d529da0a0992e8301792939316a7b0b"><div class="ttname"><a href="class_settings.html#a1d529da0a0992e8301792939316a7b0b">Settings::setSSID</a></div><div class="ttdeci">void setSSID(const char *s)</div><div class="ttdoc">SSIDを設定</div><div class="ttdef"><b>Definition</b> <a href="#l00165">Settings.h:165</a></div></div>
+<div class="ttc" id="aclass_settings_html_a2163bf51644d8be7c66c17c07f36fbfd"><div class="ttname"><a href="class_settings.html#a2163bf51644d8be7c66c17c07f36fbfd">Settings::flash</a></div><div class="ttdeci">FlashMem flash</div><div class="ttdoc">フラッシュメモリ管理用</div><div class="ttdef"><b>Definition</b> <a href="#l00074">Settings.h:74</a></div></div>
+<div class="ttc" id="aclass_settings_html_a2264305b89db65059bbfc578e25da689"><div class="ttname"><a href="class_settings.html#a2264305b89db65059bbfc578e25da689">Settings::isInsert</a></div><div class="ttdeci">bool isInsert</div><div class="ttdoc">挿入モード</div><div class="ttdef"><b>Definition</b> <a href="#l00238">Settings.h:238</a></div></div>
+<div class="ttc" id="aclass_settings_html_a23105630e4764a33d8085df6562613e4"><div class="ttname"><a href="class_settings.html#a23105630e4764a33d8085df6562613e4">Settings::setDefault</a></div><div class="ttdeci">void setDefault()</div><div class="ttdoc">デフォルト値を設定</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00045">Settings.cpp:45</a></div></div>
+<div class="ttc" id="aclass_settings_html_a249cf85f60d6b88f2bcccdac592e596e"><div class="ttname"><a href="class_settings.html#a249cf85f60d6b88f2bcccdac592e596e">Settings::run2</a></div><div class="ttdeci">const bool run2(Adafruit_ILI9341 *a_pTft, XPT2046_Touchscreen *a_pTs)</div><div class="ttdoc">ルートメニューの実行ループ</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00372">Settings.cpp:372</a></div></div>
+<div class="ttc" id="aclass_settings_html_a27e481604e2557386faecb5c55e747e9"><div class="ttname"><a href="class_settings.html#a27e481604e2557386faecb5c55e747e9">Settings::getSSID</a></div><div class="ttdeci">const char * getSSID() const</div><div class="ttdoc">SSID取得</div><div class="ttdef"><b>Definition</b> <a href="#l00157">Settings.h:157</a></div></div>
+<div class="ttc" id="aclass_settings_html_a2eeec252146d37d198ea7ee99185493a"><div class="ttname"><a href="class_settings.html#a2eeec252146d37d198ea7ee99185493a">Settings::setSerialDebug</a></div><div class="ttdeci">bool setSerialDebug(bool v)</div><div class="ttdoc">シリアルデバッグモードを設定</div><div class="ttdef"><b>Definition</b> <a href="#l00207">Settings.h:207</a></div></div>
+<div class="ttc" id="aclass_settings_html_a32c43db20f2b2319d2cfff9482f59dc0"><div class="ttname"><a href="class_settings.html#a32c43db20f2b2319d2cfff9482f59dc0">Settings::setCalibration</a></div><div class="ttdeci">void setCalibration(uint16_t a_minX, uint16_t a_minY, uint16_t a_maxX, uint16_t a_maxY)</div><div class="ttdoc">タッチパネルキャリブレーション値を設定</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00150">Settings.cpp:150</a></div></div>
+<div class="ttc" id="aclass_settings_html_a35c9709765eadaf4a8ef054f21b3eb96"><div class="ttname"><a href="class_settings.html#a35c9709765eadaf4a8ef054f21b3eb96">Settings::drawMenu2_as3935</a></div><div class="ttdeci">const void drawMenu2_as3935()</div><div class="ttdoc">AS3935設定メニュー画面を描画</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00643">Settings.cpp:643</a></div></div>
+<div class="ttc" id="aclass_settings_html_a3ed5965921e8118b49798e92cb5d65e8"><div class="ttname"><a href="class_settings.html#a3ed5965921e8118b49798e92cb5d65e8">Settings::getLocaleStr</a></div><div class="ttdeci">const char * getLocaleStr() const</div><div class="ttdoc">ロケール文字列取得</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00162">Settings.cpp:162</a></div></div>
+<div class="ttc" id="aclass_settings_html_a486a6807f9bd896303141046d8892753"><div class="ttname"><a href="class_settings.html#a486a6807f9bd896303141046d8892753">Settings::setIsEnableWifi</a></div><div class="ttdeci">void setIsEnableWifi(bool v)</div><div class="ttdoc">Wi-Fi有効フラグ設定</div><div class="ttdef"><b>Definition</b> <a href="#l00145">Settings.h:145</a></div></div>
+<div class="ttc" id="aclass_settings_html_a494794b00ed0a8cf450b9fb58b8266f3"><div class="ttname"><a href="class_settings.html#a494794b00ed0a8cf450b9fb58b8266f3">Settings::setIsClock24Hour</a></div><div class="ttdeci">void setIsClock24Hour(bool v)</div><div class="ttdoc">24時間表示設定</div><div class="ttdef"><b>Definition</b> <a href="#l00156">Settings.h:156</a></div></div>
+<div class="ttc" id="aclass_settings_html_a545cfa7849a0827e904103c6c4dd3423"><div class="ttname"><a href="class_settings.html#a545cfa7849a0827e904103c6c4dd3423">Settings::isSerialDebug</a></div><div class="ttdeci">bool isSerialDebug() const</div><div class="ttdoc">シリアルデバッグモードか判定</div><div class="ttdef"><b>Definition</b> <a href="#l00196">Settings.h:196</a></div></div>
+<div class="ttc" id="aclass_settings_html_a566c85fd3a22269e366546c038b9b5ae"><div class="ttname"><a href="class_settings.html#a566c85fd3a22269e366546c038b9b5ae">Settings::setIP</a></div><div class="ttdeci">void setIP(uint8_t a_u8Ip0, uint8_t a_u8Ip1, uint8_t a_u8Ip2, uint8_t a_u8Ip3)</div><div class="ttdoc">IPアドレスを設定</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00135">Settings.cpp:135</a></div></div>
+<div class="ttc" id="aclass_settings_html_a5c8713f9d91d2b7357645bece2e47601"><div class="ttname"><a href="class_settings.html#a5c8713f9d91d2b7357645bece2e47601">Settings::run</a></div><div class="ttdeci">const void run(Adafruit_ILI9341 *a_pTft, XPT2046_Touchscreen *a_pTs)</div><div class="ttdoc">メイン設定メニューの実行ループ</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00231">Settings.cpp:231</a></div></div>
+<div class="ttc" id="aclass_settings_html_a63c26bbf0b674f8dc4d3bd3b051750d7"><div class="ttname"><a href="class_settings.html#a63c26bbf0b674f8dc4d3bd3b051750d7">Settings::drawMenu</a></div><div class="ttdeci">const void drawMenu()</div><div class="ttdoc">メイン設定メニュー画面を描画</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00205">Settings.cpp:205</a></div></div>
+<div class="ttc" id="aclass_settings_html_a6e205f15d5b4fcf4817908c1869da9ed"><div class="ttname"><a href="class_settings.html#a6e205f15d5b4fcf4817908c1869da9ed">Settings::setMinY</a></div><div class="ttdeci">void setMinY(uint16_t v)</div><div class="ttdoc">Y最小設定</div><div class="ttdef"><b>Definition</b> <a href="#l00152">Settings.h:152</a></div></div>
+<div class="ttc" id="aclass_settings_html_a712e12d21d37f51625aa5ed726e52aee"><div class="ttname"><a href="class_settings.html#a712e12d21d37f51625aa5ed726e52aee">Settings::drawMenu2_wifi</a></div><div class="ttdeci">const void drawMenu2_wifi()</div><div class="ttdoc">Wi-Fi設定メニュー画面を描画</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00554">Settings.cpp:554</a></div></div>
+<div class="ttc" id="aclass_settings_html_a71f7d4c4abab8a2d01dde827146de7a7"><div class="ttname"><a href="class_settings.html#a71f7d4c4abab8a2d01dde827146de7a7">Settings::run2_wifi</a></div><div class="ttdeci">const void run2_wifi()</div><div class="ttdoc">Wi-Fi設定メニューの実行ループ</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00578">Settings.cpp:578</a></div></div>
+<div class="ttc" id="aclass_settings_html_a7379ea53b7bf25ef0d346f2bdc550d17"><div class="ttname"><a href="class_settings.html#a7379ea53b7bf25ef0d346f2bdc550d17">Settings::edtCursor</a></div><div class="ttdeci">uint8_t edtCursor</div><div class="ttdoc">編集カーソル位置</div><div class="ttdef"><b>Definition</b> <a href="#l00235">Settings.h:235</a></div></div>
+<div class="ttc" id="aclass_settings_html_a75ab693f2b4228de016603638771eb94"><div class="ttname"><a href="class_settings.html#a75ab693f2b4228de016603638771eb94">Settings::save</a></div><div class="ttdeci">void save()</div><div class="ttdoc">設定値をフラッシュに保存</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00076">Settings.cpp:76</a></div></div>
+<div class="ttc" id="aclass_settings_html_a7daf420f40adb65fd6a8eda0ef428237"><div class="ttname"><a href="class_settings.html#a7daf420f40adb65fd6a8eda0ef428237">Settings::ptft</a></div><div class="ttdeci">Adafruit_ILI9341 * ptft</div><div class="ttdoc">ディスプレイ制御用</div><div class="ttdef"><b>Definition</b> <a href="#l00075">Settings.h:75</a></div></div>
+<div class="ttc" id="aclass_settings_html_a8212ce3d335329480b63635cf377ca29"><div class="ttname"><a href="class_settings.html#a8212ce3d335329480b63635cf377ca29">Settings::edtX</a></div><div class="ttdeci">uint16_t edtX</div><div class="ttdoc">編集ボックスX座標</div><div class="ttdef"><b>Definition</b> <a href="#l00236">Settings.h:236</a></div></div>
+<div class="ttc" id="aclass_settings_html_a82540464caa4997d8cf3d9f9fc61d2ef"><div class="ttname"><a href="class_settings.html#a82540464caa4997d8cf3d9f9fc61d2ef">Settings::getIsClock24Hour</a></div><div class="ttdeci">bool getIsClock24Hour() const</div><div class="ttdoc">24時間表示取得</div><div class="ttdef"><b>Definition</b> <a href="#l00155">Settings.h:155</a></div></div>
+<div class="ttc" id="aclass_settings_html_a83e53074384b203728af6336e4824221"><div class="ttname"><a href="class_settings.html#a83e53074384b203728af6336e4824221">Settings::getMinY</a></div><div class="ttdeci">uint16_t getMinY() const</div><div class="ttdoc">Y最小取得</div><div class="ttdef"><b>Definition</b> <a href="#l00148">Settings.h:148</a></div></div>
+<div class="ttc" id="aclass_settings_html_a8875f3ed2bcedda3720a120e9345d03e"><div class="ttname"><a href="class_settings.html#a8875f3ed2bcedda3720a120e9345d03e">Settings::setPASSWORD</a></div><div class="ttdeci">void setPASSWORD(const char *s)</div><div class="ttdoc">パスワードを設定</div><div class="ttdef"><b>Definition</b> <a href="#l00178">Settings.h:178</a></div></div>
+<div class="ttc" id="aclass_settings_html_a8bd897eb32fa906823f9aab33bb385ad"><div class="ttname"><a href="class_settings.html#a8bd897eb32fa906823f9aab33bb385ad">Settings::getIpString</a></div><div class="ttdeci">const char * getIpString() const</div><div class="ttdoc">IPアドレスを文字列で取得</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00113">Settings.cpp:113</a></div></div>
+<div class="ttc" id="aclass_settings_html_a9388dd4a1b89871bbf90e6d63e55405b"><div class="ttname"><a href="class_settings.html#a9388dd4a1b89871bbf90e6d63e55405b">Settings::getPicoErrorSummary</a></div><div class="ttdeci">static const char * getPicoErrorSummary(int code)</div><div class="ttdoc">pico_error_codesの値から簡易説明文字列を返す</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00792">Settings.cpp:792</a></div></div>
+<div class="ttc" id="aclass_settings_html_a979ae50c012b01c1e85cdca6c99490e4"><div class="ttname"><a href="class_settings.html#a979ae50c012b01c1e85cdca6c99490e4">Settings::getMaxX</a></div><div class="ttdeci">uint16_t getMaxX() const</div><div class="ttdoc">X最大取得</div><div class="ttdef"><b>Definition</b> <a href="#l00149">Settings.h:149</a></div></div>
+<div class="ttc" id="aclass_settings_html_a999e66518497484377abb3e9d0d468dd"><div class="ttname"><a href="class_settings.html#a999e66518497484377abb3e9d0d468dd">Settings::run2_as3935</a></div><div class="ttdeci">const void run2_as3935()</div><div class="ttdoc">AS3935設定メニューの実行ループ</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00664">Settings.cpp:664</a></div></div>
+<div class="ttc" id="aclass_settings_html_a9e3d32e1cf4ceea1b91ae0308888f8a5"><div class="ttname"><a href="class_settings.html#a9e3d32e1cf4ceea1b91ae0308888f8a5">Settings::drawMenuBottom</a></div><div class="ttdeci">const void drawMenuBottom()</div><div class="ttdoc">メニュー下部の共通描画</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00179">Settings.cpp:179</a></div></div>
+<div class="ttc" id="aclass_settings_html_a9f94816b465ffa41f4adbaae97a7e15b"><div class="ttname"><a href="class_settings.html#a9f94816b465ffa41f4adbaae97a7e15b">Settings::isMustSave</a></div><div class="ttdeci">bool isMustSave</div><div class="ttdoc">設定が変更されたかどうか</div><div class="ttdef"><b>Definition</b> <a href="#l00081">Settings.h:81</a></div></div>
+<div class="ttc" id="aclass_settings_html_aa3091a47762b4593f6e5b7e82edaea73"><div class="ttname"><a href="class_settings.html#aa3091a47762b4593f6e5b7e82edaea73">Settings::getLocale</a></div><div class="ttdeci">const char * getLocale() const</div><div class="ttdoc">ロケール取得</div><div class="ttdef"><b>Definition</b> <a href="#l00146">Settings.h:146</a></div></div>
+<div class="ttc" id="aclass_settings_html_aa9fffa66c6d4bc83b7899db6b83fccea"><div class="ttname"><a href="class_settings.html#aa9fffa66c6d4bc83b7899db6b83fccea">Settings::resetIP</a></div><div class="ttdeci">void resetIP()</div><div class="ttdoc">IPアドレスを0クリア</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00123">Settings.cpp:123</a></div></div>
+<div class="ttc" id="aclass_settings_html_aac05a8bde144a4950e12aa644a44899b"><div class="ttname"><a href="class_settings.html#aac05a8bde144a4950e12aa644a44899b">Settings::EditBox</a></div><div class="ttdeci">const void EditBox(ScreenKeyboard sk, uint16_t a_x, uint16_t a_y, char *a_pText, size_t a_size)</div></div>
+<div class="ttc" id="aclass_settings_html_ab7169a6eefce79566dd07db3b1e5e967"><div class="ttname"><a href="class_settings.html#ab7169a6eefce79566dd07db3b1e5e967">Settings::Settings</a></div><div class="ttdeci">Settings()</div><div class="ttdoc">コンストラクタ</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00033">Settings.cpp:33</a></div></div>
+<div class="ttc" id="aclass_settings_html_ab7a5830d3679386c4daf1233508954c4"><div class="ttname"><a href="class_settings.html#ab7a5830d3679386c4daf1233508954c4">Settings::run2_system</a></div><div class="ttdeci">const void run2_system()</div><div class="ttdoc">システム設定メニューの実行ループ</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00470">Settings.cpp:470</a></div></div>
+<div class="ttc" id="aclass_settings_html_ac0496ce4089267648dcf4a62109ce257"><div class="ttname"><a href="class_settings.html#ac0496ce4089267648dcf4a62109ce257">Settings::getTzStr</a></div><div class="ttdeci">const char * getTzStr() const</div><div class="ttdoc">タイムゾーン文字列取得</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00171">Settings.cpp:171</a></div></div>
+<div class="ttc" id="aclass_settings_html_ac5ae86d8641cc2f92169d1579d0405bc"><div class="ttname"><a href="class_settings.html#ac5ae86d8641cc2f92169d1579d0405bc">Settings::setMaxY</a></div><div class="ttdeci">void setMaxY(uint16_t v)</div><div class="ttdoc">Y最大設定</div><div class="ttdef"><b>Definition</b> <a href="#l00154">Settings.h:154</a></div></div>
+<div class="ttc" id="aclass_settings_html_ac98b486437c1e00a0b0626b1be003a7f"><div class="ttname"><a href="class_settings.html#ac98b486437c1e00a0b0626b1be003a7f">Settings::drawMenu2_root</a></div><div class="ttdeci">const void drawMenu2_root()</div><div class="ttdoc">ルートメニュー画面を描画</div><div class="ttdef"><b>Definition</b> <a href="_settings_8cpp_source.html#l00341">Settings.cpp:341</a></div></div>
+<div class="ttc" id="aclass_settings_html_acf52406d7a37c8524aa079a9ec746f49"><div class="ttname"><a href="class_settings.html#acf52406d7a37c8524aa079a9ec746f49">Settings::pts</a></div><div class="ttdeci">XPT2046_Touchscreen * pts</div><div class="ttdoc">タッチスクリーン制御用</div><div class="ttdef"><b>Definition</b> <a href="#l00076">Settings.h:76</a></div></div>
+<div class="ttc" id="aclass_settings_html_adcbc8dc6576f6fc3fbe9b3445f895fdb"><div class="ttname"><a href="class_settings.html#adcbc8dc6576f6fc3fbe9b3445f895fdb">Settings::value</a></div><div class="ttdeci">SettingValue value</div><div class="ttdoc">現在の設定値</div><div class="ttdef"><b>Definition</b> <a href="#l00078">Settings.h:78</a></div></div>
+<div class="ttc" id="aclass_settings_html_ade55cd28808d77957c13d3197326ed93"><div class="ttname"><a href="class_settings.html#ade55cd28808d77957c13d3197326ed93">Settings::getIsEnableWifi</a></div><div class="ttdeci">bool getIsEnableWifi() const</div><div class="ttdoc">Wi-Fi有効フラグ取得</div><div class="ttdef"><b>Definition</b> <a href="#l00144">Settings.h:144</a></div></div>
+<div class="ttc" id="aclass_settings_html_ae4675710a46276393119eaf2e6b3b453"><div class="ttname"><a href="class_settings.html#ae4675710a46276393119eaf2e6b3b453">Settings::EdtDispCursor</a></div><div class="ttdeci">const void EdtDispCursor(int tick, bool isDeleteCursor=false)</div></div>
+<div class="ttc" id="aclass_settings_html_aea3e68bada4029efe950717e3275f51c"><div class="ttname"><a href="class_settings.html#aea3e68bada4029efe950717e3275f51c">Settings::getPASSWORD</a></div><div class="ttdeci">const char * getPASSWORD() const</div><div class="ttdoc">パスワード取得</div><div class="ttdef"><b>Definition</b> <a href="#l00170">Settings.h:170</a></div></div>
+<div class="ttc" id="aclass_settings_html_af46852aa9049a1f657735d9c483c3185"><div class="ttname"><a href="class_settings.html#af46852aa9049a1f657735d9c483c3185">Settings::geti2cReadMode</a></div><div class="ttdeci">int geti2cReadMode() const</div><div class="ttdoc">I2Cリードモード取得</div><div class="ttdef"><b>Definition</b> <a href="#l00189">Settings.h:189</a></div></div>
+<div class="ttc" id="aclass_settings_html_af506adb3aaef7c8e71cdd01430d0af47"><div class="ttname"><a href="class_settings.html#af506adb3aaef7c8e71cdd01430d0af47">Settings::edtY</a></div><div class="ttdeci">uint16_t edtY</div><div class="ttdoc">編集ボックスY座標</div><div class="ttdef"><b>Definition</b> <a href="#l00237">Settings.h:237</a></div></div>
+<div class="ttc" id="aclass_settings_html_af664c094270e684bae0ddd9e8a3d5c5f"><div class="ttname"><a href="class_settings.html#af664c094270e684bae0ddd9e8a3d5c5f">Settings::setMinX</a></div><div class="ttdeci">void setMinX(uint16_t v)</div><div class="ttdoc">X最小設定</div><div class="ttdef"><b>Definition</b> <a href="#l00151">Settings.h:151</a></div></div>
+<div class="ttc" id="aclass_settings_html_af961cfd130507694af122e5b0914d89c"><div class="ttname"><a href="class_settings.html#af961cfd130507694af122e5b0914d89c">Settings::getMaxY</a></div><div class="ttdeci">uint16_t getMaxY() const</div><div class="ttdoc">Y最大取得</div><div class="ttdef"><b>Definition</b> <a href="#l00150">Settings.h:150</a></div></div>
+<div class="ttc" id="aclass_settings_html_afcbbac22e06cc9fcce9bd1f567885495"><div class="ttname"><a href="class_settings.html#afcbbac22e06cc9fcce9bd1f567885495">Settings::setMaxX</a></div><div class="ttdeci">void setMaxX(uint16_t v)</div><div class="ttdoc">X最大設定</div><div class="ttdef"><b>Definition</b> <a href="#l00153">Settings.h:153</a></div></div>
+<div class="ttc" id="anamespaceard_port_1_1spi_html"><div class="ttname"><a href="namespaceard_port_1_1spi.html">ardPort::spi</a></div><div class="ttdoc">SPI関連APIの名前空間</div></div>
+<div class="ttc" id="anamespaceard_port_html"><div class="ttname"><a href="namespaceard_port.html">ardPort</a></div><div class="ttdoc">Arduino互換ポートラッパーの名前空間</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

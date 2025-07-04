@@ -1,0 +1,586 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: I2CBase クラス</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">公開メンバ関数</a> &#124;
+<a href="#pro-attribs">限定公開変数類</a> &#124;
+<a href="class_i2_c_base-members.html">全メンバ一覧</a>  </div>
+  <div class="headertitle"><div class="title">I2CBase クラス</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>I2Cデバイス用の基底抽象クラス  
+ <a href="#details">[詳解]</a></p>
+
+<p><code>#include &lt;<a class="el" href="_i2_c_base_8h_source.html">I2CBase.h</a>&gt;</code></p>
+<div class="dynheader">
+I2CBase の継承関係図</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="class_i2_c_base.png" usemap="#I2CBase_map" alt=""/>
+  <map id="I2CBase_map" name="I2CBase_map">
+<area href="class_a_s3935.html" alt="AS3935" shape="rect" coords="0,56,59,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+公開メンバ関数</h2></td></tr>
+<tr class="memitem:a51924d63794b12ca41d08f0d6d82e51b" id="r_a51924d63794b12ca41d08f0d6d82e51b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a51924d63794b12ca41d08f0d6d82e51b">I2CBase</a> ()</td></tr>
+<tr class="memdesc:a51924d63794b12ca41d08f0d6d82e51b"><td class="mdescLeft">&#160;</td><td class="mdescRight">コンストラクタ  <br /></td></tr>
+<tr class="separator:a51924d63794b12ca41d08f0d6d82e51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a95e5b45f34121810767506bfa77ef4" id="r_a3a95e5b45f34121810767506bfa77ef4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a95e5b45f34121810767506bfa77ef4">~I2CBase</a> ()</td></tr>
+<tr class="memdesc:a3a95e5b45f34121810767506bfa77ef4"><td class="mdescLeft">&#160;</td><td class="mdescRight">仮想デストラクタ  <br /></td></tr>
+<tr class="separator:a3a95e5b45f34121810767506bfa77ef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a447c445844520adee9ac58eedf1633d5" id="r_a447c445844520adee9ac58eedf1633d5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a447c445844520adee9ac58eedf1633d5">InitI2C</a> (uint8_t a_u8I2CAddress, uint8_t a_u8I2cPort, uint8_t a_u8SdaPin, uint8_t a_u8SclPin)</td></tr>
+<tr class="memdesc:a447c445844520adee9ac58eedf1633d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2C初期化  <br /></td></tr>
+<tr class="separator:a447c445844520adee9ac58eedf1633d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5949f4454586704730301dc9dd22a180" id="r_a5949f4454586704730301dc9dd22a180"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5949f4454586704730301dc9dd22a180">writeBlocking</a> (const uint8_t *src, size_t len, bool nostop)</td></tr>
+<tr class="memdesc:a5949f4454586704730301dc9dd22a180"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2Cバスにデータを書き込む  <br /></td></tr>
+<tr class="separator:a5949f4454586704730301dc9dd22a180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17713878d3d1683aeb2d086cffa2453f" id="r_a17713878d3d1683aeb2d086cffa2453f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17713878d3d1683aeb2d086cffa2453f">writeRegAndData_1</a> (uint8_t reg, uint8_t dataByte)</td></tr>
+<tr class="memdesc:a17713878d3d1683aeb2d086cffa2453f"><td class="mdescLeft">&#160;</td><td class="mdescRight">指定レジスタに1バイト書き込む  <br /></td></tr>
+<tr class="separator:a17713878d3d1683aeb2d086cffa2453f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ede36f2c06bc55936d8a31b12442f67" id="r_a4ede36f2c06bc55936d8a31b12442f67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ede36f2c06bc55936d8a31b12442f67">writeWord</a> (uint16_t cmddata)</td></tr>
+<tr class="memdesc:a4ede36f2c06bc55936d8a31b12442f67"><td class="mdescLeft">&#160;</td><td class="mdescRight">16ビットコマンド/データをI2Cバスに書き込む  <br /></td></tr>
+<tr class="separator:a4ede36f2c06bc55936d8a31b12442f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+限定公開変数類</h2></td></tr>
+<tr class="memitem:ab830e85a092f95a705eece79e70ca017" id="r_ab830e85a092f95a705eece79e70ca017"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab830e85a092f95a705eece79e70ca017">m_u8I2CAddress</a></td></tr>
+<tr class="memdesc:ab830e85a092f95a705eece79e70ca017"><td class="mdescLeft">&#160;</td><td class="mdescRight">I2Cアドレス  <br /></td></tr>
+<tr class="separator:ab830e85a092f95a705eece79e70ca017"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac817fac93781d985f10e728dedbc8a0c" id="r_ac817fac93781d985f10e728dedbc8a0c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac817fac93781d985f10e728dedbc8a0c">m_u8I2cPort</a></td></tr>
+<tr class="memdesc:ac817fac93781d985f10e728dedbc8a0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">使用するI2Cポート番号  <br /></td></tr>
+<tr class="separator:ac817fac93781d985f10e728dedbc8a0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f6592a375a2e7fc33cbcb8946136376" id="r_a3f6592a375a2e7fc33cbcb8946136376"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f6592a375a2e7fc33cbcb8946136376">m_u8SclPin</a></td></tr>
+<tr class="memdesc:a3f6592a375a2e7fc33cbcb8946136376"><td class="mdescLeft">&#160;</td><td class="mdescRight">SCLピン番号  <br /></td></tr>
+<tr class="separator:a3f6592a375a2e7fc33cbcb8946136376"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a901cc450d7561d25ad956e67170ca928" id="r_a901cc450d7561d25ad956e67170ca928"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a901cc450d7561d25ad956e67170ca928">m_u8SdaPin</a></td></tr>
+<tr class="memdesc:a901cc450d7561d25ad956e67170ca928"><td class="mdescLeft">&#160;</td><td class="mdescRight">SDAピン番号  <br /></td></tr>
+<tr class="separator:a901cc450d7561d25ad956e67170ca928"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">詳解</h2>
+<div class="textblock"><p>I2Cデバイス用の基底抽象クラス </p>
+<p>I2C通信を行うデバイスの共通機能（初期化・レジスタ書き込み等）を提供。 派生クラスでデバイス固有の処理を追加・拡張できる。 </p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8h_source.html">I2CBase.h</a> の <a class="el" href="_i2_c_base_8h_source.html#l00019">19</a> 行目に定義があります。</p>
+</div><h2 class="groupheader">構築子と解体子</h2>
+<a id="a51924d63794b12ca41d08f0d6d82e51b" name="a51924d63794b12ca41d08f0d6d82e51b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51924d63794b12ca41d08f0d6d82e51b">&#9670;&#160;</a></span>I2CBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">I2CBase::I2CBase </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>コンストラクタ </p>
+<p>I2CBaseクラスのデフォルトコンストラクタ</p>
+<p>メンバ変数を初期化 </p><dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">なし</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<p>I2Cポート番号、SDA/SCLピン番号を0で初期化します。 派生クラスでI2Cデバイスの初期化前に呼び出されます。 </p><dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">なし</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8cpp_source.html">I2CBase.cpp</a> の <a class="el" href="_i2_c_base_8cpp_source.html#l00019">19</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a3a95e5b45f34121810767506bfa77ef4" name="a3a95e5b45f34121810767506bfa77ef4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a95e5b45f34121810767506bfa77ef4">&#9670;&#160;</a></span>~I2CBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual I2CBase::~I2CBase </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>仮想デストラクタ </p>
+<p>派生クラスでのクリーンアップ用 </p><dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">なし</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8h_source.html">I2CBase.h</a> の <a class="el" href="_i2_c_base_8h_source.html#l00038">38</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">関数詳解</h2>
+<a id="a447c445844520adee9ac58eedf1633d5" name="a447c445844520adee9ac58eedf1633d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a447c445844520adee9ac58eedf1633d5">&#9670;&#160;</a></span>InitI2C()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool I2CBase::InitI2C </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>a_u8I2CAddress</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>a_u8I2cPort</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>a_u8SdaPin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>a_u8SclPin</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>I2C初期化 </p>
+<p>I2C通信の初期化を行う</p>
+<p>指定アドレス・ポート・SDA/SCLピンでI2C通信を初期化。 </p><dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a_u8I2CAddress</td><td>I2Cアドレス </td></tr>
+    <tr><td class="paramname">a_u8I2cPort</td><td>I2Cポート番号 </td></tr>
+    <tr><td class="paramname">a_u8SdaPin</td><td>SDAピン番号 </td></tr>
+    <tr><td class="paramname">a_u8SclPin</td><td>SCLピン番号 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">true</td><td>初期化成功 </td></tr>
+    <tr><td class="paramname">false</td><td>初期化失敗</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>指定したI2Cアドレス、I2Cポート、SDA/SCLピンでI2C通信を初期化します。 ポート番号やピン番号が不正な場合はfalseを返します。 初期化成功時はtrueを返します。</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a_u8I2CAddress</td><td>I2Cデバイスアドレス </td></tr>
+    <tr><td class="paramname">a_u8I2cPort</td><td>I2Cポート番号 </td></tr>
+    <tr><td class="paramname">a_u8SdaPin</td><td>SDAピン番号 </td></tr>
+    <tr><td class="paramname">a_u8SclPin</td><td>SCLピン番号 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">true</td><td>初期化成功 </td></tr>
+    <tr><td class="paramname">false</td><td>初期化失敗 </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>&lt; I2Cポート番号保存</p>
+<p>&lt; SDAピン保存</p>
+<p>&lt; SCLピン保存</p>
+<p>&lt; I2Cアドレス保存</p>
+<p>&lt; 400kHzでI2C初期化</p>
+<p>&lt; SDAピンをI2C機能に設定</p>
+<p>&lt; SCLピンをI2C機能に設定</p>
+<p>&lt; SDAピンをプルアップ</p>
+<p>&lt; SCLピンをプルアップ</p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8cpp_source.html">I2CBase.cpp</a> の <a class="el" href="_i2_c_base_8cpp_source.html#l00041">41</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a5949f4454586704730301dc9dd22a180" name="a5949f4454586704730301dc9dd22a180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5949f4454586704730301dc9dd22a180">&#9670;&#160;</a></span>writeBlocking()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int I2CBase::writeBlocking </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *</td>          <td class="paramname"><span class="paramname"><em>src</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>nostop</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>I2Cバスにデータを書き込む </p>
+<p>指定したデータをI2Cバスに送信する。nostop=trueでストップコンディション無し。 </p><dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">src</td><td>送信データバッファ </td></tr>
+    <tr><td class="paramname">len</td><td>送信バイト数 </td></tr>
+    <tr><td class="paramname">nostop</td><td>ストップコンディション無しならtrue </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">書き込んだバイト数（負値はエラー）</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<p>指定したデータをI2Cバスに送信します。 ストップコンディションを送信しない場合はnostop=trueを指定します。</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">src</td><td>送信データのポインタ </td></tr>
+    <tr><td class="paramname">len</td><td>送信データ長 </td></tr>
+    <tr><td class="paramname">nostop</td><td>ストップコンディションを送信しない場合true </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>書き込んだバイト数（負値はエラー） </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>&lt; I2Cバス書き込み</p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8cpp_source.html">I2CBase.cpp</a> の <a class="el" href="_i2_c_base_8cpp_source.html#l00090">90</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a17713878d3d1683aeb2d086cffa2453f" name="a17713878d3d1683aeb2d086cffa2453f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17713878d3d1683aeb2d086cffa2453f">&#9670;&#160;</a></span>writeRegAndData_1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int I2CBase::writeRegAndData_1 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>reg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>dataByte</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>指定レジスタに1バイト書き込む </p>
+<p>指定レジスタアドレスに1バイトデータを書き込む。 </p><dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reg</td><td>レジスタアドレス </td></tr>
+    <tr><td class="paramname">dataByte</td><td>書き込むデータ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">書き込んだバイト数（負値はエラー）</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<p>指定レジスタアドレスに1バイトのデータを書き込みます。 レジスタアドレスとデータを2バイト配列で送信します。</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reg</td><td>レジスタアドレス </td></tr>
+    <tr><td class="paramname">dataByte</td><td>書き込むデータ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>書き込んだバイト数（負値はエラー） </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>&lt; レジスタ＋データ配列</p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8cpp_source.html">I2CBase.cpp</a> の <a class="el" href="_i2_c_base_8cpp_source.html#l00106">106</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a4ede36f2c06bc55936d8a31b12442f67" name="a4ede36f2c06bc55936d8a31b12442f67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ede36f2c06bc55936d8a31b12442f67">&#9670;&#160;</a></span>writeWord()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int I2CBase::writeWord </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>cmddata</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>16ビットコマンド/データをI2Cバスに書き込む </p>
+<p>16ビットコマンド/データをI2Cバスに送信</p>
+<p>16ビット値をI2Cバスに送信する（主にダイレクトコマンド用）。 </p><dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmddata</td><td>送信する16ビット値 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">書き込んだバイト数（負値はエラー）</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<p>16ビットのコマンドやデータをI2Cバスに送信します。 上位バイト・下位バイトに分割して送信します。</p>
+<dl class="params"><dt>引数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmddata</td><td>送信する16ビット値 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>戻り値</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>書き込んだバイト数（負値はエラー） </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>&lt; 上位バイト</p>
+<p>&lt; 下位バイト</p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8cpp_source.html">I2CBase.cpp</a> の <a class="el" href="_i2_c_base_8cpp_source.html#l00070">70</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<h2 class="groupheader">メンバ詳解</h2>
+<a id="ab830e85a092f95a705eece79e70ca017" name="ab830e85a092f95a705eece79e70ca017"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab830e85a092f95a705eece79e70ca017">&#9670;&#160;</a></span>m_u8I2CAddress</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t I2CBase::m_u8I2CAddress</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>I2Cアドレス </p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8h_source.html">I2CBase.h</a> の <a class="el" href="_i2_c_base_8h_source.html#l00024">24</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="ac817fac93781d985f10e728dedbc8a0c" name="ac817fac93781d985f10e728dedbc8a0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac817fac93781d985f10e728dedbc8a0c">&#9670;&#160;</a></span>m_u8I2cPort</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t I2CBase::m_u8I2cPort</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>使用するI2Cポート番号 </p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8h_source.html">I2CBase.h</a> の <a class="el" href="_i2_c_base_8h_source.html#l00021">21</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a3f6592a375a2e7fc33cbcb8946136376" name="a3f6592a375a2e7fc33cbcb8946136376"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f6592a375a2e7fc33cbcb8946136376">&#9670;&#160;</a></span>m_u8SclPin</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t I2CBase::m_u8SclPin</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>SCLピン番号 </p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8h_source.html">I2CBase.h</a> の <a class="el" href="_i2_c_base_8h_source.html#l00023">23</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<a id="a901cc450d7561d25ad956e67170ca928" name="a901cc450d7561d25ad956e67170ca928"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a901cc450d7561d25ad956e67170ca928">&#9670;&#160;</a></span>m_u8SdaPin</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t I2CBase::m_u8SdaPin</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>SDAピン番号 </p>
+
+<p class="definition"> <a class="el" href="_i2_c_base_8h_source.html">I2CBase.h</a> の <a class="el" href="_i2_c_base_8h_source.html#l00022">22</a> 行目に定義があります。</p>
+
+</div>
+</div>
+<hr/>このクラス詳解は次のファイルから抽出されました:<ul>
+<li><a class="el" href="_i2_c_base_8h_source.html">I2CBase.h</a></li>
+<li><a class="el" href="_i2_c_base_8cpp_source.html">I2CBase.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

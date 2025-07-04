@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>雷センサー　AE-AS3935＋Raspberry pi PICO: AS3935.h ソースファイル</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">雷センサー　AE-AS3935＋Raspberry pi PICO<span id="projectnumber">&#160;1</span>
+   </div>
+   <div id="projectbrief">雷センサー</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 構築: Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','検索',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="doc-content">
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">読み取り中…</div>
+<div class="SRStatus" id="Searching">検索中…</div>
+<div class="SRStatus" id="NoMatches">一致する文字列を見つけられません</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">AS3935.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_a_s3935_8h.html">[詳解]</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;queue&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;ctime&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_ring_buffer_8h.html">RingBuffer.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_i2_c_base_8h.html">I2CBase.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;lib-9341/Adafruit_ILI9341/Adafruit_ILI9341.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Forward declaration to avoid include errors if only pointer is used</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceard_port.html">ardPort</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceard_port_1_1spi.html">ardPort::spi</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">//  Analog Front End Gain Boost</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a3600ad6e477a7a65c699ea378ae87c76">   14</a></span><span class="preprocessor">#define AFE_GB_MIN 0b00000     </span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a09654aee2c4fbc345ac9fbbd92213597">   15</a></span><span class="preprocessor">#define AFE_GB_OUTDOOR 0b01110 </span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a240cf540be6ef6288b2ad4df431ba391">   16</a></span><span class="preprocessor">#define AFE_GB_INDOOR 0b10010  </span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a9112c63eb9991dfc83203b33d2f5c0fd">   17</a></span><span class="preprocessor">#define AFE_GB_MAX 0b11111     </span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">// Noise Floor Level</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a03747ed461e00723c9aef03ed380e32e">   20</a></span><span class="preprocessor">#define NFLEV_0 0x00 </span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a61c307b32ce9ac407bf6011fa8796ffe">   21</a></span><span class="preprocessor">#define NFLEV_1 0x01 </span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a1027a319be234b7edb98abe7cb9bbf63">   22</a></span><span class="preprocessor">#define NFLEV_2 0x02 </span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a209fcdb1d7ec6abacfb0b6b9c5cb2353">   23</a></span><span class="preprocessor">#define NFLEV_3 0x03 </span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#aba645bf226c4055b0d772db78a0a9d31">   24</a></span><span class="preprocessor">#define NFLEV_4 0x04 </span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a641bc6e34fc55c9deccf8f27b85bd994">   25</a></span><span class="preprocessor">#define NFLEV_5 0x05 </span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a9893530040ac3537011c11c3acdc27e3">   26</a></span><span class="preprocessor">#define NFLEV_6 0x06 </span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a44502be51985d65c2526a6f85bcdb892">   27</a></span><span class="preprocessor">#define NFLEV_7 0x07 </span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a45718e63ae7be41340dfbb3220901e6c">   28</a></span><span class="preprocessor">#define NFLEV_DEF NFLEV_2 </span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">// Watchdog Threshold  (0～0x0F)</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#ab4ef1b9931d0dd842a9a22197dbee920">   31</a></span><span class="preprocessor">#define WDTH_MAX 0x0F      </span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#ae8154520f819ae5739c239520ef094ad">   32</a></span><span class="preprocessor">#define WDTH_DEFAULT 0x02  </span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#ae344c88951a5aaa7426ed94857800d7c">   33</a></span><span class="preprocessor">#define WDTH_MIN 0x00      </span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">// REG_02</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a797d4d03d21e627b01ff1ccc3672d2c1">   36</a></span><span class="preprocessor">#define SREJ_MIN 0x00         </span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a787b43524c5613777158ed3c4f02c7ac">   37</a></span><span class="preprocessor">#define SREJ_DEFAULT 0x02     </span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#ae19c7d591de52d94a8198ff417770b44">   38</a></span><span class="preprocessor">#define SREJ_MAX 0x0B         </span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a7c22f8f556ea64ed216114d2c7374636">   40</a></span><span class="preprocessor">#define NUMLIGHT_MIN 0x00         </span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a05a8961e5fde3d5f112ee062a897aadd">   41</a></span><span class="preprocessor">#define NUMLIGHT_DEFAULT 0x00     </span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#ad214ae638792721c8cd91b30a2ea77d8">   42</a></span><span class="preprocessor">#define NUMLIGHT_MAX 0x03         </span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="comment">#define AFE_GB_MIN (0b00000 &lt;&lt; 1)     // ANALOG FRONT END GAIN BOOST = 0 (min)</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="comment">#define AFE_GB_OUTDOOR (0b01110 &lt;&lt; 1) // ANALOG FRONT END GAIN BOOST = 14 (outdoor)</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment">#define AFE_GB_INDOOR (0b10010 &lt;&lt; 1)  // ANALOG FRONT END GAIN BOOST = 18 (indoor)</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="comment">#define AFE_GB_MAX (0b11111 &lt;&lt; 1)     // ANALOG FRONT END GAIN BOOST = 31 (max)</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="comment"></span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="comment">// Noise Floor Level</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">#define NFLEV_0 (0x00 &lt;&lt; 4) // NOISE FLOOR LEVEL = 0 (min)</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment">#define NFLEV_1 (0x01 &lt;&lt; 4) // NOISE FLOOR LEVEL = 1</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment">#define NFLEV_2 (0x02 &lt;&lt; 4) // NOISE FLOOR LEVEL = 2(default)</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment">#define NFLEV_3 (0x03 &lt;&lt; 4) // NOISE FLOOR LEVEL = 3</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="comment">#define NFLEV_4 (0x04 &lt;&lt; 4) // NOISE FLOOR LEVEL = 4</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment">#define NFLEV_5 (0x05 &lt;&lt; 4) // NOISE FLOOR LEVEL = 5</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="comment">#define NFLEV_6 (0x06 &lt;&lt; 4) // NOISE FLOOR LEVEL = 6</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment">#define NFLEV_7 (0x07 &lt;&lt; 4) // NOISE FLOOR LEVEL = 7 (max)</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="comment">#define NFLEV_DEF (NFLEV_2) // デフォルトのノイズレベルを設定</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="comment"></span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="comment">// Watchdog Threshold  (0～10)</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment">#define WDTH_DEFAULT 0x02   // WATCH DOG THRESHOLD 0x00 to 0x0F</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment">#define WDTH (WDTH_DEFAULT) // デフォルトのウォッチドッグスレッショルドを設定</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="};">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616">   67</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616">AS3935_SIGNAL</a> {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616ac157bdf0b85a40d2619cbc8bc1ae5fe2">   68</a></span>    <a class="code hl_enumvalue" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616ac157bdf0b85a40d2619cbc8bc1ae5fe2">NONE</a> = 0,    <span class="comment">// 信号が無効(信号なし)</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616acf0713491d9b887eaccfd80c18abca47">   69</a></span>    <a class="code hl_enumvalue" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616acf0713491d9b887eaccfd80c18abca47">VALID</a> = 1,   <span class="comment">// 信号が有効（雷の検出）</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616aef2863a469df3ea6871d640e3669a2f2">   70</a></span>    <a class="code hl_enumvalue" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616aef2863a469df3ea6871d640e3669a2f2">INVALID</a> = 2, <span class="comment">// 信号が無効（ノイズや誤検出など）</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616a57d3316e7827a89dea85f9a63ce0e7fe">   71</a></span>    <a class="code hl_enumvalue" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616a57d3316e7827a89dea85f9a63ce0e7fe">STATCLEAR</a> = 3, <span class="comment">// ステータスクリア（距離の古いイベントがパージされたため、距離推定が変更された）</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="};">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="class_a_s3935.html">   74</a></span><span class="keyword">class </span><a class="code hl_class" href="class_a_s3935.html">AS3935</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_i2_c_base.html">I2CBase</a></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>{</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a362bd298b7b816f509c4b0da3bedeecd">   77</a></span>    Adafruit_ILI9341* <a class="code hl_variable" href="class_a_s3935.html#a362bd298b7b816f509c4b0da3bedeecd">m_pTft</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a55eae79755e4c8fa8225605a5ce3d311">   79</a></span>    uint8_t <a class="code hl_variable" href="class_a_s3935.html#a55eae79755e4c8fa8225605a5ce3d311">m_u8IrqPin</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a8c95820a8c15200c6dbe1f4b06d7df12">   80</a></span>    uint8_t <a class="code hl_variable" href="class_a_s3935.html#a8c95820a8c15200c6dbe1f4b06d7df12">m_u8calibratedCap</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a77aeaf287739d386bc10691e7c9cde64">   81</a></span>    uint16_t <a class="code hl_variable" href="class_a_s3935.html#a77aeaf287739d386bc10691e7c9cde64">m_timeCalibration</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="class_a_s3935.html#ad483b4227a02e120b6e2e0bb30fee063">   82</a></span>    uint32_t <a class="code hl_variable" href="class_a_s3935.html#ad483b4227a02e120b6e2e0bb30fee063">m_FreqCalibration</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a606b35b0cb3fc47d30b15358df442b19">   84</a></span>    <a class="code hl_enumeration" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616">AS3935_SIGNAL</a> <a class="code hl_variable" href="class_a_s3935.html#a606b35b0cb3fc47d30b15358df442b19">m_latestSignalValid</a> = <a class="code hl_enumvalue" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616ac157bdf0b85a40d2619cbc8bc1ae5fe2">AS3935_SIGNAL::NONE</a>; <span class="comment">// 最新の信号が有効かどうか</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a828bd46cf46aa43895527c57bb3aaa79">   85</a></span>    uint8_t <a class="code hl_variable" href="class_a_s3935.html#a828bd46cf46aa43895527c57bb3aaa79">m_latestBufAlarmSummary</a> = 0;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a2ecff8df31347b770b123f4ad2001c04">   86</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_a_s3935.html#a2ecff8df31347b770b123f4ad2001c04">m_latestBufAlarmDist</a> = 0;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a437fdffbd90829c559e929bb968c3fd7">   87</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_a_s3935.html#a437fdffbd90829c559e929bb968c3fd7">m_latestBufSingleEnergy</a> = 0;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a35410252d1361e5b7c0d707a8adacc5d">   88</a></span>    time_t <a class="code hl_variable" href="class_a_s3935.html#a35410252d1361e5b7c0d707a8adacc5d">m_latestBufDateTime</a> = 0; <span class="comment">// 最新の日時</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a33b879ab66580036ac79af6ffb584729">   91</a></span>    <span class="keyword">const</span> uint8_t <a class="code hl_variable" href="class_a_s3935.html#a33b879ab66580036ac79af6ffb584729">SUMM_NONE</a> = 0x00;     <span class="comment">// アラームサマリー</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="class_a_s3935.html#afe52afed84e7ffc3dc1c90114fed1b6f">   92</a></span>    <span class="keyword">const</span> uint8_t <a class="code hl_variable" href="class_a_s3935.html#afe52afed84e7ffc3dc1c90114fed1b6f">SUMM_THUNDER</a> = 0x01;  <span class="comment">// アラームサマリー</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a6fb91c235c9fa28c4aa022b07f38bc21">   93</a></span>    <span class="keyword">const</span> uint8_t <a class="code hl_variable" href="class_a_s3935.html#a6fb91c235c9fa28c4aa022b07f38bc21">SUMM_TOOFAR</a> = 0x02;   <span class="comment">// 遠すぎる</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a5f4fadb0832d8e45050020513d80204a">   94</a></span>    <span class="keyword">const</span> uint8_t <a class="code hl_variable" href="class_a_s3935.html#a5f4fadb0832d8e45050020513d80204a">SUMM_NUMZERO</a> = 0x03;  <span class="comment">// 数がゼロ</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a885ee9136627380d7dde1beafa391a8f">   95</a></span>    <span class="keyword">const</span> uint8_t <a class="code hl_variable" href="class_a_s3935.html#a885ee9136627380d7dde1beafa391a8f">SUMM_DISTERBER</a> = 0x4; <span class="comment">// ディスターバ（誤検出）</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="class_a_s3935.html#ab959a9063f669de8c97581b99c475c36">   96</a></span>    <span class="keyword">const</span> uint8_t <a class="code hl_variable" href="class_a_s3935.html#ab959a9063f669de8c97581b99c475c36">SUMM_NOISEHIGH</a> = 0x5; <span class="comment">// ノイズレベル課題</span></div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="};">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="class_a_s3935.html#abd571c50fa68fd0f38f0b45965ccb2ad">   97</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="class_a_s3935.html#abd571c50fa68fd0f38f0b45965ccb2ad">SUMM_STRINGS</a>[6] = {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="stringliteral">&quot;なし　&quot;</span>, <span class="stringliteral">&quot;　雷　&quot;</span>, <span class="stringliteral">&quot;距離超&quot;</span>, <span class="stringliteral">&quot;距離０&quot;</span>, <span class="stringliteral">&quot;誤信号&quot;</span>, <span class="stringliteral">&quot;雑音多&quot;</span>};</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a338b0d96c3f7a185c08767c67ec8a60e">  100</a></span>    <a class="code hl_class" href="class_ring_buffer_t.html">RingBufferT&lt;uint8_t&gt;</a> <a class="code hl_variable" href="class_a_s3935.html#a338b0d96c3f7a185c08767c67ec8a60e">m_bufAlarmSummary</a>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="class_a_s3935.html#ab1312bbfa155da0ffa3f1806856752b1">  101</a></span>    <a class="code hl_class" href="class_ring_buffer_t.html">RingBufferT&lt;uint8_t&gt;</a> <a class="code hl_variable" href="class_a_s3935.html#ab1312bbfa155da0ffa3f1806856752b1">m_bufAlarmDist</a>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a453c75142d458f58d1f392651a561dd2">  102</a></span>    <a class="code hl_class" href="class_ring_buffer_t.html">RingBufferT&lt;long&gt;</a> <a class="code hl_variable" href="class_a_s3935.html#a453c75142d458f58d1f392651a561dd2">m_bufSingleEnergy</a>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a2806d94a6f0c367c04139519eeb1063c">  103</a></span>    <a class="code hl_class" href="class_ring_buffer_t.html">RingBufferT&lt;long long&gt;</a> <a class="code hl_variable" href="class_a_s3935.html#a2806d94a6f0c367c04139519eeb1063c">m_bufDateTime</a>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="class_a_s3935.html#aa88c7e0c4b42c313508d4887e12432d1">  105</a></span>    <a class="code hl_enumeration" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616">AS3935_SIGNAL</a> <a class="code hl_function" href="class_a_s3935.html#aa88c7e0c4b42c313508d4887e12432d1">getLatestSignalValid</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#a606b35b0cb3fc47d30b15358df442b19">m_latestSignalValid</a>; }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="class_a_s3935.html#af0e95218c0c6a0bf707372ff9863c7c0">  106</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_a_s3935.html#af0e95218c0c6a0bf707372ff9863c7c0">getLatestSummary</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#a828bd46cf46aa43895527c57bb3aaa79">m_latestBufAlarmSummary</a>; }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="class_a_s3935.html#aeeb8326c4d219809cba59375b8930144">  107</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_a_s3935.html#aeeb8326c4d219809cba59375b8930144">getLatestDist</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#a2ecff8df31347b770b123f4ad2001c04">m_latestBufAlarmDist</a>; }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a610d969e8609f4f569544d5f9131b50e">  108</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_a_s3935.html#a610d969e8609f4f569544d5f9131b50e">getLatestEnergy</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#a437fdffbd90829c559e929bb968c3fd7">m_latestBufSingleEnergy</a>; }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a5a88c6db76210f4ae3407cb666882d32">  109</a></span>    time_t <a class="code hl_function" href="class_a_s3935.html#a5a88c6db76210f4ae3407cb666882d32">getLatestDateTime</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#a35410252d1361e5b7c0d707a8adacc5d">m_latestBufDateTime</a>; }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a0d51679e507b45d47ce02e2530d3fcaa">  110</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_a_s3935.html#a0d51679e507b45d47ce02e2530d3fcaa">getLatestSummaryStr</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="class_a_s3935.html#ab48d8d0dc291de00423e6153524ba641">GetAlarmSummaryString</a>(<a class="code hl_variable" href="class_a_s3935.html#a828bd46cf46aa43895527c57bb3aaa79">m_latestBufAlarmSummary</a>); }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="comment">// --- キャリブレーション値のpublic getter ---</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a478e449ec1d1d7a6a092404ee16c2665">  113</a></span>    uint8_t <a class="code hl_function" href="class_a_s3935.html#a478e449ec1d1d7a6a092404ee16c2665">getCalibratedCap</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#a8c95820a8c15200c6dbe1f4b06d7df12">m_u8calibratedCap</a>; }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="class_a_s3935.html#ab0d6355d25cea5db773e3e474d8445d0">  114</a></span>    uint16_t <a class="code hl_function" href="class_a_s3935.html#ab0d6355d25cea5db773e3e474d8445d0">getTimeCalibration</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#a77aeaf287739d386bc10691e7c9cde64">m_timeCalibration</a>; }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="class_a_s3935.html#a779bc3912cb1b2cb0d8c05787a09f0f6">  115</a></span>    uint32_t <a class="code hl_function" href="class_a_s3935.html#a779bc3912cb1b2cb0d8c05787a09f0f6">getFreqCalibration</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#ad483b4227a02e120b6e2e0bb30fee063">m_FreqCalibration</a>; }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_function" href="class_a_s3935.html#a2d9bedd6ddc0710fd83253d321a8c50b">AS3935</a>(Adafruit_ILI9341* a_pTft);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_a_s3935.html#a8ba38e5a343120f3fe565250aac796fe">Init</a>(uint8_t a_u8IU2cAddress, uint8_t a_u8I2cPort, uint8_t a_u8SdaPin, uint8_t a_u8SclPin, uint8_t a_u8IrqPin);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="comment">// キャリブレーション実行</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    uint32_t <a class="code hl_function" href="class_a_s3935.html#a68a4cf3aa3492ca0c1dd4d2daba9c0d5">Calibrate</a>();</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="comment">// その他、AS3935の操作メソッドをここに追加</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_a_s3935.html#a65c675a4fd4df3b9f6d2a85433c38bee">PresetDefault</a>();</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_a_s3935.html#a19316fe41cca2c1c38ef9f71077d864f">StartCalibration</a>(uint16_t a_timeCalibration = 1000); <span class="comment">// デフォルトで1秒間キャリブレーションを行う</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <a class="code hl_enumeration" href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616">AS3935_SIGNAL</a> <a class="code hl_function" href="class_a_s3935.html#ab30374bc87e8a08909dfd4f8f67885b0">validateSignal</a>();</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_a_s3935.html#a01436c55024e09f34ec4f8d1ab441ee4">readBlockReg</a>(uint8_t* pReg);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    uint8_t <a class="code hl_function" href="class_a_s3935.html#a1b250cadcba50f331d74ef1074166a50">readReg</a>(uint8_t reg);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_a_s3935.html#a316b0a7c8a7c8a66a9d503cbc833fc36">Reset</a>();</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_a_s3935.html#a9974f55731a6446afdf2fcfcead2acc0">GetLatestEvent</a>(uint8_t idx, uint8_t&amp; a_u8AlarmSummary, uint8_t&amp; a_u8AlarmDist, <span class="keywordtype">long</span>&amp; a_lEnergy, time_t&amp; a_time);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_a_s3935.html#a9dff1c1a66d3120293945835286ef8f0">GetLatestAlarm</a>(uint8_t idx, uint8_t&amp; a_u8AlarmSummary, uint8_t&amp; a_u8AlarmDist, <span class="keywordtype">long</span>&amp; a_lEnergy, time_t&amp; a_time);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_a_s3935.html#a7eb7d50c55f538ee6d65a0666b1b8cb1">GetLatestFalseAlarm</a>(uint8_t idx, uint8_t&amp; a_u8AlarmSummary, uint8_t&amp; a_u8AlarmDist, <span class="keywordtype">long</span>&amp; a_lEnergy, time_t&amp; a_time);</div>
+<div class="foldopen" id="foldopen00183" data-start="{" data-end="}">
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="class_a_s3935.html#ab48d8d0dc291de00423e6153524ba641">  183</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="class_a_s3935.html#ab48d8d0dc291de00423e6153524ba641">GetAlarmSummaryString</a>(uint8_t a_u8AlarmSummary)</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    {</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">if</span> (a_u8AlarmSummary &lt; 6) {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="class_a_s3935.html#abd571c50fa68fd0f38f0b45965ccb2ad">SUMM_STRINGS</a>[a_u8AlarmSummary];</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        }</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">return</span> <span class="stringliteral">&quot;UNKNOWN&quot;</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    }</div>
+</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    };</div>
+</div>
+<div class="ttc" id="a_a_s3935_8h_html_a35733ea8bb2ddf7beeec5e770bed4616"><div class="ttname"><a href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616">AS3935_SIGNAL</a></div><div class="ttdeci">AS3935_SIGNAL</div><div class="ttdef"><b>Definition</b> <a href="#l00067">AS3935.h:67</a></div></div>
+<div class="ttc" id="a_a_s3935_8h_html_a35733ea8bb2ddf7beeec5e770bed4616a57d3316e7827a89dea85f9a63ce0e7fe"><div class="ttname"><a href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616a57d3316e7827a89dea85f9a63ce0e7fe">STATCLEAR</a></div><div class="ttdeci">@ STATCLEAR</div><div class="ttdef"><b>Definition</b> <a href="#l00071">AS3935.h:71</a></div></div>
+<div class="ttc" id="a_a_s3935_8h_html_a35733ea8bb2ddf7beeec5e770bed4616ac157bdf0b85a40d2619cbc8bc1ae5fe2"><div class="ttname"><a href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616ac157bdf0b85a40d2619cbc8bc1ae5fe2">NONE</a></div><div class="ttdeci">@ NONE</div><div class="ttdef"><b>Definition</b> <a href="#l00068">AS3935.h:68</a></div></div>
+<div class="ttc" id="a_a_s3935_8h_html_a35733ea8bb2ddf7beeec5e770bed4616acf0713491d9b887eaccfd80c18abca47"><div class="ttname"><a href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616acf0713491d9b887eaccfd80c18abca47">VALID</a></div><div class="ttdeci">@ VALID</div><div class="ttdef"><b>Definition</b> <a href="#l00069">AS3935.h:69</a></div></div>
+<div class="ttc" id="a_a_s3935_8h_html_a35733ea8bb2ddf7beeec5e770bed4616aef2863a469df3ea6871d640e3669a2f2"><div class="ttname"><a href="_a_s3935_8h.html#a35733ea8bb2ddf7beeec5e770bed4616aef2863a469df3ea6871d640e3669a2f2">INVALID</a></div><div class="ttdeci">@ INVALID</div><div class="ttdef"><b>Definition</b> <a href="#l00070">AS3935.h:70</a></div></div>
+<div class="ttc" id="a_i2_c_base_8h_html"><div class="ttname"><a href="_i2_c_base_8h.html">I2CBase.h</a></div><div class="ttdoc">I2Cデバイス用基底抽象クラス定義</div></div>
+<div class="ttc" id="a_ring_buffer_8h_html"><div class="ttname"><a href="_ring_buffer_8h.html">RingBuffer.h</a></div><div class="ttdoc">汎用リングバッファ（テンプレート）クラス宣言</div></div>
+<div class="ttc" id="aclass_a_s3935_html"><div class="ttname"><a href="class_a_s3935.html">AS3935</a></div><div class="ttdef"><b>Definition</b> <a href="#l00074">AS3935.h:75</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a01436c55024e09f34ec4f8d1ab441ee4"><div class="ttname"><a href="class_a_s3935.html#a01436c55024e09f34ec4f8d1ab441ee4">AS3935::readBlockReg</a></div><div class="ttdeci">void readBlockReg(uint8_t *pReg)</div><div class="ttdoc">指定レジスタから1バイト読み出す</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00381">AS3935.cpp:381</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a0d51679e507b45d47ce02e2530d3fcaa"><div class="ttname"><a href="class_a_s3935.html#a0d51679e507b45d47ce02e2530d3fcaa">AS3935::getLatestSummaryStr</a></div><div class="ttdeci">const char * getLatestSummaryStr()</div><div class="ttdef"><b>Definition</b> <a href="#l00110">AS3935.h:110</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a19316fe41cca2c1c38ef9f71077d864f"><div class="ttname"><a href="class_a_s3935.html#a19316fe41cca2c1c38ef9f71077d864f">AS3935::StartCalibration</a></div><div class="ttdeci">void StartCalibration(uint16_t a_timeCalibration=1000)</div><div class="ttdoc">AS3935の初期化を行う。</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00121">AS3935.cpp:121</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a1b250cadcba50f331d74ef1074166a50"><div class="ttname"><a href="class_a_s3935.html#a1b250cadcba50f331d74ef1074166a50">AS3935::readReg</a></div><div class="ttdeci">uint8_t readReg(uint8_t reg)</div><div class="ttdoc">指定レジスタから1バイト読み出す</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00371">AS3935.cpp:371</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a2806d94a6f0c367c04139519eeb1063c"><div class="ttname"><a href="class_a_s3935.html#a2806d94a6f0c367c04139519eeb1063c">AS3935::m_bufDateTime</a></div><div class="ttdeci">RingBufferT&lt; long long &gt; m_bufDateTime</div><div class="ttdef"><b>Definition</b> <a href="#l00103">AS3935.h:103</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a2d9bedd6ddc0710fd83253d321a8c50b"><div class="ttname"><a href="class_a_s3935.html#a2d9bedd6ddc0710fd83253d321a8c50b">AS3935::AS3935</a></div><div class="ttdeci">AS3935(Adafruit_ILI9341 *a_pTft)</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00060">AS3935.cpp:60</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a2ecff8df31347b770b123f4ad2001c04"><div class="ttname"><a href="class_a_s3935.html#a2ecff8df31347b770b123f4ad2001c04">AS3935::m_latestBufAlarmDist</a></div><div class="ttdeci">int m_latestBufAlarmDist</div><div class="ttdef"><b>Definition</b> <a href="#l00086">AS3935.h:86</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a316b0a7c8a7c8a66a9d503cbc833fc36"><div class="ttname"><a href="class_a_s3935.html#a316b0a7c8a7c8a66a9d503cbc833fc36">AS3935::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00483">AS3935.cpp:483</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a338b0d96c3f7a185c08767c67ec8a60e"><div class="ttname"><a href="class_a_s3935.html#a338b0d96c3f7a185c08767c67ec8a60e">AS3935::m_bufAlarmSummary</a></div><div class="ttdeci">RingBufferT&lt; uint8_t &gt; m_bufAlarmSummary</div><div class="ttdef"><b>Definition</b> <a href="#l00100">AS3935.h:100</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a33b879ab66580036ac79af6ffb584729"><div class="ttname"><a href="class_a_s3935.html#a33b879ab66580036ac79af6ffb584729">AS3935::SUMM_NONE</a></div><div class="ttdeci">const uint8_t SUMM_NONE</div><div class="ttdef"><b>Definition</b> <a href="#l00091">AS3935.h:91</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a35410252d1361e5b7c0d707a8adacc5d"><div class="ttname"><a href="class_a_s3935.html#a35410252d1361e5b7c0d707a8adacc5d">AS3935::m_latestBufDateTime</a></div><div class="ttdeci">time_t m_latestBufDateTime</div><div class="ttdef"><b>Definition</b> <a href="#l00088">AS3935.h:88</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a362bd298b7b816f509c4b0da3bedeecd"><div class="ttname"><a href="class_a_s3935.html#a362bd298b7b816f509c4b0da3bedeecd">AS3935::m_pTft</a></div><div class="ttdeci">Adafruit_ILI9341 * m_pTft</div><div class="ttdef"><b>Definition</b> <a href="#l00077">AS3935.h:77</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a437fdffbd90829c559e929bb968c3fd7"><div class="ttname"><a href="class_a_s3935.html#a437fdffbd90829c559e929bb968c3fd7">AS3935::m_latestBufSingleEnergy</a></div><div class="ttdeci">int m_latestBufSingleEnergy</div><div class="ttdef"><b>Definition</b> <a href="#l00087">AS3935.h:87</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a453c75142d458f58d1f392651a561dd2"><div class="ttname"><a href="class_a_s3935.html#a453c75142d458f58d1f392651a561dd2">AS3935::m_bufSingleEnergy</a></div><div class="ttdeci">RingBufferT&lt; long &gt; m_bufSingleEnergy</div><div class="ttdef"><b>Definition</b> <a href="#l00102">AS3935.h:102</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a478e449ec1d1d7a6a092404ee16c2665"><div class="ttname"><a href="class_a_s3935.html#a478e449ec1d1d7a6a092404ee16c2665">AS3935::getCalibratedCap</a></div><div class="ttdeci">uint8_t getCalibratedCap() const</div><div class="ttdef"><b>Definition</b> <a href="#l00113">AS3935.h:113</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a55eae79755e4c8fa8225605a5ce3d311"><div class="ttname"><a href="class_a_s3935.html#a55eae79755e4c8fa8225605a5ce3d311">AS3935::m_u8IrqPin</a></div><div class="ttdeci">uint8_t m_u8IrqPin</div><div class="ttdef"><b>Definition</b> <a href="#l00079">AS3935.h:79</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a5a88c6db76210f4ae3407cb666882d32"><div class="ttname"><a href="class_a_s3935.html#a5a88c6db76210f4ae3407cb666882d32">AS3935::getLatestDateTime</a></div><div class="ttdeci">time_t getLatestDateTime() const</div><div class="ttdef"><b>Definition</b> <a href="#l00109">AS3935.h:109</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a5f4fadb0832d8e45050020513d80204a"><div class="ttname"><a href="class_a_s3935.html#a5f4fadb0832d8e45050020513d80204a">AS3935::SUMM_NUMZERO</a></div><div class="ttdeci">const uint8_t SUMM_NUMZERO</div><div class="ttdef"><b>Definition</b> <a href="#l00094">AS3935.h:94</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a606b35b0cb3fc47d30b15358df442b19"><div class="ttname"><a href="class_a_s3935.html#a606b35b0cb3fc47d30b15358df442b19">AS3935::m_latestSignalValid</a></div><div class="ttdeci">AS3935_SIGNAL m_latestSignalValid</div><div class="ttdef"><b>Definition</b> <a href="#l00084">AS3935.h:84</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a610d969e8609f4f569544d5f9131b50e"><div class="ttname"><a href="class_a_s3935.html#a610d969e8609f4f569544d5f9131b50e">AS3935::getLatestEnergy</a></div><div class="ttdeci">int getLatestEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="#l00108">AS3935.h:108</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a65c675a4fd4df3b9f6d2a85433c38bee"><div class="ttname"><a href="class_a_s3935.html#a65c675a4fd4df3b9f6d2a85433c38bee">AS3935::PresetDefault</a></div><div class="ttdeci">bool PresetDefault()</div><div class="ttdoc">AS3935をデフォルトにリセットするためのダイレクトコマンド（データーシートのAS3935–23)を送信する</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00105">AS3935.cpp:105</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a68a4cf3aa3492ca0c1dd4d2daba9c0d5"><div class="ttname"><a href="class_a_s3935.html#a68a4cf3aa3492ca0c1dd4d2daba9c0d5">AS3935::Calibrate</a></div><div class="ttdeci">uint32_t Calibrate()</div><div class="ttdoc">AS3935のキャリブレーションを実行する。</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00160">AS3935.cpp:160</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a6fb91c235c9fa28c4aa022b07f38bc21"><div class="ttname"><a href="class_a_s3935.html#a6fb91c235c9fa28c4aa022b07f38bc21">AS3935::SUMM_TOOFAR</a></div><div class="ttdeci">const uint8_t SUMM_TOOFAR</div><div class="ttdef"><b>Definition</b> <a href="#l00093">AS3935.h:93</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a779bc3912cb1b2cb0d8c05787a09f0f6"><div class="ttname"><a href="class_a_s3935.html#a779bc3912cb1b2cb0d8c05787a09f0f6">AS3935::getFreqCalibration</a></div><div class="ttdeci">uint32_t getFreqCalibration() const</div><div class="ttdef"><b>Definition</b> <a href="#l00115">AS3935.h:115</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a77aeaf287739d386bc10691e7c9cde64"><div class="ttname"><a href="class_a_s3935.html#a77aeaf287739d386bc10691e7c9cde64">AS3935::m_timeCalibration</a></div><div class="ttdeci">uint16_t m_timeCalibration</div><div class="ttdef"><b>Definition</b> <a href="#l00081">AS3935.h:81</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a7eb7d50c55f538ee6d65a0666b1b8cb1"><div class="ttname"><a href="class_a_s3935.html#a7eb7d50c55f538ee6d65a0666b1b8cb1">AS3935::GetLatestFalseAlarm</a></div><div class="ttdeci">bool GetLatestFalseAlarm(uint8_t idx, uint8_t &amp;a_u8AlarmSummary, uint8_t &amp;a_u8AlarmDist, long &amp;a_lEnergy, time_t &amp;a_time)</div><div class="ttdoc">指定インデックスの最新「誤検出」イベント情報を取得</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00463">AS3935.cpp:463</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a828bd46cf46aa43895527c57bb3aaa79"><div class="ttname"><a href="class_a_s3935.html#a828bd46cf46aa43895527c57bb3aaa79">AS3935::m_latestBufAlarmSummary</a></div><div class="ttdeci">uint8_t m_latestBufAlarmSummary</div><div class="ttdef"><b>Definition</b> <a href="#l00085">AS3935.h:85</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a885ee9136627380d7dde1beafa391a8f"><div class="ttname"><a href="class_a_s3935.html#a885ee9136627380d7dde1beafa391a8f">AS3935::SUMM_DISTERBER</a></div><div class="ttdeci">const uint8_t SUMM_DISTERBER</div><div class="ttdef"><b>Definition</b> <a href="#l00095">AS3935.h:95</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a8ba38e5a343120f3fe565250aac796fe"><div class="ttname"><a href="class_a_s3935.html#a8ba38e5a343120f3fe565250aac796fe">AS3935::Init</a></div><div class="ttdeci">bool Init(uint8_t a_u8IU2cAddress, uint8_t a_u8I2cPort, uint8_t a_u8SdaPin, uint8_t a_u8SclPin, uint8_t a_u8IrqPin)</div><div class="ttdoc">AS3935センサーの初期化を行う。</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00086">AS3935.cpp:86</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a8c95820a8c15200c6dbe1f4b06d7df12"><div class="ttname"><a href="class_a_s3935.html#a8c95820a8c15200c6dbe1f4b06d7df12">AS3935::m_u8calibratedCap</a></div><div class="ttdeci">uint8_t m_u8calibratedCap</div><div class="ttdef"><b>Definition</b> <a href="#l00080">AS3935.h:80</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a9974f55731a6446afdf2fcfcead2acc0"><div class="ttname"><a href="class_a_s3935.html#a9974f55731a6446afdf2fcfcead2acc0">AS3935::GetLatestEvent</a></div><div class="ttdeci">bool GetLatestEvent(uint8_t idx, uint8_t &amp;a_u8AlarmSummary, uint8_t &amp;a_u8AlarmDist, long &amp;a_lEnergy, time_t &amp;a_time)</div><div class="ttdoc">指定インデックスの最新イベント情報を取得</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00409">AS3935.cpp:409</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_a9dff1c1a66d3120293945835286ef8f0"><div class="ttname"><a href="class_a_s3935.html#a9dff1c1a66d3120293945835286ef8f0">AS3935::GetLatestAlarm</a></div><div class="ttdeci">bool GetLatestAlarm(uint8_t idx, uint8_t &amp;a_u8AlarmSummary, uint8_t &amp;a_u8AlarmDist, long &amp;a_lEnergy, time_t &amp;a_time)</div><div class="ttdoc">指定インデックスの最新「雷」イベント情報を取得</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00431">AS3935.cpp:431</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_aa88c7e0c4b42c313508d4887e12432d1"><div class="ttname"><a href="class_a_s3935.html#aa88c7e0c4b42c313508d4887e12432d1">AS3935::getLatestSignalValid</a></div><div class="ttdeci">AS3935_SIGNAL getLatestSignalValid() const</div><div class="ttdef"><b>Definition</b> <a href="#l00105">AS3935.h:105</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_ab0d6355d25cea5db773e3e474d8445d0"><div class="ttname"><a href="class_a_s3935.html#ab0d6355d25cea5db773e3e474d8445d0">AS3935::getTimeCalibration</a></div><div class="ttdeci">uint16_t getTimeCalibration() const</div><div class="ttdef"><b>Definition</b> <a href="#l00114">AS3935.h:114</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_ab1312bbfa155da0ffa3f1806856752b1"><div class="ttname"><a href="class_a_s3935.html#ab1312bbfa155da0ffa3f1806856752b1">AS3935::m_bufAlarmDist</a></div><div class="ttdeci">RingBufferT&lt; uint8_t &gt; m_bufAlarmDist</div><div class="ttdef"><b>Definition</b> <a href="#l00101">AS3935.h:101</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_ab30374bc87e8a08909dfd4f8f67885b0"><div class="ttname"><a href="class_a_s3935.html#ab30374bc87e8a08909dfd4f8f67885b0">AS3935::validateSignal</a></div><div class="ttdeci">AS3935_SIGNAL validateSignal()</div><div class="ttdoc">雷検出後の信号検証を行う。</div><div class="ttdef"><b>Definition</b> <a href="_a_s3935_8cpp_source.html#l00199">AS3935.cpp:199</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_ab48d8d0dc291de00423e6153524ba641"><div class="ttname"><a href="class_a_s3935.html#ab48d8d0dc291de00423e6153524ba641">AS3935::GetAlarmSummaryString</a></div><div class="ttdeci">const char * GetAlarmSummaryString(uint8_t a_u8AlarmSummary)</div><div class="ttdef"><b>Definition</b> <a href="#l00183">AS3935.h:183</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_ab959a9063f669de8c97581b99c475c36"><div class="ttname"><a href="class_a_s3935.html#ab959a9063f669de8c97581b99c475c36">AS3935::SUMM_NOISEHIGH</a></div><div class="ttdeci">const uint8_t SUMM_NOISEHIGH</div><div class="ttdef"><b>Definition</b> <a href="#l00096">AS3935.h:96</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_abd571c50fa68fd0f38f0b45965ccb2ad"><div class="ttname"><a href="class_a_s3935.html#abd571c50fa68fd0f38f0b45965ccb2ad">AS3935::SUMM_STRINGS</a></div><div class="ttdeci">const char * SUMM_STRINGS[6]</div><div class="ttdef"><b>Definition</b> <a href="#l00097">AS3935.h:97</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_ad483b4227a02e120b6e2e0bb30fee063"><div class="ttname"><a href="class_a_s3935.html#ad483b4227a02e120b6e2e0bb30fee063">AS3935::m_FreqCalibration</a></div><div class="ttdeci">uint32_t m_FreqCalibration</div><div class="ttdef"><b>Definition</b> <a href="#l00082">AS3935.h:82</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_aeeb8326c4d219809cba59375b8930144"><div class="ttname"><a href="class_a_s3935.html#aeeb8326c4d219809cba59375b8930144">AS3935::getLatestDist</a></div><div class="ttdeci">int getLatestDist() const</div><div class="ttdef"><b>Definition</b> <a href="#l00107">AS3935.h:107</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_af0e95218c0c6a0bf707372ff9863c7c0"><div class="ttname"><a href="class_a_s3935.html#af0e95218c0c6a0bf707372ff9863c7c0">AS3935::getLatestSummary</a></div><div class="ttdeci">int getLatestSummary() const</div><div class="ttdef"><b>Definition</b> <a href="#l00106">AS3935.h:106</a></div></div>
+<div class="ttc" id="aclass_a_s3935_html_afe52afed84e7ffc3dc1c90114fed1b6f"><div class="ttname"><a href="class_a_s3935.html#afe52afed84e7ffc3dc1c90114fed1b6f">AS3935::SUMM_THUNDER</a></div><div class="ttdeci">const uint8_t SUMM_THUNDER</div><div class="ttdef"><b>Definition</b> <a href="#l00092">AS3935.h:92</a></div></div>
+<div class="ttc" id="aclass_i2_c_base_html"><div class="ttname"><a href="class_i2_c_base.html">I2CBase</a></div><div class="ttdoc">I2Cデバイス用の基底抽象クラス</div><div class="ttdef"><b>Definition</b> <a href="_i2_c_base_8h_source.html#l00019">I2CBase.h:19</a></div></div>
+<div class="ttc" id="aclass_ring_buffer_t_html"><div class="ttname"><a href="class_ring_buffer_t.html">RingBufferT</a></div><div class="ttdoc">汎用リングバッファ（循環バッファ）テンプレートクラス</div><div class="ttdef"><b>Definition</b> <a href="_ring_buffer_8h_source.html#l00019">RingBuffer.h:20</a></div></div>
+<div class="ttc" id="anamespaceard_port_1_1spi_html"><div class="ttname"><a href="namespaceard_port_1_1spi.html">ardPort::spi</a></div><div class="ttdoc">SPI関連APIの名前空間</div></div>
+<div class="ttc" id="anamespaceard_port_html"><div class="ttname"><a href="namespaceard_port.html">ardPort</a></div><div class="ttdoc">Arduino互換ポートラッパーの名前空間</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+構築:&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

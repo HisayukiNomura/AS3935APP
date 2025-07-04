@@ -15,11 +15,10 @@ KNJGfx9341_ARD
 outlog.txt
 *.ino
 documents
-Doxygen/html
+#Doxygen/html
 Doxygen/latex
 Doxygen/rtf
 *.zip
 !*Kicad.zip
 !Gerber.zip
 !build/*.uf2
-!Doxygen/DoxygenDoc.zip
